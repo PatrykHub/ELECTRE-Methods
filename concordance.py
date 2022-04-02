@@ -1,6 +1,6 @@
 
 from core.aliases import NumericValue
-from typing import List, Union
+from typing import List
 from core.scales import QuantitativeScale, PreferenceDirection
 
 
@@ -9,7 +9,7 @@ def concordanceMarginal(a_value:               NumericValue,
                         scale:                 QuantitativeScale,
                         indifferenceThreshold: List[NumericValue],
                         preferenceThreshold:   List[NumericValue]) -> NumericValue:
-    '''
+    """
 
     :param a_value:
     :param b_value:
@@ -17,7 +17,7 @@ def concordanceMarginal(a_value:               NumericValue,
     :param indifferenceThreshold:
     :param preferenceThreshold:
     :return:
-    '''
+    """
     if not isinstance(a_value, NumericValue) or not isinstance(b_value, NumericValue):
         raise TypeError('Both criteria values have to be numeric values (int or float).')
 
@@ -63,7 +63,7 @@ def concordanceComprehensive(a:                     List[NumericValue],
                              weights:               List[NumericValue],
                              indifferenceThreshold: List[List[NumericValue]],
                              preferenceThreshold:   List[List[NumericValue]]) -> NumericValue:
-    '''
+    """
 
     :param a:
     :param b:
@@ -72,7 +72,7 @@ def concordanceComprehensive(a:                     List[NumericValue],
     :param indifferenceThreshold:
     :param preferenceThreshold:
     :return:
-    '''
+    """
     if not (isinstance(a, list) and isinstance(b, list) and isinstance(scales, list) and isinstance(weights, list) and
             isinstance(indifferenceThreshold, list) and isinstance(preferenceThreshold, list)):
         raise TypeError('All arguments have to be lists.')
@@ -90,6 +90,118 @@ def concordanceComprehensive(a:                     List[NumericValue],
         ) / sum(weights)
 
 
+def concordance_reinforced_pair(a:                      List[NumericValue],
+                                b:                      List[NumericValue],
+                                scales:                 List[QuantitativeScale],
+                                weights:                List[NumericValue],
+                                indifferenceThreshold:  List[List[NumericValue]],
+                                preferenceThreshold:    List[List[NumericValue]],
+                                reinforcedThresholds:   List[List[NumericValue]],
+                                reinforcementFactors:   List[NumericValue]) -> NumericValue:
+    """
+
+    :param a:
+    :param b:
+    :param scales:
+    :param weights:
+    :param indifferenceThreshold:
+    :param preferenceThreshold:
+    :param reinforcedThresholds:
+    :param reinforcementFactors:
+    :return:
+    """
+
+    try:
+        reinforcedThresholds = [
+            (reinforcedThresholds[i][0] * a[i] + reinforcedThresholds[i][1]) for i in range(len(reinforcedThresholds))
+        ]
+    except TypeError as e:
+        e.args = ('Threshold values have to be numeric values (int or float).',)
+        raise
+
+    reinforce_occur = [
+        a[i] - b[i] > reinforcedThresholds[i] if scales[i].preference_direction == PreferenceDirection.MIN else
+        a[i] - b[i] < reinforcedThresholds[i]
+        for i in range(len(a))
+    ]
+
+    sum_weights_thresholds = sum([
+        weights[i] * reinforce_occur[i] * reinforcementFactors[i] for i in range(len(reinforcementFactors))
+    ])
+
+    return (
+        sum_weights_thresholds + sum([
+            0 if reinforce_occur[i] else
+            weights[i] * concordanceMarginal(a[i], b[i], scales[i], indifferenceThreshold[i], preferenceThreshold[i])
+            for i in range(len(a))
+        ])
+    ) / (sum_weights_thresholds + sum([weights[i] * (not reinforce_occur[i]) for i in range(len(weights))]))
 
 
+def concordance_reinforced(alternativesPerform:   List[List[NumericValue]],
+                           scales:                List[QuantitativeScale],
+                           weights:               List[NumericValue],
+                           indifferenceThreshold: List[List[NumericValue]],
+                           preferenceThreshold:   List[List[NumericValue]],
+                           reinforcedThresholds:  List[List[NumericValue]],
+                           reinforcementFactors:  List[NumericValue],
+                           profilesPerform:       List[List[NumericValue]] = None) -> List[List[NumericValue]]:
+    if profilesPerform is not None:
+        return [
+            [concordance_reinforced_pair(
+                alternativesPerform[i],
+                profilesPerform[j],
+                scales, weights,
+                indifferenceThreshold, preferenceThreshold,
+                reinforcedThresholds, reinforcementFactors
+            )
+                for j in range( len(profilesPerform) )
+            ]
+            for i in range(len(alternativesPerform))
+        ]
+
+    return [
+        [concordance_reinforced_pair(
+            alternativesPerform[i],
+            alternativesPerform[j],
+            scales, weights,
+            indifferenceThreshold, preferenceThreshold,
+            reinforcedThresholds, reinforcementFactors
+        )
+            for j in range( len(alternativesPerform[i]) )
+        ]
+        for i in range(len(alternativesPerform))
+    ]
+
+
+def concordance(alternativesPerform:   List[List[NumericValue]],
+                scales:                List[QuantitativeScale],
+                weights:               List[NumericValue],
+                indifferenceThreshold: List[List[NumericValue]],
+                preferenceThreshold:   List[List[NumericValue]],
+                profilesPerform:       List[List[NumericValue]] = None) -> List[List[NumericValue]]:
+    if profilesPerform is not None:
+        return [
+            [concordanceComprehensive(
+                alternativesPerform[i],
+                profilesPerform[j],
+                scales, weights,
+                indifferenceThreshold, preferenceThreshold
+            )
+                for j in range(len(profilesPerform))
+            ]
+            for i in range(len(alternativesPerform))
+        ]
+
+    return [
+        [concordanceComprehensive(
+            alternativesPerform[i],
+            alternativesPerform[j],
+            scales, weights,
+            indifferenceThreshold, preferenceThreshold
+        )
+            for j in range(len(alternativesPerform[i]))
+        ]
+        for i in range(len(alternativesPerform))
+    ]
 
