@@ -17,17 +17,17 @@ if __name__ == '__main__':
         [0.4, 500]
     ]
     for i in range(2):
-        print(concordanceMarginal(
-            fiat[i], vwPolo[i], scales[i], indifference[i], preference[i]
+        print(concordance_marginal(
+            fiat[i], vwPolo[i], scales[i], indifference[i], preference[i], False
         ))
     for i in range(2):
-        print(concordanceMarginal(
-            vwPolo[i], fiat[i], scales[i], indifference[i], preference[i]
+        print(concordance_marginal(
+            vwPolo[i], fiat[i], scales[i], indifference[i], preference[i], False
         ))
 
-    print(concordanceComprehensive(
-        fiat, vwPolo, scales, weights, indifference, preference
+    print(concordance_comprehensive(
+        fiat, vwPolo, scales, weights, indifference, preference, False
     ))
-    print(concordanceComprehensive(
-        vwPolo, fiat, scales, weights, indifference, preference
+    print(concordance_comprehensive(
+        vwPolo, fiat, scales, weights, indifference, preference, False
     ))
