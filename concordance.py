@@ -90,13 +90,61 @@ def concordanceComprehensive(a:                     List[NumericValue],
         ) / sum(weights)
 
 
-def concordanceWithInteractions(a:                      List[NumericValue],
-                                 b:                     List[NumericValue],
-                                 scales:                List[QuantitativeScale],
-                                 weights:               List[NumericValue],
-                                 interactions:          List[List[List[NumericValue]]],
-                                 indifferenceThreshold: List[List[NumericValue]],
-                                 preferenceThreshold:   List[List[NumericValue]]) -> NumericValue:
+def check_interactions(interactions:    List[List[List]],
+                       weights:         List[NumericValue],
+                       length:          NumericValue) -> bool:
+    '''
+
+    :param interactions:
+    :param weights:
+    :param length:
+    :return:
+    '''
+
+    if not isinstance(interactions, list) and not all(1 if isinstance(item, list) else 0 in interactions for item in interactions):
+        raise TypeError('Interactions have to be represented as a matrix.')
+    if not len(interactions) == length and not all(1 if len(row) == length else 0 in interactions for row in interactions):
+        raise ValueError('Interactions have to be a square matrix.')
+    for i in range(len(interactions)):
+        for j in range(len(interactions[i])):
+            if len(interactions[i][j]) > 0 and len(interactions[i][j]) != 3:
+                raise ValueError('Each interaction has to be represented as a list of length 3.')
+            if len(interactions[i][j]) == 3 and interactions[i][j][0] not in ['MW', 'MS', 'A']:
+                raise ValueError('The interaction type has to be represented by one of the following tokens:\n\'MW\' '
+                                 '- Mutual Weakening\n\'MS\' - Mutual Strengthening\n\'A\' - Antagonistic')
+            if len(interactions[i][j]) == 3 and interactions[i][j][1] not in ['min', 'multi']:
+                raise ValueError('The Z function has to be represented by one of the following tokens:\n\'min\' - '
+                                 'minimum\n\'multi\' - multiplication')
+            if len(interactions[i][j]) == 3 and not isinstance(interactions[i][j][2], NumericValue):
+                raise TypeError('Interaction factor must be a numerical value.')
+            if len(interactions[i][j]) == 3 and interactions[i][j][0] == 'MW' and weights[i] - abs(interactions[i][j][2]) < 0:
+                raise ValueError('Incorrect interaction factor.')
+            if len(interactions[i][j]) == 3 and interactions[i][j][0] == 'A' and weights[i] - interactions[i][j][2] < 0:
+                raise ValueError('Incorrect interaction factor.')
+
+    return True
+
+
+def interact(interactions:      List[List[List]],
+             g_i:               NumericValue,
+             g_j:               NumericValue,
+             interaction_token: str,
+             z_function:        str,
+             factor:            NumericValue):
+
+    interactions[g_i][g_j].append(interaction_token)
+    interactions[g_i][g_j].append(z_function)
+    interactions[g_i][g_j].append(factor)
+
+
+
+def concordanceWithInteractions(a:                     List[NumericValue],
+                                b:                     List[NumericValue],
+                                scales:                List[QuantitativeScale],
+                                weights:               List[NumericValue],
+                                interactions:          List[List[List]],
+                                indifferenceThreshold: List[List[NumericValue]],
+                                preferenceThreshold:   List[List[NumericValue]]) -> NumericValue:
     '''
 
     :param a:
@@ -117,17 +165,10 @@ def concordanceWithInteractions(a:                      List[NumericValue],
     for weight in weights:
         if not isinstance(weight, NumericValue):
             raise ValueError(f'Wrong weight type. Expected numeric value, got {type(weight).__name__}')
-    if not (isinstance(a, list) and isinstance(b, list) and isinstance(scales, list) and isinstance(weights, list) and
-            isinstance(indifferenceThreshold, list) and isinstance(preferenceThreshold, list)):
-        raise TypeError('All arguments have to be lists.')
-    if len(a) != len(b) or len(a) != len(scales) or len(a) != len(weights) or\
-            len(a) != len(indifferenceThreshold) or len(a) != len(preferenceThreshold):
-        raise ValueError('All lists given in arguments have to have the same length.')
-    for weight in weights:
-        if not isinstance(weight, NumericValue):
-            raise ValueError(f'Wrong weight type. Expected numeric value, got {type(weight).__name__}')
 
-    mutual_strenghtening = []
+    check_interactions(interactions, weights, len(a))
+
+    mutual_strengthening = []
     mutual_weakening = []
     antagonistic = []
     for i in range(len(interactions)):
@@ -137,7 +178,7 @@ def concordanceWithInteractions(a:                      List[NumericValue],
                 c_j = concordanceMarginal(a[j], b[j], scales[j], indifferenceThreshold[j], preferenceThreshold[j])
                 if interactions[i][j][0] == 'MS':
                     strengthening_weight = weights[i] + weights[j] + interactions[i][j][2]
-                    mutual_strenghtening.append(strengthening_weight * min(c_i, c_j) if interactions[i][j][1] == 'min'
+                    mutual_strengthening.append(strengthening_weight * min(c_i, c_j) if interactions[i][j][1] == 'min'
                               else strengthening_weight * c_i * c_j)
                 elif interactions[i][j][0] == 'MW':
                     weakening_weight = weights[i] + weights[j] + interactions[i][j][2]
@@ -153,5 +194,5 @@ def concordanceWithInteractions(a:                      List[NumericValue],
                 weights[i] * concordanceMarginal(a[i], b[i], scales[i], indifferenceThreshold[i], preferenceThreshold[i])
                 for i in range(len(a))
             ]
-            ) + sum(mutual_strenghtening) + sum(mutual_weakening) - sum(antagonistic)) / \
-           (sum(weights) + sum(mutual_strenghtening) + sum(mutual_weakening) - sum(antagonistic))
+            ) + sum(mutual_strengthening) + sum(mutual_weakening) - sum(antagonistic)) / \
+           (sum(weights) + sum(mutual_strengthening) + sum(mutual_weakening) - sum(antagonistic))
