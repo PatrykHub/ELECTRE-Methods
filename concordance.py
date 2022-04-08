@@ -131,10 +131,23 @@ def interact(interactions:      List[List[List]],
              interaction_token: str,
              z_function:        str,
              factor:            NumericValue):
+    '''
 
-    interactions[g_i][g_j].append(interaction_token)
-    interactions[g_i][g_j].append(z_function)
-    interactions[g_i][g_j].append(factor)
+    :param interactions:
+    :param g_i:
+    :param g_j:
+    :param interaction_token:
+    :param z_function:
+    :param factor:
+    :return:
+    '''
+
+    g1 = min(g_i, g_j) - 1
+    g2 = max(g_i, g_j) - 1
+
+    interactions[g1][g2].append(interaction_token)
+    interactions[g1][g2].append(z_function)
+    interactions[g1][g2].append(factor)
 
 
 
