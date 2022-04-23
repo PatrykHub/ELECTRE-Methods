@@ -1,4 +1,3 @@
-
 from core.aliases import NumericValue
 from typing import List, Union
 from core.scales import QuantitativeScale, PreferenceDirection
@@ -106,6 +105,8 @@ def check_interactions(interactions:    List[List[List]],
     if not len(interactions) == length and not all(1 if len(row) == length else 0 in interactions for row in interactions):
         raise ValueError('Interactions have to be a square matrix.')
     for i in range(len(interactions)):
+        if interactions[i][i] != []:
+            raise ValueError('Criterion cannot interact with itself.')
         for j in range(len(interactions[i])):
             if len(interactions[i][j]) > 0 and len(interactions[i][j]) != 3:
                 raise ValueError('Each interaction has to be represented as a list of length 3.')
@@ -141,14 +142,29 @@ def interact(interactions:      List[List[List]],
     :param factor:
     :return:
     '''
+    if z_function not in ['min', 'multi']:
+        raise ValueError('The Z function has to be represented by one of the following tokens:\n\'min\' - '
+                         'minimum\n\'multi\' - multiplication')
+    if interaction_token not in ['A', 'MS', 'MW']:
+        raise ValueError('The interaction type has to be represented by one of the following tokens:\n\'MW\' '
+                         '- Mutual Weakening\n\'MS\' - Mutual Strengthening\n\'A\' - Antagonistic')
+    if g_i == g_j:
+        raise ValueError('Criterion cannot interact with itself.')
+    if not isinstance(factor, NumericValue):
+        raise TypeError('Interaction factor must be a numerical value.')
 
-    g1 = min(g_i, g_j) - 1
-    g2 = max(g_i, g_j) - 1
-
-    interactions[g1][g2].append(interaction_token)
-    interactions[g1][g2].append(z_function)
-    interactions[g1][g2].append(factor)
-
+    if interaction_token == 'A':
+        g1 = g_i - 1
+        g2 = g_j - 1
+        interactions[g1][g2].append(interaction_token)
+        interactions[g1][g2].append(z_function)
+        interactions[g1][g2].append(factor)
+    else:
+        g1 = min(g_i, g_j) - 1
+        g2 = max(g_i, g_j) - 1
+        interactions[g1][g2].append(interaction_token)
+        interactions[g1][g2].append(z_function)
+        interactions[g1][g2].append(factor)
 
 
 def concordanceWithInteractions(a:                     List[NumericValue],
@@ -185,7 +201,7 @@ def concordanceWithInteractions(a:                     List[NumericValue],
     mutual_weakening = []
     antagonistic = []
     for i in range(len(interactions)):
-        for j in range(i+1, len(interactions[i])):
+        for j in range(len(interactions[i])):
             if len(interactions[i]) > 1:
                 c_i = concordanceMarginal(a[i], b[i], scales[i], indifferenceThreshold[i], preferenceThreshold[i])
                 c_j = concordanceMarginal(a[j], b[j], scales[j], indifferenceThreshold[j], preferenceThreshold[j])
