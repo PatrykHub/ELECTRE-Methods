@@ -218,3 +218,43 @@ def concordance(alternatives_perform: List[List[NumericValue]],
         ]
         for i in range(len(alternatives_perform))
     ]
+
+
+
+def concordance_profiles_thresholds(alternatives_perform: List[List[NumericValue]],
+                                    scales: List[QuantitativeScale],
+                                    weights: List[NumericValue],
+                                    indifference_threshold: List[List[List[NumericValue]]],
+                                    preference_threshold: List[List[List[NumericValue]]],
+                                    profiles_perform: List[List[NumericValue]]):
+    '''
+
+    :param alternatives_perform:
+    :param scales:
+    :param weights:
+    :param indifference_threshold:
+    :param preference_threshold:
+    :param profiles_perform:
+    :return:
+    '''
+    return [
+        [concordance_comprehensive(
+            alternatives_perform[i],
+            profiles_perform[j],
+            scales, weights,
+            indifference_threshold[j], preference_threshold[j], True
+        )
+            for j in range(len(profiles_perform))
+        ]
+        for i in range(len(alternatives_perform))
+    ], [
+        [concordance_comprehensive(
+            profiles_perform[j],
+            alternatives_perform[i],
+            scales, weights,
+            indifference_threshold[j], preference_threshold[j]
+        )
+            for j in range(len(profiles_perform))
+        ]
+        for i in range(len(alternatives_perform))
+    ]

@@ -26,8 +26,8 @@ if __name__ == '__main__':
         ))
 
     print(concordance_comprehensive(
-        fiat, vwPolo, scales, weights, indifference, preference
+        fiat, vwPolo, scales, weights, indifference, preference, False
     ))
     print(concordance_comprehensive(
-        vwPolo, fiat, scales, weights, indifference, preference
+        vwPolo, fiat, scales, weights, indifference, preference, False
     ))
