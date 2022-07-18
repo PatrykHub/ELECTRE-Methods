@@ -26,5 +26,5 @@ jobs:
           pip install pytest-cov
       - name: Test modules
         run: pytest --cov-report term --cov=mcda tests/
-      - name: Test documentation
-        run: pytest --doctest-modules mcda/
+      # - name: Test documentation
+      #   run: pytest --doctest-modules mcda/
