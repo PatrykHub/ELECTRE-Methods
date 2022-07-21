@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 """This module contains set functions utilities.
 
 .. todo::

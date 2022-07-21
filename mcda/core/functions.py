@@ -1,5 +1,5 @@
 import math
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Type, cast, get_args
 
 from .aliases import NumericFunction, NumericValue, Value
 
@@ -357,3 +357,53 @@ class FuzzyNumber(PieceWiseFunction):
         for interval in self.intervals:
             res += interval.dmax
         return res / (len(self.functions) + 1)
+
+
+class Threshold:
+    """This class implements Electre threshold.
+
+    :param NumericValue alpha:
+    :param NumericValue beta:
+    """
+    def __init__(self, alpha: NumericValue, beta: NumericValue) -> None:
+        self.__check_coeff_val(alpha)
+        self.__check_coeff_val(beta)
+
+        self._alpha: NumericValue = alpha
+        self._beta: NumericValue = beta
+    
+    def __check_coeff_val(self, val: NumericValue) -> None:
+        """Checks if new coefficient value has a numeric type."""
+        if not isinstance(val, get_args(NumericValue)):
+            raise TypeError(
+                f"Wrong coefficient type. Expected '{NumericValue}', "
+                f"but got '{type(val).__name__}' instead."
+            )
+    
+    @property
+    def alpha(self) -> NumericValue:
+        return self._alpha
+    
+    @alpha.setter
+    def alpha(self, value: NumericValue) -> None:
+        self.__check_coeff_val(value)
+        self._alpha = value
+    
+    @property
+    def beta(self) -> NumericValue:
+        return self._beta
+
+    @beta.setter
+    def beta(self, value: NumericValue) -> None:
+        self.__check_coeff_val(value)
+        self._beta = value
+
+    def __call__(self, value: NumericValue) -> NumericValue:
+        """Returns threshold value for given parameter.
+        """
+        try:
+            return self.alpha * value + self.beta
+        except TypeError as exc:
+            exc.args = (f"Wrong value type. Expected '{NumericValue}', but got "
+                        f"'{type(value).__name__}' instead.",)
+            raise

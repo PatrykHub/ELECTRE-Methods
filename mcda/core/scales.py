@@ -1,3 +1,4 @@
+# mypy: ignore-errors
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import List, Union, cast
