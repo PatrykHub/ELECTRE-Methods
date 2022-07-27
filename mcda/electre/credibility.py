@@ -1,4 +1,4 @@
-from core.aliases import NumericValue
+from mcda.core.aliases import NumericValue
 from typing import List
 from functools import reduce
 
