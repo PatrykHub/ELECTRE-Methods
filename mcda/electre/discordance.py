@@ -189,15 +189,22 @@ def discordance_marginal(
     :param pre_veto_threshold:
     :return:
     """
-
-      return sum(
-          [
-              weights[i] * discordance_marginal(alternatives_a[i], alternatives_b[i], scales[i],
-                                                preference_threshold[i], veto_threshold[i], pre_veto_threshold[i])
-              for i in range(len(alternatives_a))
-          ]
-      ) / sum(weights)
-
+    if pre_veto_threshold:
+        return sum(
+            [
+                weights[i] * discordance_marginal(alternatives_a[i], alternatives_b[i], scales[i],
+                                                  preference_threshold[i], veto_threshold[i], pre_veto_threshold[i])
+                for i in range(len(alternatives_a))
+            ]
+        ) / sum(weights)
+    else:
+        return sum(
+            [
+                weights[i] * discordance_marginal(alternatives_a[i], alternatives_b[i], scales[i],
+                                                  preference_threshold[i], veto_threshold[i], None)
+                for i in range(len(alternatives_a))
+            ]
+        ) / sum(weights)
     
 def discordance_pair(
     a_values: List[NumericValue],
