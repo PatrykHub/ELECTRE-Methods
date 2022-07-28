@@ -1,6 +1,6 @@
-from core.aliases import NumericValue
+from ..core.aliases import NumericValue
 from typing import List
-from core.scales import QuantitativeScale, PreferenceDirection
+from ..core.scales import QuantitativeScale, PreferenceDirection
 
 
 def concordance_marginal(a_value: NumericValue,

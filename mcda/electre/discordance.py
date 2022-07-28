@@ -1,5 +1,5 @@
-from core.scales import QuantitativeScale, PreferenceDirection
-from core.aliases import NumericValue
+from ..core.scales import QuantitativeScale, PreferenceDirection
+from ..core.aliases import NumericValue
 from typing import List, Union, Tuple
 
 
