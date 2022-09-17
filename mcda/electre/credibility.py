@@ -1,17 +1,11 @@
 """This module implements methods to compute
 an outranking credibility."""
 
-from typing import List, Union
 from functools import reduce
-from ..core.aliases import NumericValue
-
-
-"""This module implements methods to compute
-an outranking credibility."""
-
-from typing import List, Union
+from typing import Dict, List, Union
 
 from ..core.aliases import NumericValue
+from ..core.scales import PreferenceDirection, QuantitativeScale
 
 
 def credibility_cv_pair(
@@ -63,15 +57,15 @@ def credibility_cv(
         exc.args = ("",)
         raise  # TODO
 
-def credibility_marginal(concordance: NumericValue,
-                         discordance: NumericValue):
-    '''
+
+def credibility_marginal(concordance: NumericValue, discordance: NumericValue) -> NumericValue:
+    """
     :param x:
     :param y:
     :param concordance:
     :param discordance:
     :return:
-    '''
+    """
     discordance_values = [discordance]
     if set(discordance_values) == {0}:  # only zeros
         c_idx = concordance
@@ -92,25 +86,25 @@ def credibility_marginal(concordance: NumericValue,
     return c_idx
 
 
-def credibility_comprehensive(comparables_a: List[NumericValue],
-                              comparables_b: List[NumericValue],
-                              concordance: List[List[NumericValue]],
-                              discordance: List[List[NumericValue]]):
-
-    credibility = {}
-
+def credibility_comprehensive(
+    comparables_a: List[int],
+    comparables_b: List[int],
+    concordance: List[List[NumericValue]],
+    discordance: List[List[NumericValue]],
+) -> Dict[int, Dict[int, NumericValue]]:
+    credibility: Dict[int, Dict[int, NumericValue]] = {}
     for i in comparables_a:
         for j in comparables_b:
             credibility[i] = {}
-            credibility[i].update({j: credibility_marginal(concordance[i][j], discordance[i][j])})
+            credibility[i].update(
+                {j: credibility_marginal(concordance[i][j], discordance[i][j])}
+            )
             credibility[j] = {}
-            credibility[j].update({i: credibility_marginal(concordance[j][i], discordance[j][i])})
+            credibility[j].update(
+                {i: credibility_marginal(concordance[j][i], discordance[j][i])}
+            )
 
     return credibility
-
-from typing import List
-from mcda.core.aliases import NumericValue
-from mcda.core.scales import QuantitativeScale, PreferenceDirection
 
 
 def _get_criteria_difference(
@@ -169,7 +163,7 @@ def _get_credibility_values(
     scales: List[QuantitativeScale],
     veto_threshold: List[NumericValue],
 ) -> List[List]:
-    credibility = [
+    credibility: List[List[NumericValue]] = [
         [0 for _ in range(len(alternatives))] for _ in range(len(alternatives))
     ]
 
@@ -195,7 +189,8 @@ def _get_credibility_values(
                         credibility[i][j] = 0.4
 
                 elif (
-                    np_ba <= 1 and np_ab >= len(scales) / 2
+                    np_ba <= 1
+                    and np_ab >= len(scales) / 2
                     and _is_veto(
                         alternatives[j], alternatives[i], scales, veto_threshold
                     )
@@ -211,9 +206,9 @@ def credibility_electre_iv(
     scales: List[QuantitativeScale],
     indifference_threshold: List[NumericValue],
     prefference_threshold: List[NumericValue],
-    veto_threshold: List[NumericValue] = None,
+    veto_threshold: List[NumericValue],
 ) -> List[List]:
-    criteria_counts = [
+    criteria_counts: List[List[List[float]]] = [
         [[0.0] * 4 for _ in range(len(alternatives))] for _ in range(len(alternatives))
     ]
 
