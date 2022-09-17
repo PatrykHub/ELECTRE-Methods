@@ -1,13 +1,19 @@
-from ..core.scales import QuantitativeScale, PreferenceDirection
+"""This module implements methods to compute discordance."""
+from typing import List, Optional, Sized, Tuple, Union, cast
+
 from ..core.aliases import NumericValue
-from typing import List, Union, Tuple
+from ..core.functions import Threshold
+from ..core.scales import PreferenceDirection, QuantitativeScale
+from ._validate import _all_lens_equal, _both_values_in_scale, _inverse_values
 
 
-def discordance_marginal_bin(a_value: NumericValue,
-                             b_value: NumericValue,
-                             scale: QuantitativeScale,
-                             veto_threshold: List[NumericValue],
-                             inverse: bool = False) -> int:
+def discordance_marginal_bin(
+    a_value: NumericValue,
+    b_value: NumericValue,
+    scale: QuantitativeScale,
+    veto_threshold: List[NumericValue],
+    inverse: bool = False,
+) -> int:
     """
     Calculates binary marginal discordance with veto threshold.
     :param a_value:
@@ -20,35 +26,41 @@ def discordance_marginal_bin(a_value: NumericValue,
     try:
         if a_value not in scale or b_value not in scale:
             # TODO
-            raise ValueError('')
+            raise ValueError("")
     except TypeError as e:
-        e.args = ('Both criteria values have to be numeric values.',)
+        e.args = ("Both criteria values have to be numeric values.",)
         raise
 
     try:
         if inverse:
             a_value, b_value = b_value, a_value
-            scale.preference_direction = PreferenceDirection.MIN \
-                if scale.preference_direction == PreferenceDirection.MAX \
+            scale.preference_direction = (
+                PreferenceDirection.MIN
+                if scale.preference_direction == PreferenceDirection.MAX
                 else PreferenceDirection.MAX
+            )
 
         veto: NumericValue = veto_threshold[0] * a_value + veto_threshold[1]
         if scale.preference_direction == PreferenceDirection.MAX:
             return 1 if b_value - a_value >= veto else 0
         return 1 if a_value - b_value >= veto else 0
     except (IndexError, TypeError) as e:
-        e.args = ('Veto threshold needs to be a two element list.',)
+        e.args = ("Veto threshold needs to be a two element list.",)
         raise
     except AttributeError as e:
-        e.args = (f'Scale have to be a QuantitativeScale object, got {type(scale).__name__} instead.',)
+        e.args = (
+            f"Scale have to be a QuantitativeScale object, got {type(scale).__name__} instead.",
+        )
         raise
 
 
-def discordance_comprehensive_bin(a: List[NumericValue],
-                                  b: List[NumericValue],
-                                  scales: List[QuantitativeScale],
-                                  veto_thresholds: List[List[NumericValue]],
-                                  inverse: bool = False) -> int:
+def discordance_comprehensive_bin(
+    a: List[NumericValue],
+    b: List[NumericValue],
+    scales: List[QuantitativeScale],
+    veto_thresholds: List[List[NumericValue]],
+    inverse: bool = False,
+) -> int:
     """
     Calculates comprehensive binary discordance.
     :param a:
@@ -59,24 +71,34 @@ def discordance_comprehensive_bin(a: List[NumericValue],
     :return:
     """
     try:
-        list_len: int = max(len(el) for el in (a, b, scales, veto_thresholds))
-        return 1 \
-            if 1 in [discordance_marginal_bin(a[i], b[i], scales[i], veto_thresholds[i], inverse)
-                     for i in range(list_len)] \
+        list_len: int = max(
+            len(cast(Sized, el)) for el in (a, b, scales, veto_thresholds)
+        )
+        return (
+            1
+            if 1
+            in [
+                discordance_marginal_bin(
+                    a[i], b[i], scales[i], veto_thresholds[i], inverse
+                )
+                for i in range(list_len)
+            ]
             else 0
+        )
     except TypeError:
         # TODO ktorys arg nie jest lista
-        pass
+        raise
     except IndexError:
         # TODO rozna dlugosc list
-        pass
+        raise
 
 
-def discordance_bin(alternatives_perform: List[List[NumericValue]],
-                    scales: List[QuantitativeScale],
-                    veto_thresholds: List[List[NumericValue]],
-                    profiles_perform: List[List[NumericValue]] = None
-                    ) -> Union[List[List[int]], Tuple]:
+def discordance_bin(
+    alternatives_perform: List[List[NumericValue]],
+    scales: List[QuantitativeScale],
+    veto_thresholds: List[List[NumericValue]],
+    profiles_perform: List[List[NumericValue]] = None,
+) -> Union[List[List[int]], Tuple]:
     """
     :param alternatives_perform:
     :param scales:
@@ -88,33 +110,33 @@ def discordance_bin(alternatives_perform: List[List[NumericValue]],
         return [
             [
                 discordance_comprehensive_bin(
-                    alternatives_perform[i], alternatives_perform[j], scales, veto_thresholds
-                ) for j in range(len(alternatives_perform[i]))
-            ] for i in range(len(alternatives_perform))
+                    alternatives_perform[i],
+                    alternatives_perform[j],
+                    scales,
+                    veto_thresholds,
+                )
+                for j in range(len(alternatives_perform[i]))
+            ]
+            for i in range(len(alternatives_perform))
         ]
 
     return [
         [
             discordance_comprehensive_bin(
                 alternatives_perform[i], profiles_perform[j], scales, veto_thresholds
-            ) for j in range(len(profiles_perform))
-        ] for i in range(len(alternatives_perform))
+            )
+            for j in range(len(profiles_perform))
+        ]
+        for i in range(len(alternatives_perform))
     ], [
         [
             discordance_comprehensive_bin(
                 profiles_perform[i], alternatives_perform[j], scales, veto_thresholds
-            ) for j in range(len(alternatives_perform))
-        ] for i in range(len(profiles_perform))
+            )
+            for j in range(len(alternatives_perform))
+        ]
+        for i in range(len(profiles_perform))
     ]
-
-"""This module implements methods to compute discordance."""
-from typing import List, Optional
-
-from ..core.aliases import NumericValue
-from ..core.scales import QuantitativeScale, PreferenceDirection
-from ..core.functions import Threshold
-
-from ._validate import _both_values_in_scale, _inverse_values, _all_lens_equal
 
 
 def discordance_marginal(
@@ -170,14 +192,15 @@ def discordance_marginal(
     return (veto - a_value + b_value) / (veto - preference)
 
 
- def discordance_comprehensive(alternatives_a: List[NumericValue],
-                              alternatives_b: List[NumericValue],
-                              scales: List[QuantitativeScale],
-                              weights: List[NumericValue],
-                              preference_threshold: List[Threshold],
-                              veto_threshold: List[Threshold],
-                              pre_veto_threshold: Optional[List[Threshold]]
-                              ):
+def discordance_comprehensive(
+    alternatives_a: List[NumericValue],
+    alternatives_b: List[NumericValue],
+    scales: List[QuantitativeScale],
+    weights: List[NumericValue],
+    preference_threshold: List[Threshold],
+    veto_threshold: List[Threshold],
+    pre_veto_threshold: Optional[List[Threshold]],
+):
     """
 
     :param alternatives_a:
@@ -192,20 +215,35 @@ def discordance_marginal(
     if pre_veto_threshold:
         return sum(
             [
-                weights[i] * discordance_marginal(alternatives_a[i], alternatives_b[i], scales[i],
-                                                  preference_threshold[i], veto_threshold[i], pre_veto_threshold[i])
+                weights[i]
+                * discordance_marginal(
+                    alternatives_a[i],
+                    alternatives_b[i],
+                    scales[i],
+                    preference_threshold[i],
+                    veto_threshold[i],
+                    pre_veto_threshold[i],
+                )
                 for i in range(len(alternatives_a))
             ]
         ) / sum(weights)
     else:
         return sum(
             [
-                weights[i] * discordance_marginal(alternatives_a[i], alternatives_b[i], scales[i],
-                                                  preference_threshold[i], veto_threshold[i], None)
+                weights[i]
+                * discordance_marginal(
+                    alternatives_a[i],
+                    alternatives_b[i],
+                    scales[i],
+                    preference_threshold[i],
+                    veto_threshold[i],
+                    None,
+                )
                 for i in range(len(alternatives_a))
             ]
         ) / sum(weights)
-    
+
+
 def discordance_pair(
     a_values: List[NumericValue],
     b_values: List[NumericValue],
@@ -227,12 +265,12 @@ def discordance_pair(
     """
     if pre_veto_thresholds:
         _all_lens_equal(
-            a_values,
-            b_values,
-            scales,
-            preference_thresholds,
-            veto_thresholds,
-            pre_veto_thresholds,
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+            pre_veto_thresholds=pre_veto_thresholds,
         )
         return [
             discordance_marginal(
@@ -253,7 +291,13 @@ def discordance_pair(
                 pre_veto_thresholds,
             )
         ]
-    _all_lens_equal(a_values, b_values, scales, preference_thresholds, veto_thresholds)
+    _all_lens_equal(
+        a_values=a_values,
+        b_values=b_values,
+        scales=scales,
+        preference_thresholds=preference_thresholds,
+        veto_thresholds=veto_thresholds,
+    )
     return [
         discordance_marginal(
             aval,
@@ -343,7 +387,12 @@ def counter_veto_pair(
     :param List[Threshold] counter_veto_thresholds: _description_
     :return List[bool]: _description_
     """
-    _all_lens_equal(a_values, b_values, scales, counter_veto_thresholds)
+    _all_lens_equal(
+        a_values=a_values,
+        b_values=b_values,
+        scales=scales,
+        counter_veto_thresholds=counter_veto_thresholds,
+    )
     return [
         counter_veto_marginal(aval, bval, scale, counter_veto_threshold)
         for aval, bval, scale, counter_veto_threshold in zip(
