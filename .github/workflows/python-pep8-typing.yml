@@ -1,0 +1,21 @@
+name: PEP8 and typing test
+on: push
+
+jobs:
+  pep8_and_typing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - run: python --version
+      - name: Set up Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8 mypy
+      - name: Checking with flake8
+        run: flake8 mcda/electre/ tests/ --max-line-length=100
+      - name: Checking typing
+        run: mypy mcda/electre/ tests/
