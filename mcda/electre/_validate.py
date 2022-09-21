@@ -143,3 +143,57 @@ def _reinforcement_factors_vals(reinforcement_factors: List[NumericValue]) -> No
             f"'{type(non_numeric).__name__}' instead.",
         )
         raise
+
+
+def _check_indice_value_interval(
+    value: NumericValue,
+    name: str,
+    minimal_val: NumericValue = 0,
+    maximal_val: NumericValue = 1,
+    include_min: bool = True,
+    include_max: bool = True,
+) -> None:
+    """Checks if provided indice value is inside its interval.
+
+    :param value: indice value
+    :param name: indice name to display in the exception message
+    (such as concordance, cutting level etc.)
+    :param min: minimal indice value, defaults to 0
+    :param max: maximal indice value, defaults to 1
+    :param include_min: decides if lower boundary of the interval is
+    inside of it, defaults to True
+    :param include_max: decides if upper boundary of the interval is
+    inside of it, defaults to True
+
+    :raises ValueError:
+        * if `value` is outside its interval
+
+    :raises TypeError:
+        * if `value` is not numeric
+    """
+    try:
+        wrong_value_test_result: bool
+        interval_str: str
+        if include_min and include_max:
+            wrong_value_test_result = value < minimal_val or value > maximal_val
+            interval_str = f"[{minimal_val}, {maximal_val}]"
+        elif include_min and not include_max:
+            wrong_value_test_result = value < minimal_val or value >= maximal_val
+            interval_str = f"[{minimal_val}, {maximal_val})"
+        elif not include_min and include_max:
+            wrong_value_test_result = value <= minimal_val or value > maximal_val
+            interval_str = f"({minimal_val}, {maximal_val}]"
+        else:
+            wrong_value_test_result = value <= minimal_val or value >= maximal_val
+            interval_str = f"({minimal_val}, {maximal_val})"
+
+        if wrong_value_test_result:
+            raise ValueError(
+                f"Wrong {name} value. Expected value from a {interval_str} interval, "
+                f"but got {value} instead."
+            )
+    except TypeError as exc:
+        exc.args = (
+            f"Wrong {name} type. Expected numeric, but got '{type(value).__name__}' instead.",
+        )
+        raise
