@@ -182,25 +182,25 @@ def crisp_outranking_coal(
 
 
 def outranking_relation_marginal(
-    crisp_outranking_1: bool,
-    crisp_outranking_2: bool,
+    crisp_outranking_ab: bool,
+    crisp_outranking_ba: bool,
 ) -> Optional[OutrankingRelation]:
     """Aggregates the crisp outranking relations
 
-    :param crisp_outranking_1: crisp outranking relation of (a, b) alternatives
-    :param crisp_outranking_2: crisp outranking relation of (b, a) alternatives
+    :param crisp_outranking_ab: crisp outranking relation of (a, b) alternatives
+    :param crisp_outranking_ba: crisp outranking relation of (b, a) alternatives
 
     :return:
         * None, if b is preferred to a
         * OutrankingRelation enum
     """
-    if crisp_outranking_1 and crisp_outranking_2:
+    if crisp_outranking_ab and crisp_outranking_ba:
         return OutrankingRelation.INDIFF
 
-    if crisp_outranking_1 and not crisp_outranking_2:
+    if crisp_outranking_ab and not crisp_outranking_ba:
         return OutrankingRelation.PQ
 
-    if not crisp_outranking_1 and not crisp_outranking_2:
+    if not crisp_outranking_ab and not crisp_outranking_ba:
         return OutrankingRelation.R
 
     return None
