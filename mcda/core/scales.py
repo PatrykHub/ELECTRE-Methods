@@ -168,6 +168,14 @@ class QuantitativeScale(Scale, Interval):
             raise ValueError(PreferenceDirection.content_message())
         self.preference_direction = preference_direction
 
+    def __repr__(self) -> str:
+        """Return instance representation string."""
+        return (
+            f"Scale [{self.dmin}, {self.dmax}], "
+            f"{'min' if self.preference_direction == PreferenceDirection.MIN else 'max'}"
+            " direction"
+        )
+
     def __contains__(self, x: Value) -> bool:
         """Check if values are inside scale.
 
