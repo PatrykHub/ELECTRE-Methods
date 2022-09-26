@@ -107,7 +107,7 @@ def concordance(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    profiles_perform: Optional[pd.DataFrame],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 
@@ -320,7 +320,7 @@ def concordance_reinforced(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     reinforced_thresholds: Union[Dict[Any, Threshold], pd.Series],
     reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
-    profiles_perform: Optional[pd.DataFrame],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 

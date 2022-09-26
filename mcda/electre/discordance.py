@@ -72,7 +72,7 @@ def discordance_bin(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    profiles_perform: Optional[pd.DataFrame],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 
@@ -172,7 +172,7 @@ def discordance_marginal(
     scale: QuantitativeScale,
     preference_threshold: Threshold,
     veto_threshold: Threshold,
-    pre_veto_threshold: Optional[Threshold],
+    pre_veto_threshold: Optional[Threshold] = None,
     inverse: bool = False,
 ) -> NumericValue:
     """_summary_
@@ -226,7 +226,7 @@ def discordance_comprehensive(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
 ) -> NumericValue:
     """_summary_
 
@@ -262,8 +262,8 @@ def discordance(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]],
-    profiles_perform: Optional[pd.DataFrame],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 
@@ -325,7 +325,7 @@ def discordance_profiles(
     preference_thresholds: pd.DataFrame,
     veto_thresholds: pd.DataFrame,
     profiles_perform: pd.DataFrame,
-    pre_veto_thresholds: Optional[pd.DataFrame],
+    pre_veto_thresholds: Optional[pd.DataFrame] = None,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """_summary_
 
@@ -490,7 +490,7 @@ def counter_veto_count(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    profiles_perform: Optional[pd.DataFrame],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 
