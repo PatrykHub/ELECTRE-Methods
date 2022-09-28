@@ -3,6 +3,7 @@ an outranking credibility."""
 
 from functools import reduce
 from typing import Dict, List, Union
+import pandas as pd
 
 from ..core.aliases import NumericValue
 from ..core.scales import PreferenceDirection, QuantitativeScale
@@ -29,18 +30,18 @@ def credibility_cv_pair(
 
 
 def credibility_cv(
-    concordance_comprehensive: List[List[NumericValue]],
-    discordance_comprehensive: List[List[NumericValue]],
-    counter_veto_occurs: List[List[int]],
-) -> List[List[NumericValue]]:
+    concordance_comprehensive: pd.DataFrame,
+    discordance_comprehensive: pd.DataFrame,
+    counter_veto_occurs: pd.DataFrame,
+) -> pd.DataFrame:
     """_summary_
-    :param List[List[NumericValue]] concordance_comprehensive: _description_
-    :param List[List[NumericValue]] discordance_comprehensive: _description_
-    :param List[List[int]] counter_veto_occurs: _description_
-    :return List[List[NumericValue]]: _description_
+    :param pd.DataFrame concordance_comprehensive: _description_
+    :param pd.DataFrame discordance_comprehensive: _description_
+    :param pd.DataFrame counter_veto_occurs: _description_
+    :return pd.DataFrame: _description_
     """
     try:
-        return [
+        return pd.DataFrame([
             [
                 credibility_cv_pair(concordance, discordance, [cv])
                 for concordance, discordance, cv in zip(
@@ -52,7 +53,7 @@ def credibility_cv(
                 discordance_comprehensive,
                 counter_veto_occurs,
             )
-        ]
+        ])
     except TypeError as exc:
         exc.args = ("",)
         raise  # TODO
