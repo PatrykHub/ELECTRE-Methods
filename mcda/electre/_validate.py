@@ -145,7 +145,7 @@ def _reinforcement_factors_vals(reinforcement_factors: List[NumericValue]) -> No
         raise
 
 
-def _check_indice_value_interval(
+def _check_index_value_interval(
     value: NumericValue,
     name: str,
     minimal_val: NumericValue = 0,
@@ -153,13 +153,13 @@ def _check_indice_value_interval(
     include_min: bool = True,
     include_max: bool = True,
 ) -> None:
-    """Checks if provided indice value is inside its interval.
+    """Checks if provided index value is inside its interval.
 
-    :param value: indice value
-    :param name: indice name to display in the exception message
+    :param value: index value
+    :param name: index name to display in the exception message
     (such as concordance, cutting level etc.)
-    :param min: minimal indice value, defaults to 0
-    :param max: maximal indice value, defaults to 1
+    :param min: minimal index value, defaults to 0
+    :param max: maximal index value, defaults to 1
     :param include_min: decides if lower boundary of the interval is
     inside of it, defaults to True
     :param include_max: decides if upper boundary of the interval is

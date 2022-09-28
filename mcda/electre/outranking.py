@@ -1,9 +1,11 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
+
+import pandas as pd
 
 from ..core.aliases import NumericValue
-from ._validate import _check_indice_value_interval
+from ._validate import _check_index_value_interval
 
 
 class OutrankingRelation(Enum):
@@ -24,30 +26,36 @@ def crisp_outranking_cut_marginal(
 
     :return: ``True`` if a outranks b, ``False`` otherwise
     """
-    _check_indice_value_interval(credibility, "credibility")
-    _check_indice_value_interval(cutting_level, "cutting level", minimal_val=0.5)
+    _check_index_value_interval(credibility, "credibility")
+    _check_index_value_interval(cutting_level, "cutting level", minimal_val=0.5)
     return credibility >= cutting_level
 
 
 def crisp_outranking_cut(
-    credibiliy_table: List[List[NumericValue]],
+    credibility_table: pd.DataFrame,
     cutting_level: NumericValue,
-) -> List[List[bool]]:
+) -> pd.DataFrame:
     """Constructs crisp outranking relations,
     based on credibility values.
 
-    :param credibiliy_table: table with credibility values
+    :param credibility_table: table with credibility values
     :param cutting_level: value from [0.5, 1] interval
 
     :return: Boolean table the same size as the credibility table
     """
-    return [
+    return pd.DataFrame(
         [
-            crisp_outranking_cut_marginal(credibility, cutting_level)
-            for credibility in credibility_row
-        ]
-        for credibility_row in credibiliy_table
-    ]
+            [
+                crisp_outranking_cut_marginal(
+                    credibility_table.loc[alt_name_a][alt_name_b], cutting_level
+                )
+                for alt_name_b in credibility_table.index
+            ]
+            for alt_name_a in credibility_table.index
+        ],
+        index=credibility_table.index,
+        columns=credibility_table.index,
+    )
 
 
 def crisp_outranking_Is_marginal(
@@ -65,8 +73,8 @@ def crisp_outranking_Is_marginal(
 
     :return: ``True`` if a outranks b, ``False`` otherwise
     """
-    _check_indice_value_interval(concordance_comprehensive, "comprehensive concordance")
-    _check_indice_value_interval(
+    _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
+    _check_index_value_interval(
         concordance_cutting_level, "cutting level", minimal_val=0.5
     )
 
@@ -83,10 +91,10 @@ def crisp_outranking_Is_marginal(
 
 
 def crisp_outranking_Is(
-    concordance_comprehensive_table: List[List[NumericValue]],
-    discordance_comprehensive_bin_table: List[List[int]],
+    concordance_comprehensive_table: pd.DataFrame,
+    discordance_comprehensive_bin_table: pd.DataFrame,
     concordance_cutting_level: NumericValue,
-) -> List[List[bool]]:
+) -> pd.DataFrame:
     """Constructs a crisp outranking relations, based on
     comprehensive concordance C(a, b) and comprehensive
     binary discordance D(a, b) indices.
@@ -98,21 +106,21 @@ def crisp_outranking_Is(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
-    return [
+    return pd.DataFrame(
         [
-            crisp_outranking_Is_marginal(
-                concordance_comprehensive,
-                discordance_comprehensive_bin,
-                concordance_cutting_level,
-            )
-            for concordance_comprehensive, discordance_comprehensive_bin in zip(
-                concordance_tabe_row, discordance_table_row
-            )
-        ]
-        for concordance_tabe_row, discordance_table_row in zip(
-            concordance_comprehensive_table, discordance_comprehensive_bin_table
-        )
-    ]
+            [
+                crisp_outranking_Is_marginal(
+                    concordance_comprehensive_table.loc[alt_name_a][alt_name_b],
+                    discordance_comprehensive_bin_table.loc[alt_name_a][alt_name_b],
+                    concordance_cutting_level,
+                )
+                for alt_name_b in concordance_comprehensive_table.index
+            ]
+            for alt_name_a in concordance_comprehensive_table.index
+        ],
+        index=concordance_comprehensive_table.index,
+        columns=concordance_comprehensive_table.index,
+    )
 
 
 def crisp_outranking_coal_marginal(
@@ -132,12 +140,12 @@ def crisp_outranking_coal_marginal(
 
     :return: ``True`` if a outranks b, ``False`` otherwise
     """
-    _check_indice_value_interval(concordance_comprehensive, "comprehensive concordance")
-    _check_indice_value_interval(discordance_comprehensive, "comprehensive discordance")
-    _check_indice_value_interval(
+    _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
+    _check_index_value_interval(discordance_comprehensive, "comprehensive discordance")
+    _check_index_value_interval(
         concordance_cutting_level, "concordance majority threshold", minimal_val=0.5
     )
-    _check_indice_value_interval(
+    _check_index_value_interval(
         discordance_cutting_level, "discordance majority threshold", include_min=False
     )
     return (
@@ -147,11 +155,11 @@ def crisp_outranking_coal_marginal(
 
 
 def crisp_outranking_coal(
-    concordance_comprehensive_table: List[List[NumericValue]],
-    discordance_comprehensive_table: List[List[NumericValue]],
+    concordance_comprehensive_table: pd.DataFrame,
+    discordance_comprehensive_table: pd.DataFrame,
     concordance_cutting_level: NumericValue,
     discordance_cutting_level: NumericValue,
-) -> List[List[bool]]:
+) -> pd.DataFrame:
     """Constructs a crisp outranking relations, based on
     comprehensive concordance C(a, b) and comprehensive
     discordance D(a, b) indices.
@@ -163,22 +171,22 @@ def crisp_outranking_coal(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
-    return [
+    return pd.DataFrame(
         [
-            crisp_outranking_coal_marginal(
-                concordance_comprehensive,
-                discordance_comprehensive,
-                concordance_cutting_level,
-                discordance_cutting_level,
-            )
-            for concordance_comprehensive, discordance_comprehensive in zip(
-                concordance_table_row, discordance_table_row
-            )
-        ]
-        for concordance_table_row, discordance_table_row in zip(
-            concordance_comprehensive_table, discordance_comprehensive_table
-        )
-    ]
+            [
+                crisp_outranking_coal_marginal(
+                    concordance_comprehensive_table.loc[alt_name_a][alt_name_b],
+                    discordance_comprehensive_table.loc[alt_name_a][alt_name_b],
+                    concordance_cutting_level,
+                    discordance_cutting_level,
+                )
+                for alt_name_b in concordance_comprehensive_table.index
+            ]
+            for alt_name_a in concordance_comprehensive_table.index
+        ],
+        index=concordance_comprehensive_table.index,
+        columns=concordance_comprehensive_table.index,
+    )
 
 
 def outranking_relation_marginal(
@@ -207,12 +215,9 @@ def outranking_relation_marginal(
 
 
 def outranking_relation(
-    crisp_outranking_table: List[List[bool]],
-    crisp_outranking_table_profiles: Optional[List[List[bool]]],
-) -> Union[
-    List[List[Optional[OutrankingRelation]]],
-    Tuple[List[List[Optional[OutrankingRelation]]], ...],
-]:
+    crisp_outranking_table: pd.DataFrame,
+    crisp_outranking_table_profiles: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """Aggregates crisp outranking relations.
 
     :param crisp_outranking_table: table with crisp relations
@@ -223,32 +228,48 @@ def outranking_relation(
     :return: one table with outranking relations between alternatives, if only
     one table was provided, in other case the function will return two
     tables - first one with alternatives - profiles, second one with
-    profiles - alternatives comparision.
+    profiles - alternatives comparison.
     """
     if crisp_outranking_table_profiles is not None:
-        return [
+        return pd.DataFrame(
             [
-                outranking_relation_marginal(
-                    crisp_outranking_table[i][j], crisp_outranking_table_profiles[j][i]
-                )
-                for j in range(len(crisp_outranking_table[i]))
-            ]
-            for i in range(len(crisp_outranking_table))
-        ], [
+                [
+                    outranking_relation_marginal(
+                        crisp_outranking_table.loc[alt_name][profile_name],
+                        crisp_outranking_table_profiles.loc[profile_name][alt_name],
+                    )
+                    for profile_name in crisp_outranking_table_profiles.index
+                ]
+                for alt_name in crisp_outranking_table.index
+            ],
+            index=crisp_outranking_table.index,
+            columns=crisp_outranking_table_profiles.index,
+        ), pd.DataFrame(
             [
-                outranking_relation_marginal(
-                    crisp_outranking_table_profiles[i][j], crisp_outranking_table[j][i]
-                )
-                for j in range(len(crisp_outranking_table_profiles[i]))
-            ]
-            for i in range(len(crisp_outranking_table_profiles))
-        ]
-    return [
+                [
+                    outranking_relation_marginal(
+                        crisp_outranking_table_profiles.loc[profile_name][alt_name],
+                        crisp_outranking_table.loc[alt_name][profile_name],
+                    )
+                    for alt_name in crisp_outranking_table.index
+                ]
+                for profile_name in crisp_outranking_table_profiles.index
+            ],
+            index=crisp_outranking_table_profiles.index,
+            columns=crisp_outranking_table.index,
+        )
+
+    return pd.DataFrame(
         [
-            outranking_relation_marginal(
-                crisp_outranking_table[i][j], crisp_outranking_table[j][i]
-            )
-            for j in range(len(crisp_outranking_table[i]))
-        ]
-        for i in range(len(crisp_outranking_table))
-    ]
+            [
+                outranking_relation_marginal(
+                    crisp_outranking_table.loc[alt_name_a][alt_name_b],
+                    crisp_outranking_table.loc[alt_name_b][alt_name_a],
+                )
+                for alt_name_b in crisp_outranking_table.index
+            ]
+            for alt_name_a in crisp_outranking_table.index
+        ],
+        index=crisp_outranking_table.index,
+        columns=crisp_outranking_table.index,
+    )
