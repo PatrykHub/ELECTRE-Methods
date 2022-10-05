@@ -41,7 +41,6 @@ def concordance_marginal(
     """
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
-
     q_a: NumericValue = indifference_threshold(a_value)
     p_a: NumericValue = preference_threshold(a_value)
 
@@ -279,7 +278,7 @@ def concordance_reinforced_comprehensive(
             weights[criterion_name]
             * reinforce_occur[criterion_name]
             * reinforcement_factors[criterion_name]
-            for criterion_name in reinforce_occur
+            for criterion_name in reinforce_occur.keys()
         ]
     )
 
