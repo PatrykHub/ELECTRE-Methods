@@ -1,6 +1,7 @@
 """This module implements methods to compute
 an outranking credibility."""
 
+import math
 from functools import reduce
 from typing import Dict, List, Union
 
@@ -138,7 +139,7 @@ def get_criteria_counts(
                 nq += 1
             else:
                 ni += 1
-        elif difference == 0.0:
+        elif math.isclose(difference, 0.0):
             no += 1
 
     return [np, nq, ni, no]
