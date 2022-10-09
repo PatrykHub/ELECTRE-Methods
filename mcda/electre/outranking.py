@@ -5,10 +5,9 @@ from typing import Callable, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from mcda.electre.utils import linear_function
-
 from ..core.aliases import NumericValue
 from ._validate import _check_index_value_interval
+from .utils import linear_function
 
 
 class OutrankingRelation(Enum):
@@ -414,7 +413,7 @@ def _distillation_process(
     preference_operator: Callable,
     alpha: NumericValue = -0.15,
     beta: NumericValue = 0.30,
-    maximal_credibility_index: NumericValue = None,
+    maximal_credibility_index: Optional[NumericValue] = None,
 ) -> Tuple[pd.Series, NumericValue]:
     """Conducts main distillation process.
 
