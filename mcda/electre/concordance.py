@@ -443,12 +443,16 @@ def concordance_reinforced_profiles(
 
 
 class Interaction:
-    def __init__(self, interaction_type: str = None, function: str = None, factor: NumericValue = None):
+    def __init__(self, interaction_type: str = None,
+                 function: str = None,
+                 factor: NumericValue = None):
         self.interaction = interaction_type
         self.function = function
         self.factor = factor
 
-    def set_interaction(self, interaction_type: str, function: str, factor: NumericValue):
+    def set_interaction(self, interaction_type: str,
+                        function: str,
+                        factor: NumericValue):
         self.interaction = interaction_type.upper()
         self.function = function
         self.factor = factor
@@ -488,7 +492,8 @@ def concordance_with_interactions_marginal(
         if interactions[i][i].interaction is not None:
             raise ValueError("Criterion cannot interact with itself.")
         for j in interactions.columns:
-            if interactions[i][j].interaction is not None and interactions[i][j].interaction not in [
+            if interactions[i][j].interaction is not None \
+                    and interactions[i][j].interaction not in [
                 "MW",
                 "MS",
                 "A",
