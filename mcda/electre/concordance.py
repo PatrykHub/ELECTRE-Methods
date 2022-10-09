@@ -2,11 +2,10 @@
 from typing import Any, Dict, List, Optional, Tuple, Union, get_args
 
 import pandas as pd
-
-from ..core.aliases import NumericValue
-from ..core.functions import Threshold
-from ..core.scales import PreferenceDirection, QuantitativeScale
-from ._validate import (
+from mcda.core.aliases import NumericValue
+from mcda.core.functions import Threshold
+from mcda.core.scales import PreferenceDirection, QuantitativeScale
+from mcda.electre._validate import (
     _all_lens_equal,
     _both_values_in_scale,
     _inverse_values,
@@ -231,7 +230,7 @@ def is_reinforcement_occur(
     """
     return (
         a_value - b_value > reinforcement_threshold(a_value)
-        if scale.preference_direction == PreferenceDirection.MIN
+        if scale.preference_direction == PreferenceDirection.MAX
         else a_value - b_value < reinforcement_threshold(a_value)
     )
 
@@ -276,10 +275,9 @@ def concordance_reinforced_comprehensive(
 
     sum_weights_thresholds = sum(
         [
-            weights[criterion_name]
-            * reinforce_occur[criterion_name]
-            * reinforcement_factors[criterion_name]
-            for criterion_name in reinforce_occur
+            weights[criterion_name] * reinforcement_factors[criterion_name]
+            if reinforce_occur[criterion_name] else 0
+            for criterion_name in reinforce_occur.index
         ]
     )
 
@@ -305,7 +303,7 @@ def concordance_reinforced_comprehensive(
         sum_weights_thresholds
         + sum(
             [
-                weights[criterion_name] * (not reinforce_occur[criterion_name])
+                weights[criterion_name] if not reinforce_occur[criterion_name] else 0
                 for criterion_name in reinforce_occur.keys()
             ]
         )
