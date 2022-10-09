@@ -1,5 +1,5 @@
 """This module implements methods to compute concordance."""
-from typing import Any, Dict, List, Optional, Tuple, Union, get_args
+from typing import Any, Dict, Optional, Tuple, Union, get_args
 
 import pandas as pd
 
