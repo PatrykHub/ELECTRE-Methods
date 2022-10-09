@@ -94,7 +94,7 @@ def concordance_comprehensive(
                 scales[criterion_name],
                 indifference_thresholds[criterion_name],
                 preference_thresholds[criterion_name],
-                inverse,
+                inverse
             )
             for criterion_name in a_values.keys()
         ]
@@ -171,8 +171,8 @@ def concordance_profiles(
     :param alternatives_perform:
     :param scales:
     :param weights:
-    :param indifference_threshold:
-    :param preference_threshold:
+    :param indifference_thresholds:
+    :param preference_thresholds:
     :param profiles_perform:
 
     :return:
@@ -442,28 +442,41 @@ def concordance_reinforced_profiles(
     )
 
 
-def concordance_with_interactions(
-    a: List[NumericValue],
-    b: List[NumericValue],
-    scales: List[QuantitativeScale],
-    weights: List[NumericValue],
-    interactions: List[List[List]],  # missed typing
-    indifference_thresholds: List[Threshold],
-    preference_thresholds: List[Threshold],
+class Interaction:
+    def __init__(self, interaction_type: str = None, function: str = None, factor: NumericValue = None):
+        self.interaction = interaction_type
+        self.function = function
+        self.factor = factor
+
+    def set_interaction(self, interaction_type: str, function: str, factor: NumericValue):
+        self.interaction = interaction_type.upper()
+        self.function = function
+        self.factor = factor
+
+
+def concordance_with_interactions_marginal(
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    interactions: pd.DataFrame
 ) -> NumericValue:
     """
-    :param a:
-    :param b:
+
+    :param interactions:
+    :param a_values:
+    :param b_values:
     :param scales:
     :param weights:
-    :param interactions:
-    :param indifferenceThreshold:
-    :param preferenceThreshold:
+    :param indifference_thresholds:
+    :param preference_thresholds:
     :return:
     """
     _all_lens_equal(
-        a=a,
-        b=b,
+        a=a_values,
+        b=b_values,
         scales=scales,
         weights=weights,
         indifference_thresholds=indifference_thresholds,
@@ -471,23 +484,11 @@ def concordance_with_interactions(
     )
     _weights_proper_vals(weights)
 
-    if not isinstance(interactions, list) and not all(
-        1 if isinstance(item, list) else 0 in interactions for item in interactions
-    ):
-        raise TypeError("Interactions have to be represented as a matrix.")
-    if not len(interactions) == len(a) and not all(
-        1 if len(row) == len(a) else 0 in interactions for row in interactions
-    ):
-        raise ValueError("Interactions have to be a square matrix.")
-    for i in range(len(interactions)):
-        if interactions[i][i] != []:
+    for i in interactions.index:
+        if interactions[i][i].interaction is not None:
             raise ValueError("Criterion cannot interact with itself.")
-        for j in range(len(interactions[i])):
-            if len(interactions[i][j]) > 0 and len(interactions[i][j]) != 3:
-                raise ValueError(
-                    "Each interaction has to be represented as a list of length 3."
-                )
-            if len(interactions[i][j]) == 3 and interactions[i][j][0] not in [
+        for j in interactions.columns:
+            if interactions[i][j].interaction is not None and interactions[i][j].interaction not in [
                 "MW",
                 "MS",
                 "A",
@@ -496,7 +497,7 @@ def concordance_with_interactions(
                     "The interaction type has to be represented by one of the following tokens:\n"
                     "'MW' - Mutual Weakening\n'MS' - Mutual Strengthening\n'A' - Antagonistic"
                 )
-            if len(interactions[i][j]) == 3 and interactions[i][j][1] not in [
+            if interactions[i][j].function is not None and interactions[i][j].function not in [
                 "min",
                 "multi",
             ]:
@@ -504,66 +505,66 @@ def concordance_with_interactions(
                     "The Z function has to be represented by one of the following tokens:\n'min' - "
                     "minimum\n'multi' - multiplication"
                 )
-            if len(interactions[i][j]) == 3 and not isinstance(
-                interactions[i][j][2], get_args(NumericValue)
+            if interactions[i][j].factor is not None and not isinstance(
+                interactions[i][j].factor, get_args(NumericValue)
             ):
                 raise TypeError("Interaction factor must be a numerical value.")
             if (
-                len(interactions[i][j]) == 3
-                and interactions[i][j][0] == "MW"
-                and weights[i] - abs(interactions[i][j][2]) < 0
+                interactions[i][j].interaction is not None
+                and interactions[i][j].interaction == "MW"
+                and weights[i] - abs(interactions[i][j].factor) < 0
             ):
                 raise ValueError("Incorrect interaction factor.")
             if (
-                len(interactions[i][j]) == 3
-                and interactions[i][j][0] == "A"
-                and weights[i] - interactions[i][j][2] < 0
+                interactions[i][j].interaction
+                and interactions[i][j].interaction == "A"
+                and weights[i] - interactions[i][j].factor < 0
             ):
                 raise ValueError("Incorrect interaction factor.")
 
     mutual_strengthening = []
     mutual_weakening = []
     antagonistic = []
-    for i in range(len(interactions)):
-        for j in range(len(interactions[i])):
-            if len(interactions[i][j]) > 1:
+    for i in interactions.index:
+        for j in interactions.columns:
+            if interactions[i][j].interaction is not None:
                 c_i = concordance_marginal(
-                    a[i],
-                    b[i],
+                    a_values[i],
+                    b_values[i],
                     scales[i],
                     indifference_thresholds[i],
                     preference_thresholds[i],
                 )
                 c_j = concordance_marginal(
-                    a[j],
-                    b[j],
+                    a_values[j],
+                    b_values[j],
                     scales[j],
                     indifference_thresholds[j],
                     preference_thresholds[j],
                 )
-                if interactions[i][j][0] == "MS":
+                if interactions[i][j].interaction == "MS":
                     strengthening_weight = (
-                        weights[i] + weights[j] + interactions[i][j][2]
+                        weights[i] + weights[j] + interactions[i][j].factor
                     )
                     mutual_strengthening.append(
                         strengthening_weight * min(c_i, c_j)
-                        if interactions[i][j][1] == "min"
+                        if interactions[i][j].function == "min"
                         else strengthening_weight * c_i * c_j
                     )
-                elif interactions[i][j][0] == "MW":
-                    weakening_weight = weights[i] + weights[j] + interactions[i][j][2]
+                elif interactions[i][j].interaction == "MW":
+                    weakening_weight = weights[i] + weights[j] + interactions[i][j].factor
                     mutual_weakening.append(
                         weakening_weight * min(c_i, c_j)
-                        if interactions[i][j][1] == "min"
+                        if interactions[i][j].function == "min"
                         else weakening_weight * c_i * c_j
                     )
                 else:
                     antagonistic_weight = (
-                        weights[i] + weights[j] - interactions[i][j][2]
+                        weights[i] + weights[j] - interactions[i][j].factor
                     )
                     antagonistic.append(
                         antagonistic_weight * min(c_i, c_j)
-                        if interactions[i][j][1] == "min"
+                        if interactions[i][j].function == "min"
                         else antagonistic_weight * c_i * c_j
                     )
 
@@ -572,13 +573,13 @@ def concordance_with_interactions(
             [
                 weights[i]
                 * concordance_marginal(
-                    a[i],
-                    b[i],
+                    a_values[i],
+                    b_values[i],
                     scales[i],
                     indifference_thresholds[i],
                     preference_thresholds[i],
                 )
-                for i in range(len(a))
+                for i in range(len(a_values))
             ]
         )
         + sum(mutual_strengthening)
@@ -592,26 +593,63 @@ def concordance_with_interactions(
     )
 
 
-def concordance_w_i(
-    alternatives_perform: List[List[NumericValue]],
-    scales: List[QuantitativeScale],
-    weights: List[NumericValue],
-    indifference_thresholds: List[Threshold],
-    preference_thresholds: List[Threshold],
-    interactions,  # missing typing
-) -> List[List[NumericValue]]:
-    return [
+def concordance_with_interactions(
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    interactions: pd.DataFrame,
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> pd.DataFrame:
+    """_summary_
+
+    :param alternatives_perform: _description_
+    :param scales: _description_
+    :param weights: _description_
+    :param indifference_thresholds: _description_
+    :param preference_thresholds: _description_
+    :param interactions: _description_
+    :param profiles_perform: _description_
+
+    :return: _description_
+    """
+    if profiles_perform is not None:
+        return pd.DataFrame(
+            [
+                [
+                    concordance_with_interactions_marginal(
+                        alternatives_perform.loc[alt_name],
+                        profiles_perform.loc[prof_name],
+                        scales,
+                        weights,
+                        indifference_thresholds,
+                        preference_thresholds,
+                        interactions
+                    )
+                    for prof_name in profiles_perform.index
+                ]
+                for alt_name in alternatives_perform.index
+            ],
+            index=alternatives_perform.index,
+            columns=profiles_perform.index,
+        )
+    return pd.DataFrame(
         [
-            concordance_with_interactions(
-                alternatives_perform[i],
-                alternatives_perform[j],
-                scales,
-                weights,
-                interactions,
-                indifference_thresholds,
-                preference_thresholds,
-            )
-            for j in range(len(alternatives_perform[i]))
-        ]
-        for i in range(len(alternatives_perform))
-    ]
+            [
+                concordance_with_interactions_marginal(
+                    alternatives_perform.loc[alt_name_a],
+                    alternatives_perform.loc[alt_name_b],
+                    scales,
+                    weights,
+                    indifference_thresholds,
+                    preference_thresholds,
+                    interactions
+                )
+                for alt_name_b in alternatives_perform.index
+            ]
+            for alt_name_a in alternatives_perform.index
+        ],
+        index=alternatives_perform.index,
+        columns=alternatives_perform.index,
+    )
