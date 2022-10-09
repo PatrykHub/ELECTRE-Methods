@@ -1,11 +1,13 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
 from ._validate import _check_index_value_interval
+from .utils import linear_function
 
 
 class OutrankingRelation(Enum):
@@ -273,3 +275,214 @@ def outranking_relation(
         index=crisp_outranking_table.index,
         columns=crisp_outranking_table.index,
     )
+
+
+def get_maximal_credibility_index(credibility_matrix: pd.DataFrame) -> NumericValue:
+    """Selects the maximal credibility index, based on credibility matrix S(a, b).
+
+    :param credibility_matrix: matrix with credibility values for each alternatives' pair
+
+    :return: Maximal credibility index, value from the [0, 1] interval
+    """
+    return max(credibility_matrix.max())
+
+
+def get_minimal_credibility_index(
+    credibility_matrix: pd.DataFrame,
+    maximal_credibility_index: NumericValue,
+    alpha: NumericValue = -0.15,
+    beta: NumericValue = 0.30,
+) -> NumericValue:
+    """Selects the minimal credibility index, based on credibility matrix S(a, b),
+    maximal_credibility_index and given linear function coefficients.
+
+    :param credibility_matrix: matrix with credibility values for each alternatives' pair
+    :param maximal_credibility_index: maximal credibility index, value from the [0, 1] interval
+    :param alpha: coefficient of the independent variable, defaults to -0.15
+    :param beta: y-intercept, defaults to 0.30
+
+    :return: Minimal credibility index, value from the [0, 1] interval
+    """
+    threshold_value = maximal_credibility_index - linear_function(
+        maximal_credibility_index, alpha, beta
+    )
+
+    for alt_name_a in credibility_matrix.index:
+        for alt_name_b in credibility_matrix.index:
+            if threshold_value <= credibility_matrix.loc[alt_name_a][alt_name_b]:
+                credibility_matrix.loc[alt_name_a][alt_name_b] = 0.0
+
+    return max(credibility_matrix.max())
+
+
+def crisp_outranking_relation_distillation(
+    credibility_pair_value_ab: NumericValue,
+    credibility_pair_value_ba: NumericValue,
+    minimal_credibility_index: NumericValue,
+    alpha: NumericValue = -0.15,
+    beta: NumericValue = 0.30,
+) -> int:
+    """Constructs crisp outranking relations for distillation,
+    based on credibility values of pairs (a, b) and (b, a) alternatives,
+    also minimal_credibility_index.
+
+    :param credibility_pair_value_ab: credibility value of (a, b) alternatives
+    :param credibility_pair_value_ba:  credibility value of (b, a) alternatives
+    :param minimal_credibility_index: minimal credibility index, value from the [0, 1] interval
+    :param alpha: coefficient of the independent variable, defaults to -0.15
+    :param beta: y-intercept, defaults to 0.30
+
+    :return: 1 if undermentioned inequality is true, 0 otherwise
+    """
+    return (
+        1
+        if credibility_pair_value_ab > minimal_credibility_index
+        and credibility_pair_value_ab
+        > credibility_pair_value_ba
+        + linear_function(alpha, credibility_pair_value_ab, beta)
+        else 0
+    )
+
+
+def alternative_qualities(
+    credibility_matrix: pd.DataFrame,
+    alpha: NumericValue = -0.15,
+    beta: NumericValue = 0.30,
+    maximal_credibility_index: NumericValue = None,
+) -> Tuple[pd.Series, NumericValue]:
+    """Computes strength and weakness of each alternative a as the numbers of alternatives
+    which are, respectively, outranked by a or outrank a.
+
+    :param credibility_matrix: matrix with credibility values for each alternatives' pair
+    :param alpha: coefficient of the independent variable, defaults to -0.15
+    :param beta: y-intercept, defaults to 0.30
+    :param maximal_credibility_index: optional minimal credibility index from outer distillation,
+    defaults to None
+
+    :return: Quality of a computed as the difference of its strength and weakness,
+    also maximal credibility index for possible inner distillation
+    """
+    if maximal_credibility_index is None:
+        maximal_credibility_index = get_maximal_credibility_index(credibility_matrix)
+    minimal_credibility_index = get_minimal_credibility_index(
+        credibility_matrix.copy(), maximal_credibility_index, alpha, beta
+    )
+
+    alternatives_strength = pd.Series(
+        {
+            alt_name_a: sum(
+                (
+                    crisp_outranking_relation_distillation(
+                        credibility_matrix.loc[alt_name_a][alt_name_b],
+                        credibility_matrix.loc[alt_name_b][alt_name_a],
+                        minimal_credibility_index,
+                        alpha,
+                        beta,
+                    )
+                )
+                for alt_name_b in credibility_matrix.index
+            )
+            for alt_name_a in credibility_matrix.index
+        }
+    )
+
+    alternatives_weakness = pd.Series(
+        {
+            alt_name_b: sum(
+                (
+                    crisp_outranking_relation_distillation(
+                        credibility_matrix.loc[alt_name_a][alt_name_b],
+                        credibility_matrix.loc[alt_name_b][alt_name_a],
+                        minimal_credibility_index,
+                        alpha,
+                        beta,
+                    )
+                )
+                for alt_name_a in credibility_matrix.index
+            )
+            for alt_name_b in credibility_matrix.index
+        }
+    )
+
+    return alternatives_strength - alternatives_weakness, minimal_credibility_index
+
+
+def _distillation_process(
+    credibility_matrix: pd.DataFrame,
+    remaining_alt_indices: pd.Series,
+    preference_operator: Callable,
+    alpha: NumericValue = -0.15,
+    beta: NumericValue = 0.30,
+    maximal_credibility_index: Optional[NumericValue] = None,
+) -> Tuple[pd.Series, NumericValue]:
+    """Conducts main distillation process.
+
+    :param credibility_matrix: matrix with credibility values for each alternatives' pair
+    :param remaining_alt_indices: remaining alternatives' indices to conduct distillation
+    :param preference_operator: represents distillation order (max - downward / min - upward)
+    :param alpha: coefficient of the independent variable, defaults to -0.15
+    :param beta: y-intercept, defaults to 0.30
+    :param maximal_credibility_index: optional minimal credibility index from outer distillation,
+    defaults to None
+
+    :return: Set of alternatives with the greatest quality,
+    also maximal credibility index for possible inner distillation
+    """
+    updated_credibility_matrix = credibility_matrix.loc[remaining_alt_indices][
+        remaining_alt_indices
+    ]
+
+    qualities, minimal_credibility_index = alternative_qualities(
+        updated_credibility_matrix, alpha, beta, maximal_credibility_index
+    )
+
+    return (
+        qualities[qualities == preference_operator(qualities)],
+        minimal_credibility_index,
+    )
+
+
+def distillation(
+    credibility_matrix: pd.DataFrame,
+    upward_order: bool = False,
+    alpha: NumericValue = -0.15,
+    beta: NumericValue = 0.30,
+) -> pd.Series:
+    """Conducts either descending or ascending distillation in the set of alternatives
+    on the basis of credibility matrix. Depending on the boolean variable upward order,
+    it provides either upward or downward order. Output can be parametrized
+    with linear function coefficients.
+
+    :param credibility_matrix: matrix with credibility values for each alternatives' pair
+    :param upward_order: descending order if False, otherwise ascending, defaults to False
+    :param alpha: coefficient of the independent variable, defaults to -0.15
+    :param beta: y-intercept, defaults to 0.30
+
+    :return: Complete upward or downward order
+    """
+    np.fill_diagonal(credibility_matrix.values, 0)
+    preference_operator = min if upward_order else max
+    remaining_alt_indices = credibility_matrix.index.to_series()
+    ranking = pd.Series([], dtype="float64")
+    level: int = 0
+
+    while not remaining_alt_indices.empty:
+        preferred_alternatives, minimal_credibility_index = _distillation_process(
+            credibility_matrix, remaining_alt_indices, preference_operator, alpha, beta
+        )
+
+        if len(preferred_alternatives) > 1:
+            preferred_alternatives, _ = _distillation_process(
+                credibility_matrix,
+                preferred_alternatives.index.to_series(),
+                preference_operator,
+                alpha,
+                beta,
+                minimal_credibility_index,
+            )
+
+        remaining_alt_indices = remaining_alt_indices.drop(preferred_alternatives.index)
+        ranking[level] = preferred_alternatives.index.to_list()
+        level += 1
+
+    return ranking[::-1] if upward_order else ranking
