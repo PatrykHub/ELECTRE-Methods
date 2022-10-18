@@ -16,17 +16,16 @@ from ..core.scales import PreferenceDirection, QuantitativeScale
 
 
 def concordance_marginal(
-        a_value: NumericValue,
-        b_value: NumericValue,
-        scale: QuantitativeScale,
-        indifference_threshold: Threshold,
-        preference_threshold: Threshold,
-        inverse: bool = False,
+    a_value: NumericValue,
+    b_value: NumericValue,
+    scale: QuantitativeScale,
+    indifference_threshold: Threshold,
+    preference_threshold: Threshold,
+    inverse: bool = False,
 ) -> NumericValue:
     """Computes marginal concordance index c(a, b) ∈ [0, 1],
     which represents a degree to which criterion supports
     the hypothesis about outranking a over b (aSb).
-
     :param a_value: criterion value
     :param b_value: criterion value
     :param scale: criterion scale with specified preference direction
@@ -34,10 +33,8 @@ def concordance_marginal(
     :param preference_threshold: criterion preference threshold
     :param inverse: if ``True``, then function will calculate c(b, a)
     with opposite scale preference direction, defaults to ``False``
-
     :raises ValueError:
         * if the preference threshold is less than the indifference one
-
     :return: marginal concordance index, value from the [0, 1] interval
     """
     _both_values_in_scale(a_value, b_value, scale)
@@ -66,16 +63,15 @@ def concordance_marginal(
 
 
 def concordance_comprehensive(
-        a_values: Union[Dict[Any, NumericValue], pd.Series],
-        b_values: Union[Dict[Any, NumericValue], pd.Series],
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        inverse: bool = False,
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    inverse: bool = False,
 ) -> NumericValue:
     """_summary_
-
     :param a_values: _description_
     :param b_values: _description_
     :param scales: _description_
@@ -83,7 +79,6 @@ def concordance_comprehensive(
     :param indifference_thresholds: _description_
     :param preference_thresholds: _description_
     :param inverse: _description_, defaults to False
-
     :return: _description_
     """
     return sum(
@@ -95,7 +90,7 @@ def concordance_comprehensive(
                 scales[criterion_name],
                 indifference_thresholds[criterion_name],
                 preference_thresholds[criterion_name],
-                inverse
+                inverse,
             )
             for criterion_name in a_values.keys()
         ]
@@ -103,22 +98,20 @@ def concordance_comprehensive(
 
 
 def concordance(
-        alternatives_perform: pd.DataFrame,
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        profiles_perform: Optional[pd.DataFrame] = None,
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
-
     :param alternatives_perform: _description_
     :param scales: _description_
     :param weights: _description_
     :param indifference_thresholds: _description_
     :param preference_thresholds: _description_
     :param profiles_perform: _description_
-
     :return: _description_
     """
     if profiles_perform is not None:
@@ -161,12 +154,12 @@ def concordance(
 
 
 def concordance_profiles(
-        alternatives_perform: pd.DataFrame,
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: pd.DataFrame,
-        preference_thresholds: pd.DataFrame,
-        profiles_perform: pd.DataFrame,
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: pd.DataFrame,
+    preference_thresholds: pd.DataFrame,
+    profiles_perform: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     :param alternatives_perform:
@@ -175,7 +168,6 @@ def concordance_profiles(
     :param indifference_thresholds:
     :param preference_thresholds:
     :param profiles_perform:
-
     :return:
     """
     return pd.DataFrame(
@@ -216,18 +208,16 @@ def concordance_profiles(
 
 
 def is_reinforcement_occur(
-        a_value: NumericValue,
-        b_value: NumericValue,
-        scale: QuantitativeScale,
-        reinforcement_threshold: Threshold,
+    a_value: NumericValue,
+    b_value: NumericValue,
+    scale: QuantitativeScale,
+    reinforcement_threshold: Threshold,
 ) -> bool:
     """_summary_
-
     :param a_value: _description_
     :param b_value: _description_
     :param scale: _description_
     :param reinforcement_threshold: _description_
-
     :return: _description_
     """
     return (
@@ -238,18 +228,17 @@ def is_reinforcement_occur(
 
 
 def concordance_reinforced_comprehensive(
-        a_values: Union[Dict[Any, NumericValue], pd.Series],
-        b_values: Union[Dict[Any, NumericValue], pd.Series],
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        reinforced_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
-        inverse: bool = False,
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    reinforced_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
+    inverse: bool = False,
 ) -> NumericValue:
     """_summary_
-
     :param a_values: _description_
     :param b_values: _description_
     :param scales: _description_
@@ -259,7 +248,6 @@ def concordance_reinforced_comprehensive(
     :param reinforced_thresholds: _description_
     :param reinforcement_factors: _description_
     :param inverse: _description_, defaults to False
-
     :return: _description_
     """
     reinforce_occur = pd.Series(
@@ -285,46 +273,45 @@ def concordance_reinforced_comprehensive(
     )
 
     return (
-       sum_weights_thresholds
-       + sum(
+        sum_weights_thresholds
+        + sum(
             [
                 0
                 if reinforce_occur[criterion_name]
                 else weights[criterion_name]
                 * concordance_marginal(
-                   a_values[criterion_name],
-                   b_values[criterion_name],
-                   scales[criterion_name],
-                   indifference_thresholds[criterion_name],
-                   preference_thresholds[criterion_name],
-                   inverse,
+                    a_values[criterion_name],
+                    b_values[criterion_name],
+                    scales[criterion_name],
+                    indifference_thresholds[criterion_name],
+                    preference_thresholds[criterion_name],
+                    inverse,
                 )
                 for criterion_name in reinforce_occur.keys()
             ]
-       )
+        )
     ) / (
-       sum_weights_thresholds
-       + sum(
-           [
-               weights[criterion_name] * (not reinforce_occur[criterion_name])
-               for criterion_name in reinforce_occur.keys()
-           ]
-       )
+        sum_weights_thresholds
+        + sum(
+            [
+                weights[criterion_name] * (not reinforce_occur[criterion_name])
+                for criterion_name in reinforce_occur.keys()
+            ]
+        )
     )
 
 
 def concordance_reinforced(
-        alternatives_perform: pd.DataFrame,
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        reinforced_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
-        profiles_perform: Optional[pd.DataFrame] = None,
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    reinforced_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
-
     :param alternatives_perform: _description_
     :param scales: _description_
     :param weights: _description_
@@ -333,7 +320,6 @@ def concordance_reinforced(
     :param reinforced_thresholds: _description_
     :param reinforcement_factors: _description_
     :param profiles_perform: _description_
-
     :return: _description_
     """
     if profiles_perform is not None:
@@ -380,17 +366,16 @@ def concordance_reinforced(
 
 
 def concordance_reinforced_profiles(
-        alternatives_perform: pd.DataFrame,
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: pd.DataFrame,
-        preference_thresholds: pd.DataFrame,
-        reinforced_thresholds: pd.DataFrame,
-        reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
-        profiles_perform: pd.DataFrame,
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: pd.DataFrame,
+    preference_thresholds: pd.DataFrame,
+    reinforced_thresholds: pd.DataFrame,
+    reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series],
+    profiles_perform: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """_summary_
-
     :param alternatives_perform: _description_
     :param scales: _description_
     :param weights: _description_
@@ -399,7 +384,6 @@ def concordance_reinforced_profiles(
     :param reinforced_thresholds: _description_
     :param reinforcement_factors: _description_
     :param profiles_perform: _description_
-
     :return: _description_
     """
     return pd.DataFrame(
