@@ -285,32 +285,32 @@ def concordance_reinforced_comprehensive(
     )
 
     return (
-                   sum_weights_thresholds
-                   + sum(
-               [
-                   0
-                   if reinforce_occur[criterion_name]
-                   else weights[criterion_name]
-                        * concordance_marginal(
-                       a_values[criterion_name],
-                       b_values[criterion_name],
-                       scales[criterion_name],
-                       indifference_thresholds[criterion_name],
-                       preference_thresholds[criterion_name],
-                       inverse,
-                   )
-                   for criterion_name in reinforce_occur.keys()
-               ]
-           )
-           ) / (
-                   sum_weights_thresholds
-                   + sum(
-               [
-                   weights[criterion_name] * (not reinforce_occur[criterion_name])
-                   for criterion_name in reinforce_occur.keys()
-               ]
-           )
-           )
+       sum_weights_thresholds
+       + sum(
+            [
+                0
+                if reinforce_occur[criterion_name]
+                else weights[criterion_name]
+                * concordance_marginal(
+                   a_values[criterion_name],
+                   b_values[criterion_name],
+                   scales[criterion_name],
+                   indifference_thresholds[criterion_name],
+                   preference_thresholds[criterion_name],
+                   inverse,
+                )
+                for criterion_name in reinforce_occur.keys()
+            ]
+       )
+    ) / (
+       sum_weights_thresholds
+       + sum(
+           [
+               weights[criterion_name] * (not reinforce_occur[criterion_name])
+               for criterion_name in reinforce_occur.keys()
+           ]
+       )
+    )
 
 
 def concordance_reinforced(
