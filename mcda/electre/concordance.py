@@ -439,9 +439,9 @@ class FunctionType(Enum):
 
 
 class Interaction:
-    def __init__(self, interaction_type: InteractionType = None,
-                 function_type: FunctionType = None,
-                 factor: NumericValue = None):
+    def __init__(self, interaction_type: InteractionType,
+                 function_type: FunctionType,
+                 factor: NumericValue):
         self.interaction = interaction_type
         self.function_type = function_type
         self.factor = factor
@@ -456,13 +456,13 @@ class Interaction:
 
 
 def concordance_with_interactions_marginal(
-        a_values: Union[Dict[Any, NumericValue], pd.Series],
-        b_values: Union[Dict[Any, NumericValue], pd.Series],
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        interactions: pd.DataFrame
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    interactions: pd.DataFrame
 ) -> NumericValue:
     """
 
@@ -588,13 +588,13 @@ def concordance_with_interactions_marginal(
 
 
 def concordance_with_interactions(
-        alternatives_perform: pd.DataFrame,
-        scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-        weights: Union[Dict[Any, NumericValue], pd.Series],
-        indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-        interactions: pd.DataFrame,
-        profiles_perform: Optional[pd.DataFrame] = None,
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    interactions: pd.DataFrame,
+    profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
 
