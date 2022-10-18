@@ -455,8 +455,8 @@ class FunctionType(Enum):
 
 
 class Interaction:
-    def __init__(self, interaction_type: Optional[InteractionType] = None,
-                 function_type: Optional[FunctionType] = None,
+    def __init__(self, interaction_type: InteractionType = None,
+                 function_type: FunctionType = None,
                  factor: NumericValue = None):
         self.interaction = interaction_type
         self.function_type = function_type
