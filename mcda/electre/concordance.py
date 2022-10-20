@@ -573,18 +573,14 @@ def concordance_with_interactions_marginal(
     interaction_sum = sum(mutual_strengthening) + sum(mutual_weakening) - sum(antagonistic)
 
     return (
-                   sum(
-                       [
-                           weights[criterion_name]
-                           * marginal_concordances[criterion_name]
-                           for criterion_name in a_values.keys()
-                       ]
-                   )
-                   + interaction_sum
-           ) / (
-                   sum(weights)
-                   + interaction_sum
-           )
+        sum(
+            [
+                weights[criterion_name] * marginal_concordances[criterion_name]
+                for criterion_name in a_values.keys()
+            ]
+        )
+        + interaction_sum
+    ) / (sum(weights) + interaction_sum)
 
 
 def concordance_with_interactions(
