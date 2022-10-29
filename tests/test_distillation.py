@@ -4,17 +4,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mcda.electre.outranking import (
-    _get_maximal_credibility_index,
-    _get_minimal_credibility_index,
-    alternative_qualities,
-    crisp_outranking_relation_distillation,
-    distillation,
-    final_ranking_matrix,
-    median_order,
-    order_to_outranking_matrix,
-    ranks,
-)
+from mcda.electre.outranking import (_get_maximal_credibility_index,
+                                     _get_minimal_credibility_index,
+                                     alternative_qualities,
+                                     crisp_outranking_relation_distillation,
+                                     distillation, final_ranking_matrix,
+                                     median_order, order_to_outranking_matrix,
+                                     ranks)
 
 
 @pytest.fixture
@@ -132,10 +128,13 @@ def upward_order() -> pd.Series:
     return pd.Series([["FRA"], ["GER"], ["ITA"], ["BEL"], ["AUT"]])
 
 
-def test_order_to_outranking_matrix(
-    downward_order, downward_order_matrix, upward_order, upward_order_matrix
+def test_order_to_outranking_matrix_downward(
+    downward_order, downward_order_matrix
 ) -> None:
     assert order_to_outranking_matrix(downward_order).equals(downward_order_matrix)
+
+
+def test_order_to_outranking_matrix_upward(upward_order, upward_order_matrix) -> None:
     assert order_to_outranking_matrix(upward_order).equals(upward_order_matrix)
 
 

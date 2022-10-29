@@ -1,3 +1,4 @@
+import warnings
 from typing import Union
 
 import graphviz
@@ -8,14 +9,14 @@ import pandas as pd
 def outranking_to_graph(
     outranking_matrix: pd.DataFrame,
     transitive_reduction: bool = True,
-) -> Union[nx.DiGraph, str]:
+) -> Union[nx.DiGraph, None]:
     """Constructs graph from outranking matrix.
 
     :param outranking_matrix: given outranking matrix
     :param transitive_reduction: enable transitive reduction, defaults to True
 
     :return: Graph created from outranking matrix if possible,
-    otherwise returns string as a warning.
+    otherwise returns None.
     """
     graph = nx.DiGraph()
     for alt_name_a in outranking_matrix.index:
@@ -29,7 +30,8 @@ def outranking_to_graph(
     try:
         return nx.transitive_reduction(graph) if transitive_reduction else graph
     except nx.NetworkXError:
-        return "Directed Acyclic Graph required for transitive_reduction"
+        warnings.warn("Directed Acyclic Graph required for transitive_reduction")
+        return None
 
 
 def _networkx_graph_to_graphviz(graph: nx.DiGraph) -> graphviz.Digraph:
@@ -48,18 +50,18 @@ def _networkx_graph_to_graphviz(graph: nx.DiGraph) -> graphviz.Digraph:
 
 def plot_outranking(
     outranking_matrix: pd.DataFrame, transitive_reduction: bool = True
-) -> Union[graphviz.Digraph, str]:
+) -> Union[graphviz.Digraph, None]:
     """Creates graph plot from outranking matrix
 
     :param outranking_matrix: given outranking matrix
     :param transitive_reduction: enable transitive reduction, defaults to True
 
     :return: Graph created from outranking matrix if possible,
-    otherwise returns string as a warning.
+    otherwise returns None.
     """
     graph = outranking_to_graph(outranking_matrix, transitive_reduction)
+    if graph is not None:
+        graph = _networkx_graph_to_graphviz(graph)
+        graph.render()
 
-    if isinstance(graph, str):
-        return "Directed Acyclic Graph required for transitive_reduction"
-
-    return _networkx_graph_to_graphviz(graph)
+    return graph
