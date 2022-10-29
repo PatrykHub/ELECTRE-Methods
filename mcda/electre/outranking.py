@@ -599,4 +599,4 @@ def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
             for alt_name in crisp_outranking_table.index
         ],
         index=crisp_outranking_table.index,
-    ).sort_values(descending=True)
+    ).sort_values(ascending=False)
