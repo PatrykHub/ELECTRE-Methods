@@ -488,13 +488,6 @@ def distillation(
     return ranking[::-1] if upward_order else ranking
 
 
-from enum import Enum
-from typing import Callable, Optional, Tuple, Union
-
-import numpy as np
-import pandas as pd
-
-
 def change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     return pd.Series(
         {
