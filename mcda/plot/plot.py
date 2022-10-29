@@ -1,5 +1,5 @@
 import warnings
-from typing import Union
+from typing import Optional
 
 import graphviz
 import networkx as nx
@@ -9,7 +9,7 @@ import pandas as pd
 def outranking_to_graph(
     outranking_matrix: pd.DataFrame,
     transitive_reduction: bool = True,
-) -> Union[nx.DiGraph, None]:
+) -> Optional[nx.DiGraph]:
     """Constructs graph from outranking matrix.
 
     :param outranking_matrix: given outranking matrix
@@ -50,7 +50,7 @@ def _networkx_graph_to_graphviz(graph: nx.DiGraph) -> graphviz.Digraph:
 
 def plot_outranking(
     outranking_matrix: pd.DataFrame, transitive_reduction: bool = True
-) -> Union[graphviz.Digraph, None]:
+) -> Optional[graphviz.Digraph]:
     """Creates graph plot from outranking matrix
 
     :param outranking_matrix: given outranking matrix
@@ -61,7 +61,6 @@ def plot_outranking(
     """
     graph = outranking_to_graph(outranking_matrix, transitive_reduction)
     if graph is not None:
-        graph = _networkx_graph_to_graphviz(graph)
-        graph.render()
+        return _networkx_graph_to_graphviz(graph)
 
     return graph
