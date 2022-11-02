@@ -501,13 +501,13 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     )
 
 
-def strongly_connected_components(graph: pd.Series) ->List[Any]:
+def strongly_connected_components(graph: pd.Series) -> List[Any]:
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
 
-    #Function checks if node make with another strongly_connected_component. If so
-    #return list of nodes. Otherwise return only this node as a list.
+    # Function checks if node make with another strongly_connected_component. If so
+    # return list of nodes. Otherwise return only this node as a list.
     def _strong_connect(node):
         index[node] = index_counter[0]
         lowlink[node] = index_counter[0]
@@ -538,7 +538,6 @@ def strongly_connected_components(graph: pd.Series) ->List[Any]:
     return result
 
 
-
 def aggregate(graph: pd.Series) -> pd.Series:
     new_graph = graph.copy()
     for vertices in strongly_connected_components(graph):
@@ -557,16 +556,20 @@ def aggregate(graph: pd.Series) -> pd.Series:
                         new_graph[key].append(aggregated)
         new_graph[aggregated] = new_connections
     for key in new_graph.index:
-        if(key in new_graph[key]):
+        if key in new_graph[key]:
             new_graph[key].remove(key)
     return new_graph
 
 
 def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
-    vertices_with_preedecessor = list(set([v for key in graph.index for v in graph[key]]))
-    return [vertex for vertex in graph.index if vertex not in vertices_with_preedecessor]
+    vertices_with_preedecessor = list(
+        set([v for key in graph.index for v in graph[key]])
+    )
+    return [
+        vertex for vertex in graph.index if vertex not in vertices_with_preedecessor
+    ]
 
-import time
+
 def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     """This function finds a kernel (out1) in a graph
     constructed on the basis of a crisp outranking relation

@@ -1,8 +1,5 @@
 from typing import List, Tuple, Union, Any
-import sys
-import os
 
-sys.path.append(os.path.abspath("../"))
 import pandas as pd
 import pytest
 from mcda.electre.outranking import (
@@ -283,16 +280,6 @@ def test_strongly_connected_components(
         "expected",
     ),
     (
-        (
-            pd.Series(
-                [["a", "b"], ["a", "c", "d"], [], [], []],
-                index=["a", "b", "c", "d", "e"],
-            ),
-            pd.Series(
-                [[], [], [], ["c", "d"]],
-                index=["c", "d", "e", "b, a"],
-            ),
-        ),
         (
             pd.Series([["b"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
             pd.Series([["b"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
