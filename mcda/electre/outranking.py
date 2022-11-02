@@ -7,7 +7,7 @@ import pandas as pd
 
 from ..core.aliases import NumericValue
 from ._validate import _check_index_value_interval
-from .utils import linear_function
+from .utils import linear_function, reverse_transform_series, transform_series
 
 
 class OutrankingRelation(Enum):
@@ -277,8 +277,9 @@ def outranking_relation(
     )
 
 
-def get_maximal_credibility_index(credibility_matrix: pd.DataFrame) -> NumericValue:
-    """Selects the maximal credibility index, based on credibility matrix S(a, b).
+def _get_maximal_credibility_index(credibility_matrix: pd.DataFrame) -> NumericValue:
+    """Selects the maximal credibility index, based on credibility matrix S(a, b)
+    with zeroed diagonal.
 
     :param credibility_matrix: matrix with credibility values for each alternatives' pair
 
@@ -287,14 +288,14 @@ def get_maximal_credibility_index(credibility_matrix: pd.DataFrame) -> NumericVa
     return max(credibility_matrix.max())
 
 
-def get_minimal_credibility_index(
+def _get_minimal_credibility_index(
     credibility_matrix: pd.DataFrame,
     maximal_credibility_index: NumericValue,
     alpha: NumericValue = -0.15,
     beta: NumericValue = 0.30,
 ) -> NumericValue:
-    """Selects the minimal credibility index, based on credibility matrix S(a, b),
-    maximal_credibility_index and given linear function coefficients.
+    """Selects the minimal credibility index, based on credibility matrix S(a, b)
+    with zeroed diagonal, maximal_credibility_index and given linear function coefficients.
 
     :param credibility_matrix: matrix with credibility values for each alternatives' pair
     :param maximal_credibility_index: maximal credibility index, value from the [0, 1] interval
@@ -348,7 +349,7 @@ def alternative_qualities(
     credibility_matrix: pd.DataFrame,
     alpha: NumericValue = -0.15,
     beta: NumericValue = 0.30,
-    maximal_credibility_index: NumericValue = None,
+    maximal_credibility_index: Optional[NumericValue] = None,
 ) -> Tuple[pd.Series, NumericValue]:
     """Computes strength and weakness of each alternative a as the numbers of alternatives
     which are, respectively, outranked by a or outrank a.
@@ -363,8 +364,8 @@ def alternative_qualities(
     also maximal credibility index for possible inner distillation
     """
     if maximal_credibility_index is None:
-        maximal_credibility_index = get_maximal_credibility_index(credibility_matrix)
-    minimal_credibility_index = get_minimal_credibility_index(
+        maximal_credibility_index = _get_maximal_credibility_index(credibility_matrix)
+    minimal_credibility_index = _get_minimal_credibility_index(
         credibility_matrix.copy(), maximal_credibility_index, alpha, beta
     )
 
@@ -458,13 +459,13 @@ def distillation(
     :param alpha: coefficient of the independent variable, defaults to -0.15
     :param beta: y-intercept, defaults to 0.30
 
-    :return: Complete upward or downward order
+    :return: Nested list of complete upward or downward order
     """
     np.fill_diagonal(credibility_matrix.values, 0)
     preference_operator = min if upward_order else max
     remaining_alt_indices = credibility_matrix.index.to_series()
-    ranking = pd.Series([], dtype="float64")
-    level: int = 0
+    order = pd.Series([], dtype="float64")
+    level: int = 1
 
     while not remaining_alt_indices.empty:
         preferred_alternatives, minimal_credibility_index = _distillation_process(
@@ -482,7 +483,142 @@ def distillation(
             )
 
         remaining_alt_indices = remaining_alt_indices.drop(preferred_alternatives.index)
-        ranking[level] = preferred_alternatives.index.to_list()
+        order[level] = preferred_alternatives.index.to_list()
         level += 1
 
-    return ranking[::-1] if upward_order else ranking
+    return order[::-1] if upward_order else order
+
+
+def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
+    """Transforms order (upward or downward) to outranking matrix.
+
+    :param order: nested list with order (upward or downward)
+
+    :return: Outranking matrix of given order
+    """
+    alternatives = order.explode().to_list()
+    outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
+
+    for position in order:
+        outranking_matrix.loc[position, position] = 1
+        outranking_matrix.loc[
+            position, alternatives[alternatives.index(position[-1]) + 1:]
+        ] = 1
+
+    return outranking_matrix
+
+
+def final_ranking_matrix(
+    descending_order_matrix: pd.DataFrame, ascending_order_matrix: pd.DataFrame
+) -> pd.DataFrame:
+    """Constructs final partial preorder intersection from downward and upward orders of
+    alternatives derived from the descending and ascending distillation procedures, respectively.
+
+    :param descending_order_matrix: outranking matrix from downward order
+    :param ascending_order_matrix: outranking matrix from upward order
+
+    :return: Final outranking matrix
+    """
+    return descending_order_matrix * ascending_order_matrix
+
+
+def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
+    """Constructs ranks of the alternatives in the final preorder.
+
+    :param final_ranking_matrix: outranking matrix from final ranking
+
+    :return: Nested list of ranks
+    """
+    ranks_ranking = pd.Series([], dtype="float64")
+    remaining_alt_indices = final_ranking_matrix.index.to_series()
+    level: int = 1
+
+    while not remaining_alt_indices.empty:
+        rank_level = []
+        for alt_name_a in remaining_alt_indices.index:
+            current_rank = True
+            for alt_name_b in remaining_alt_indices.index:
+                if (
+                    alt_name_a != alt_name_b
+                    and final_ranking_matrix.loc[alt_name_b][alt_name_a] == 1
+                    and final_ranking_matrix.loc[alt_name_a][alt_name_b] == 0
+                ):
+                    current_rank = False
+                    break
+
+            if current_rank:
+                rank_level.append(alt_name_a)
+
+        remaining_alt_indices = remaining_alt_indices.drop(rank_level)
+        ranks_ranking[level] = rank_level
+        level += 1
+
+    return ranks_ranking
+
+
+def median_order(
+    ranks: pd.Series, downward_order: pd.Series, upward_order: pd.Series
+) -> pd.Series:
+    """Constructs median preorder.
+
+    :param ranks: nested list of ranks of the alternatives
+    :param downward_order: nested list of downward order
+    :param upward_order: nested list of upward order
+
+    :return: Nested list of median preorder
+    """
+    alternatives = ranks.explode().to_list()
+    ranks = transform_series(ranks)
+    downward_order = transform_series(downward_order)
+    upward_order = transform_series(upward_order)
+
+    initial_order = []
+    for i in range(len(ranks)):
+        initial_order.append(i)
+        for j in range(i, 0, -1):
+            alt_name_a, alt_name_b = (
+                alternatives[initial_order[j]],
+                alternatives[initial_order[j - 1]],
+            )
+
+            if ranks[alt_name_a] < ranks[alt_name_b]:
+                initial_order[j], initial_order[j - 1] = (
+                    initial_order[j - 1],
+                    initial_order[j],
+                )
+
+            elif ranks[alt_name_a] == ranks[alt_name_b]:
+                downwards_difference = (
+                    downward_order[alt_name_a] - downward_order[alt_name_b]
+                )
+                upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
+
+                if downwards_difference + upwards_difference < 0:
+                    initial_order[j], initial_order[j - 1] = (
+                        initial_order[j - 1],
+                        initial_order[j],
+                    )
+
+    final_order = pd.Series([], dtype="float64")
+    level: int = 1
+    for i in range(len(initial_order)):
+        alt_name_a, alt_name_b = (
+            alternatives[initial_order[i]],
+            alternatives[initial_order[i - 1]],
+        )
+
+        if ranks[alt_name_a] > ranks[alt_name_b]:
+            level += 1
+
+        elif ranks[alt_name_a] == ranks[alt_name_b]:
+            downwards_difference = (
+                downward_order[alt_name_a] - downward_order[alt_name_b]
+            )
+            upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
+
+            if downwards_difference + upwards_difference > 0:
+                level += 1
+
+        final_order[alternatives[initial_order[i]]] = level
+
+    return reverse_transform_series(final_order)
