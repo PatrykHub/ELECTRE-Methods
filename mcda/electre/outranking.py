@@ -501,7 +501,7 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     )
 
 
-def strongly_connected_components(graph: pd.Series) -> List[Any]:
+def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
