@@ -1,6 +1,6 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Callable, Optional, Tuple, Union, List
+from typing import Callable, Optional, Tuple, Union, List, Any
 
 import numpy as np
 import pandas as pd
@@ -488,24 +488,26 @@ def distillation(
     return ranking[::-1] if upward_order else ranking
 
 
-def change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     return pd.Series(
         {
             alt_name_b: [
                 alt_name_a
                 for alt_name_a in crisp_outranking_table.index
-                if crisp_outranking_table.loc[alt_name_a][alt_name_b] != 0
+                if crisp_outranking_table.loc[alt_name_b][alt_name_a] != 0
             ]
             for alt_name_b in crisp_outranking_table.index
         }
     )
 
 
-def strongly_connected_components(graph: pd.Series) -> List:
+def strongly_connected_components(graph: pd.Series) ->List[Any]:
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
 
+    #Function checks if node make with another strongly_connected_component. If so
+    #return list of nodes. Otherwise return only this node as a list.
     def _strong_connect(node):
         index[node] = index_counter[0]
         lowlink[node] = index_counter[0]
@@ -528,12 +530,13 @@ def strongly_connected_components(graph: pd.Series) -> List:
                 connected_component.append(successor)
                 if successor == node:
                     break
-            result.append(connected_component[:])
+            result.append(connected_component)
 
-    for node in graph:
+    for node in graph.index:
         if node not in index:
             _strong_connect(node)
     return result
+
 
 
 def aggregate(graph: pd.Series) -> pd.Series:
@@ -545,7 +548,7 @@ def aggregate(graph: pd.Series) -> pd.Series:
         new_connections = list(
             set([v for key in vertices for v in graph[key] if v not in vertices])
         )
-        graph.drop(labels=vertices)
+        new_graph = new_graph.drop(labels=vertices)
         for key in new_graph:
             for vertex in new_graph[key][:]:
                 if vertex in vertices:
@@ -553,35 +556,38 @@ def aggregate(graph: pd.Series) -> pd.Series:
                     if aggregated not in new_graph[key]:
                         new_graph[key].append(aggregated)
         new_graph[aggregated] = new_connections
+    for key in new_graph.index:
+        if(key in new_graph[key]):
+            new_graph[key].remove(key)
     return new_graph
 
 
-def find_vertices_without_predecessor(graph: pd.Series) -> List:
-    vertices_with_preedecessor = list(set([v for key in graph for v in graph[key]]))
-    return [vertex for vertex in graph if vertex not in vertices_with_preedecessor]
+def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
+    vertices_with_preedecessor = list(set([v for key in graph.index for v in graph[key]]))
+    return [vertex for vertex in graph.index if vertex not in vertices_with_preedecessor]
 
-
-def find_kernel(crisp_outranking_table: pd.DataFrame) -> List:
+import time
+def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     """This function finds a kernel (out1) in a graph
     constructed on the basis of a crisp outranking relation
     :param crisp_outranking_table: table with crisp relations
     between alternatives
     :return: every alternative that is in kernel
     """
-    graph = change_to_series(crisp_outranking_table)
+    graph = _change_to_series(crisp_outranking_table)
     graph = aggregate(graph)
     not_kernel: List = []
     kernel = find_vertices_without_predecessor(graph)
     for vertex in kernel:
         not_kernel = not_kernel + graph[vertex]
         graph.pop(vertex)
-    while graph:
+    while graph.any():
         vertices = find_vertices_without_predecessor(graph)
         for vertex in vertices:
             if vertex not in not_kernel:
                 kernel.append(vertex)
                 not_kernel = not_kernel + graph[vertex]
-            del graph[vertex]
+                graph.pop(vertex)
     return kernel
 
 
