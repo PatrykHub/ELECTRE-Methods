@@ -1,8 +1,7 @@
 """This module implements methods to compute
 an outranking credibility."""
 
-from functools import reduce
-from typing import Dict, List, Union
+from typing import List, Union
 import pandas as pd
 
 from ..core.aliases import NumericValue
