@@ -1,6 +1,5 @@
 from typing import List
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -411,6 +410,7 @@ def test_concordance_profiles(
     helpers.assert_array_values(
         expected_profiles_alternatives, concordance_matrix_prof_alt.to_numpy()
     )
+
 
 @pytest.mark.skip(reason="XD")
 def test_reinforcement_no_profiles(

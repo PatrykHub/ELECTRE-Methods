@@ -1,11 +1,10 @@
-import math
 from typing import List
 
 import pandas as pd
 import pytest
 
 from mcda.core.functions import Threshold
-from mcda.electre.discordance import discordance, discordance_bin
+from mcda.electre.discordance import discordance
 
 from .. import helpers
 
