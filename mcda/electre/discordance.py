@@ -1,5 +1,5 @@
 """This module implements methods to compute discordance."""
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 
@@ -38,7 +38,7 @@ def discordance_bin_comprehensive(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     inverse: bool = False,
 ) -> int:
     """_summary_
@@ -62,6 +62,8 @@ def discordance_bin_comprehensive(
                 veto_thresholds[criterion_name],
                 inverse,
             )
+            if veto_thresholds[criterion_name] is not None
+            else 0
             for criterion_name in a_values.keys()
         ]
         else 0
@@ -71,7 +73,7 @@ def discordance_bin_comprehensive(
 def discordance_bin(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
@@ -177,7 +179,7 @@ def discordance_comprehensive(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[
         Union[Dict[Any, Optional[Threshold]], pd.Series]
     ] = None,
@@ -205,6 +207,8 @@ def discordance_comprehensive(
                 veto_thresholds[criterion_name],
                 pre_veto_thresholds[criterion_name] if pre_veto_thresholds else None,
             )
+            if veto_thresholds[criterion_name] is not None
+            else 0
             for criterion_name in a_values.keys()
         ]
     ) / sum(weights.values() if isinstance(weights, dict) else weights.values)
