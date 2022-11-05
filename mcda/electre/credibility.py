@@ -140,7 +140,8 @@ def _is_veto(
     for i in range(len(a_values)):
         if (
             veto_thresholds[i] is not None
-            and _get_criteria_difference(a_values[i], b_values[i], scales[i]) > veto_thresholds[i]
+            and _get_criteria_difference(a_values[i], b_values[i], scales[i])
+            > veto_thresholds[i]
         ):
             return True
     return False
