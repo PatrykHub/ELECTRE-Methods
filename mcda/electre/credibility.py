@@ -3,6 +3,9 @@ an outranking credibility."""
 
 from typing import List, Union
 import pandas as pd
+import math
+from functools import reduce
+
 
 from ..core.aliases import NumericValue
 from ..core.scales import PreferenceDirection, QuantitativeScale
@@ -103,54 +106,54 @@ def _get_criteria_difference(
     )
 
 
-def _get_criteria_counts(
-    a: List[NumericValue],
-    b: List[NumericValue],
+def get_criteria_counts(
+    a_values: List[NumericValue],
+    b_values: List[NumericValue],
     scales: List[QuantitativeScale],
-    indifference_threshold: List[NumericValue],
-    prefference_threshold: List[NumericValue],
-) -> List:
+    indifference_thresholds: List[NumericValue],
+    preference_thresholds: List[NumericValue],
+) -> List[int]:
     np = nq = ni = no = 0
 
-    for i in range(len(a)):
-        difference = _get_criteria_difference(a[i], b[i], scales[i])
+    for i in range(len(a_values)):
+        difference = _get_criteria_difference(a_values[i], b_values[i], scales[i])
 
-        if difference:
-            if difference >= prefference_threshold[i]:
+        if difference > 0.0:
+            if difference >= preference_thresholds[i]:
                 np += 1
-            elif difference > indifference_threshold[i]:
+            elif difference > indifference_thresholds[i]:
                 nq += 1
             else:
                 ni += 1
-        else:
+        elif math.isclose(difference, 0.0):
             no += 1
 
     return [np, nq, ni, no]
 
 
 def _is_veto(
-    a: List[NumericValue],
-    b: List[NumericValue],
+    a_values: List[NumericValue],
+    b_values: List[NumericValue],
     scales: List[QuantitativeScale],
-    veto_threshold: List[NumericValue],
+    veto_thresholds: List[NumericValue],
 ) -> bool:
-    for i in range(len(a)):
+    for i in range(len(a_values)):
         if (
-            veto_threshold[i] is not None
-            and _get_criteria_difference(a[i], b[i], scales[i]) > veto_threshold[i]
+            veto_thresholds[i] is not None
+            and _get_criteria_difference(a_values[i], b_values[i], scales[i]) > veto_thresholds[i]
         ):
             return True
     return False
 
 
-def _get_credibility_values(
-    alternatives: List[List],
-    criteria_counts: List[List],
+def get_credibility_values(
+    alternatives: List[List[NumericValue]],
+    criteria_counts: List[List[List[int]]],
     scales: List[QuantitativeScale],
-    veto_threshold: List[NumericValue],
-) -> List[List]:
+    veto_thresholds: List[NumericValue],
+) -> List[List[NumericValue]]:
     credibility: List[List[NumericValue]] = [
-        [0 for _ in range(len(alternatives))] for _ in range(len(alternatives))
+        [0.0 for _ in range(len(alternatives))] for _ in range(len(alternatives))
     ]
 
     for i in range(len(alternatives)):
@@ -158,8 +161,8 @@ def _get_credibility_values(
             if i == j:
                 credibility[i][j] = 1.0
             else:
-                np_ab, nq_ab, ni_ab = criteria_counts[i][j][0:3]
-                np_ba, nq_ba, ni_ba = criteria_counts[j][i][0:3]
+                np_ab, nq_ab, ni_ab = criteria_counts[i][j][:3]
+                np_ba, nq_ba, ni_ba = criteria_counts[j][i][:3]
 
                 if np_ba + nq_ba == 0 and ni_ba < np_ab + nq_ab + ni_ab:
                     credibility[i][j] = 1.0
@@ -178,7 +181,7 @@ def _get_credibility_values(
                     np_ba <= 1
                     and np_ab >= len(scales) / 2
                     and _is_veto(
-                        alternatives[j], alternatives[i], scales, veto_threshold
+                        alternatives[j], alternatives[i], scales, veto_thresholds
                     )
                     is False
                 ):
@@ -188,27 +191,27 @@ def _get_credibility_values(
 
 
 def credibility_electre_iv(
-    alternatives: List[List],
+    alternatives: List[List[NumericValue]],
     scales: List[QuantitativeScale],
-    indifference_threshold: List[NumericValue],
-    prefference_threshold: List[NumericValue],
-    veto_threshold: List[NumericValue],
-) -> List[List]:
-    criteria_counts: List[List[List[float]]] = [
-        [[0.0] * 4 for _ in range(len(alternatives))] for _ in range(len(alternatives))
+    indifference_thresholds: List[NumericValue],
+    preference_thresholds: List[NumericValue],
+    veto_thresholds: List[NumericValue],
+) -> List[List[NumericValue]]:
+    criteria_counts: List[List[List[int]]] = [
+        [[0] * 4 for _ in range(len(alternatives))] for _ in range(len(alternatives))
     ]
 
     for i in range(len(alternatives)):
         for j in range(len(alternatives)):
             if i != j:
-                criteria_counts[i][j] = _get_criteria_counts(
+                criteria_counts[i][j] = get_criteria_counts(
                     alternatives[i],
                     alternatives[j],
                     scales,
-                    indifference_threshold,
-                    prefference_threshold,
+                    indifference_thresholds,
+                    preference_thresholds,
                 )
 
-    return _get_credibility_values(
-        alternatives, criteria_counts, scales, veto_threshold
+    return get_credibility_values(
+        alternatives, criteria_counts, scales, veto_thresholds
     )
