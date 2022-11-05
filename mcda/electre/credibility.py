@@ -4,8 +4,6 @@ an outranking credibility."""
 from typing import List, Union
 import pandas as pd
 import math
-from functools import reduce
-
 
 from ..core.aliases import NumericValue
 from ..core.scales import PreferenceDirection, QuantitativeScale
