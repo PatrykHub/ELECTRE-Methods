@@ -439,9 +439,12 @@ class FunctionType(Enum):
 
 
 class Interaction:
-    def __init__(self, interaction_type: InteractionType,
-                 function_type: FunctionType,
-                 factor: NumericValue):
+    def __init__(
+        self,
+        interaction_type: InteractionType,
+        function_type: FunctionType,
+        factor: NumericValue,
+    ):
         self.interaction = interaction_type
         self.function_type = function_type
         self.factor = factor
@@ -462,7 +465,7 @@ def concordance_with_interactions_marginal(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    interactions: pd.DataFrame
+    interactions: pd.DataFrame,
 ) -> NumericValue:
     """
 
@@ -489,8 +492,9 @@ def concordance_with_interactions_marginal(
         if interactions[i][i] is not None:
             raise ValueError("Criterion cannot interact with itself.")
         for j in interactions.columns:
-            if interactions[i][j] is not None \
-                    and interactions[i][j].interaction not in [
+            if interactions[i][j] is not None and interactions[i][
+                j
+            ].interaction not in [
                 InteractionType.MW,
                 InteractionType.MS,
                 InteractionType.A,
@@ -500,29 +504,28 @@ def concordance_with_interactions_marginal(
                     "by one of the following enumeration tokens:\n"
                     "'MW' - Mutual Weakening\n'MS' - Mutual Strengthening\n'A' - Antagonistic"
                 )
-            if interactions[i][j] is not None and interactions[i][j].function_type not in [
-                FunctionType.MIN,
-                FunctionType.MUL
-            ]:
+            if interactions[i][j] is not None and interactions[i][
+                j
+            ].function_type not in [FunctionType.MIN, FunctionType.MUL]:
                 raise ValueError(
                     "The Z function has to be represented "
                     "by one of the following enumeration tokens:\n'min' - "
                     "minimum\n'multi' - multiplication"
                 )
             if interactions[i][j] is not None and not isinstance(
-                    interactions[i][j].factor, get_args(NumericValue)
+                interactions[i][j].factor, get_args(NumericValue)
             ):
                 raise TypeError("Interaction factor must be a numerical value.")
             if (
-                    interactions[i][j] is not None
-                    and interactions[i][j].interaction == InteractionType.MW
-                    and weights[i] - abs(interactions[i][j].factor) < 0
+                interactions[i][j] is not None
+                and interactions[i][j].interaction == InteractionType.MW
+                and weights[i] - abs(interactions[i][j].factor) < 0
             ):
                 raise ValueError("Incorrect interaction factor.")
             if (
-                    interactions[i][j]
-                    and interactions[i][j].interaction == InteractionType.A
-                    and weights[i] - interactions[i][j].factor < 0
+                interactions[i][j]
+                and interactions[i][j].interaction == InteractionType.A
+                and weights[i] - interactions[i][j].factor < 0
             ):
                 raise ValueError("Incorrect interaction factor.")
 
@@ -535,7 +538,7 @@ def concordance_with_interactions_marginal(
             b_values[criterion_name],
             scales[criterion_name],
             indifference_thresholds[criterion_name],
-            preference_thresholds[criterion_name]
+            preference_thresholds[criterion_name],
         )
         for criterion_name in a_values.keys()
     ]
@@ -546,7 +549,7 @@ def concordance_with_interactions_marginal(
                 c_j = marginal_concordances[j]
                 if interactions[i][j].interaction == InteractionType.MS:
                     strengthening_weight = (
-                            weights[i] + weights[j] + interactions[i][j].factor
+                        weights[i] + weights[j] + interactions[i][j].factor
                     )
                     mutual_strengthening.append(
                         strengthening_weight * min(c_i, c_j)
@@ -554,7 +557,9 @@ def concordance_with_interactions_marginal(
                         else strengthening_weight * c_i * c_j
                     )
                 elif interactions[i][j].interaction == InteractionType.MW:
-                    weakening_weight = weights[i] + weights[j] + interactions[i][j].factor
+                    weakening_weight = (
+                        weights[i] + weights[j] + interactions[i][j].factor
+                    )
                     mutual_weakening.append(
                         weakening_weight * min(c_i, c_j)
                         if interactions[i][j].function_type == FunctionType.MIN
@@ -562,7 +567,7 @@ def concordance_with_interactions_marginal(
                     )
                 else:
                     antagonistic_weight = (
-                            weights[i] + weights[j] - interactions[i][j].factor
+                        weights[i] + weights[j] - interactions[i][j].factor
                     )
                     antagonistic.append(
                         antagonistic_weight * min(c_i, c_j)
@@ -570,7 +575,9 @@ def concordance_with_interactions_marginal(
                         else antagonistic_weight * c_i * c_j
                     )
 
-    interaction_sum = sum(mutual_strengthening) + sum(mutual_weakening) - sum(antagonistic)
+    interaction_sum = (
+        sum(mutual_strengthening) + sum(mutual_weakening) - sum(antagonistic)
+    )
 
     return (
         sum(
@@ -615,7 +622,7 @@ def concordance_with_interactions(
                         weights,
                         indifference_thresholds,
                         preference_thresholds,
-                        interactions
+                        interactions,
                     )
                     for prof_name in profiles_perform.index
                 ]
@@ -634,7 +641,7 @@ def concordance_with_interactions(
                     weights,
                     indifference_thresholds,
                     preference_thresholds,
-                    interactions
+                    interactions,
                 )
                 for alt_name_b in alternatives_perform.index
             ]
