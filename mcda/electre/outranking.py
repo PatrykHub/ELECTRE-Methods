@@ -502,7 +502,7 @@ def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
     for position in order:
         outranking_matrix.loc[position, position] = 1
         outranking_matrix.loc[
-            position, alternatives[alternatives.index(position[-1]) + 1:]
+            position, alternatives[alternatives.index(position[-1]) + 1 :]
         ] = 1
 
     return outranking_matrix
@@ -677,7 +677,6 @@ def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
         ],
         index=crisp_outranking_table.index,
     ).sort_values(ascending=False)
-  
 
 
 def median_order(
