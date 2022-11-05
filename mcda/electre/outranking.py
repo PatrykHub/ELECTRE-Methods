@@ -1,6 +1,6 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union, List, Any
 
 import numpy as np
 import pandas as pd
@@ -554,6 +554,129 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
         level += 1
 
     return ranks_ranking
+
+
+def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    return pd.Series(
+        {
+            alt_name_b: [
+                alt_name_a
+                for alt_name_a in crisp_outranking_table.index
+                if crisp_outranking_table.loc[alt_name_b][alt_name_a] != 0
+            ]
+            for alt_name_b in crisp_outranking_table.index
+        }
+    )
+
+
+def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
+    index_counter = [0]
+    stack, result = [], []
+    lowlink, index = {}, {}
+
+    # Function checks if node make with another strongly_connected_component. If so
+    # return list of nodes. Otherwise return only this node as a list.
+    def _strong_connect(node):
+        index[node] = index_counter[0]
+        lowlink[node] = index_counter[0]
+        index_counter[0] += 1
+        stack.append(node)
+
+        successors = graph[node]
+        for successor in successors:
+            if successor not in index:
+                _strong_connect(successor)
+                lowlink[node] = min(lowlink[node], lowlink[successor])
+            elif successor in stack:
+                lowlink[node] = min(lowlink[node], index[successor])
+
+        if lowlink[node] == index[node]:
+            connected_component = []
+
+            while True:
+                successor = stack.pop()
+                connected_component.append(successor)
+                if successor == node:
+                    break
+            result.append(connected_component)
+
+    for node in graph.index:
+        if node not in index:
+            _strong_connect(node)
+    return result
+
+
+def aggregate(graph: pd.Series) -> pd.Series:
+    new_graph = graph.copy()
+    for vertices in strongly_connected_components(graph):
+        if len(vertices) == 1:
+            continue
+        aggregated = ", ".join(str(v) for v in vertices)
+        new_connections = list(
+            set([v for key in vertices for v in graph[key] if v not in vertices])
+        )
+        new_graph = new_graph.drop(labels=vertices)
+        for key in new_graph:
+            for vertex in new_graph[key][:]:
+                if vertex in vertices:
+                    new_graph[key].remove(vertex)
+                    if aggregated not in new_graph[key]:
+                        new_graph[key].append(aggregated)
+        new_graph[aggregated] = new_connections
+    for key in new_graph.index:
+        if key in new_graph[key]:
+            new_graph[key].remove(key)
+    return new_graph
+
+
+def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
+    vertices_with_preedecessor = list(
+        set([v for key in graph.index for v in graph[key]])
+    )
+    return [
+        vertex for vertex in graph.index if vertex not in vertices_with_preedecessor
+    ]
+
+
+def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
+    """This function finds a kernel (out1) in a graph
+    constructed on the basis of a crisp outranking relation
+    :param crisp_outranking_table: table with crisp relations
+    between alternatives
+    :return: every alternative that is in kernel
+    """
+    graph = _change_to_series(crisp_outranking_table)
+    graph = aggregate(graph)
+    not_kernel: List = []
+    kernel = find_vertices_without_predecessor(graph)
+    for vertex in kernel:
+        not_kernel = not_kernel + graph[vertex]
+        graph.pop(vertex)
+    while graph.any():
+        vertices = find_vertices_without_predecessor(graph)
+        for vertex in vertices:
+            if vertex not in not_kernel:
+                kernel.append(vertex)
+                not_kernel = not_kernel + graph[vertex]
+                graph.pop(vertex)
+    return kernel
+
+
+def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    """This function computes net flow scores for all
+    alternatives.
+    :param crisp_outranking_table: table with crisp relations
+    between alternatives
+    :return: net flow scores for all alternatives
+    """
+    return pd.Series(
+        [
+            crisp_outranking_table.loc[alt_name].sum()
+            - crisp_outranking_table[alt_name].sum()
+            for alt_name in crisp_outranking_table.index
+        ],
+        index=crisp_outranking_table.index,
+    ).sort_values(ascending=False)
 
 
 def median_order(
