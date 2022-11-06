@@ -194,9 +194,9 @@ def is_reinforcement_occur(
     :return: _description_
     """
     return (
-        a_value - b_value > reinforcement_threshold(a_value)
+        a_value - b_value > reinforcement_threshold(b_value)
         if scale.preference_direction == PreferenceDirection.MAX
-        else b_value - a_value > reinforcement_threshold(a_value)
+        else b_value - a_value > reinforcement_threshold(b_value)
     )
 
 
@@ -281,7 +281,7 @@ def concordance_reinforced(
     reinforced_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     reinforcement_factors: Union[Dict[Any, Optional[NumericValue]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
