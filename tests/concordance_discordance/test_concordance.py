@@ -1,10 +1,18 @@
 from typing import List
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from mcda.core.functions import Threshold
-from mcda.electre.concordance import concordance, concordance_reinforced
+from mcda.electre.concordance import (
+    FunctionType,
+    Interaction,
+    InteractionType,
+    concordance,
+    concordance_reinforced,
+    concordance_with_interactions,
+)
 
 from .. import helpers
 
@@ -34,15 +42,71 @@ def reinforcement_factors(
     criterion_names: List[str],
 ) -> pd.Series:
     """Returns all criteria reinforcement factors."""
-    return pd.Series(
-        [1.3, 1.2, None, 1.01, 1.1, None, None, 1.5], index=criterion_names
-    )
+    return pd.Series([1.3, 1.2, None, 1.01, 1.1, None, None, 1.5], index=criterion_names)
 
 
 @pytest.fixture
 def interactions(criterion_names: List[str]) -> pd.DataFrame:
     """Returns matrix with all interactions between criteria."""
-    return pd.DataFrame([], index=criterion_names, columns=criterion_names)
+    return pd.DataFrame(
+        [
+            [
+                None,
+                Interaction(InteractionType.MW, -2.5),
+                None,
+                None,
+                None,
+                None,
+                None,
+                Interaction(InteractionType.MS, 3.1),
+            ],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [
+                None,
+                None,
+                Interaction(InteractionType.MS, 1.05),
+                None,
+                None,
+                None,
+                None,
+                None,
+            ],
+            [
+                None,
+                None,
+                None,
+                Interaction(InteractionType.A, 1.7),
+                None,
+                None,
+                None,
+                None,
+            ],
+            [
+                Interaction(InteractionType.MW, -0.75),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ],
+            [
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Interaction(InteractionType.A, 2.33),
+            ],
+            [None, None, None, None, None, None, None, None],
+        ],
+        index=criterion_names,
+        columns=criterion_names,
+    )
 
 
 def test_concordance_no_profiles(
@@ -389,6 +453,8 @@ def test_concordance_profiles(
         ],
     ]
 
+    concordance_matrix_alt_prof: pd.DataFrame
+    concordance_matrix_prof_alt: pd.DataFrame
     concordance_matrix_alt_prof, concordance_matrix_prof_alt = concordance(
         performance_table,
         scales,
@@ -412,7 +478,6 @@ def test_concordance_profiles(
     )
 
 
-@pytest.mark.skip(reason="XD")
 def test_reinforcement_no_profiles(
     performance_table: pd.DataFrame,
     scales: pd.Series,
@@ -635,7 +700,6 @@ def test_reinforcement_no_profiles(
     helpers.assert_array_values(expected_values, concordance_matrix.to_numpy())
 
 
-@pytest.mark.skip(reason="XD")
 def test_reinforcement_profiles(
     performance_table: pd.DataFrame,
     scales: pd.Series,
@@ -647,13 +711,13 @@ def test_reinforcement_profiles(
     profiles_performance: pd.DataFrame,
 ) -> None:
     expected_alternatives_profiles = [
-        [0.210526315789, 0.471293983505, 0.748514851485, 1.0, 1.0],
+        [0.210526315789, 0.460163330526, 0.748514851485, 1.0, 1.0],
         [0.547368421053, 0.668737060041, 1.0, 1.0, 1.0],
-        [0.381443298969, 0.75230389858, 0.797160243408, 0.797160243408, 0.954846559966],
+        [0.368421052632, 0.75230389858, 0.797160243408, 0.797160243408, 0.954846559966],
         [0.2, 0.495374264087, 0.82405165456, 1.0, 1.0],
         [0.294736842105, 0.596774193548, 0.813482216708, 1.0, 1.0],
         [0.463157894737, 0.63872255489, 0.641812865497, 0.757575757576, 0.892049702519],
-        [0.288659793814, 0.515463917526, 0.818819027723, 1.0, 1.0],
+        [0.273684210526, 0.515463917526, 0.818819027723, 1.0, 1.0],
         [
             0.340412909474,
             0.690988835726,
@@ -738,7 +802,7 @@ def test_reinforcement_profiles(
             0.368421052632,
             0.422680412371,
             0.367719298246,
-            0.505154639175,
+            0.494736842105,
         ],
         [
             0.340210526316,
@@ -757,6 +821,8 @@ def test_reinforcement_profiles(
         ],
     ]
 
+    concordance_matrix_alt_prof: pd.DataFrame
+    concordance_matrix_prof_alt: pd.DataFrame
     concordance_matrix_alt_prof, concordance_matrix_prof_alt = concordance_reinforced(
         performance_table,
         scales,
@@ -765,6 +831,718 @@ def test_reinforcement_profiles(
         preference_thresholds,
         reinforcement_thresholds,
         reinforcement_factors,
+        profiles_performance,
+    )
+
+    assert concordance_matrix_alt_prof.index.equals(performance_table.index)
+    assert concordance_matrix_alt_prof.columns.equals(profiles_performance.index)
+
+    assert concordance_matrix_prof_alt.index.equals(profiles_performance.index)
+    assert concordance_matrix_prof_alt.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(
+        expected_alternatives_profiles, concordance_matrix_alt_prof.to_numpy()
+    )
+    helpers.assert_array_values(
+        expected_profiles_alternatives, concordance_matrix_prof_alt.to_numpy()
+    )
+
+
+def test_interactions_min_no_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    weights: pd.Series,
+    indifference_thresholds: pd.Series,
+    preference_thresholds: pd.Series,
+    interactions: pd.DataFrame,
+) -> None:
+    expected_values = [
+        [
+            1.0,
+            0.413407821229,
+            0.566434753097,
+            0.580583783518,
+            0.479373763759,
+            0.578947368421,
+            0.39049716803,
+            0.474105263158,
+            0.69387755102,
+            0.727891156463,
+            0.578947368421,
+            0.745762711864,
+            0.494736842105,
+        ],
+        [
+            0.689163518239,
+            1.0,
+            0.677419354839,
+            0.727891156463,
+            0.742721733243,
+            0.855560905152,
+            0.748110831234,
+            0.657142857143,
+            0.808467741935,
+            0.842726081258,
+            0.587998208688,
+            0.866488651535,
+            0.727891156463,
+        ],
+        [
+            0.799247848606,
+            0.510344827586,
+            1.0,
+            0.652095874059,
+            0.621604270504,
+            0.578947368421,
+            0.51299365664,
+            0.727891156463,
+            0.617316017316,
+            0.501133786848,
+            0.640591598742,
+            0.803536345776,
+            0.368421052632,
+        ],
+        [
+            0.767981438515,
+            0.304347826087,
+            0.609756097561,
+            1.0,
+            0.576271186441,
+            0.528225806452,
+            0.5841995842,
+            0.452631578947,
+            0.615157894737,
+            0.704225352113,
+            0.556451612903,
+            0.702308626974,
+            0.606912516197,
+        ],
+        [
+            0.5841995842,
+            0.302634491919,
+            0.588235294118,
+            0.717218265605,
+            1.0,
+            0.521505376344,
+            0.5841995842,
+            0.591836734694,
+            0.451447245565,
+            0.614829080404,
+            0.69696969697,
+            0.858638743455,
+            0.759700105732,
+        ],
+        [
+            0.449277775465,
+            0.616564417178,
+            0.588235294118,
+            0.585667433949,
+            0.647736117448,
+            1.0,
+            0.4025202781,
+            0.790286975717,
+            0.59502239082,
+            0.798619874876,
+            0.758436994841,
+            0.643148450245,
+            0.451247165533,
+        ],
+        [
+            0.877107940193,
+            0.681724845996,
+            0.498132586368,
+            0.632909455799,
+            0.451368421053,
+            0.640570130138,
+            1.0,
+            0.494736842105,
+            0.715789473684,
+            0.762278537789,
+            0.578947368421,
+            0.789473684211,
+            0.494736842105,
+        ],
+        [
+            0.5841995842,
+            0.358076563959,
+            0.70260185761,
+            0.626865671642,
+            0.7002997003,
+            0.739854318418,
+            0.5841995842,
+            1.0,
+            0.544817927171,
+            0.703654922621,
+            0.81045392506,
+            0.723756906077,
+            0.579265106719,
+        ],
+        [
+            0.582366589327,
+            0.246086956522,
+            0.582366589327,
+            0.670897978373,
+            0.670897978373,
+            0.46233246033,
+            0.260869565217,
+            0.533898305085,
+            1.0,
+            0.670897978373,
+            0.533898305085,
+            0.78601085915,
+            0.657748821244,
+        ],
+        [
+            0.609781113779,
+            0.252631578947,
+            0.4,
+            0.604827367179,
+            0.648047229791,
+            0.546699336985,
+            0.274532231631,
+            0.501026694045,
+            0.779446455917,
+            1.0,
+            0.557458046497,
+            0.454853939215,
+            0.539836970813,
+        ],
+        [
+            0.600173243065,
+            0.358076563959,
+            0.748942917548,
+            0.545771838851,
+            0.724157955865,
+            0.739854318418,
+            0.544817927171,
+            0.815452755906,
+            0.544817927171,
+            0.7002997003,
+            1.0,
+            0.748942917548,
+            0.622232113709,
+        ],
+        [
+            0.552572706935,
+            0.35766721044,
+            0.4,
+            0.59480800133,
+            0.691683746893,
+            0.442366306456,
+            0.389671361502,
+            0.348210526316,
+            0.43529524847,
+            0.477194594509,
+            0.410526315789,
+            1.0,
+            0.578947368421,
+        ],
+        [
+            0.526209677419,
+            0.252631578947,
+            0.588235294118,
+            0.662964090079,
+            0.720641102457,
+            0.690224873795,
+            0.526209677419,
+            0.657836644592,
+            0.455024311183,
+            0.630317310975,
+            0.757383966245,
+            0.675264385516,
+            1.0,
+        ],
+    ]
+
+    concordance_matrix: pd.DataFrame = concordance_with_interactions(
+        performance_table,
+        scales,
+        weights,
+        indifference_thresholds,
+        preference_thresholds,
+        interactions,
+    )
+
+    assert concordance_matrix.index.equals(performance_table.index)
+    assert concordance_matrix.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(expected_values, concordance_matrix.to_numpy())
+
+
+def test_interactions_min_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    weights: pd.Series,
+    indifference_thresholds: pd.Series,
+    preference_thresholds: pd.Series,
+    profiles_performance: pd.DataFrame,
+    interactions: pd.DataFrame,
+) -> None:
+    expected_alternatives_profiles = [
+        [0.124649859944, 0.46674593257, 0.719646799117, 1.0, 1.0],
+        [0.482426576793, 0.614829080404, 1.0, 1.0, 1.0],
+        [0.368421052632, 0.75593950583, 0.803536345776, 0.803536345776, 0.95265005287],
+        [0.2, 0.478260869565, 0.770068873865, 1.0, 1.0],
+        [0.21802054155, 0.544817927171, 0.763204872414, 1.0, 1.0],
+        [0.353448275862, 0.616362865621, 0.62249614792, 0.759328653613, 0.893918708504],
+        [0.273684210526, 0.467120181406, 0.796539372599, 1.0, 1.0],
+        [
+            0.287524746441,
+            0.655095683133,
+            0.655095683133,
+            0.723756906077,
+            0.853687399966,
+        ],
+        [
+            0.314200366152,
+            0.406130268199,
+            0.693769799366,
+            0.820788530466,
+            0.837728194726,
+        ],
+        [0.21802054155, 0.544817927171, 0.748942917548, 0.86758509998, 0.931102362205],
+        [0.31918104999, 0.544817927171, 0.692943801924, 0.914260763714, 0.975926817525],
+        [0.077964519141, 0.55414499847, 0.893194237457, 1.0, 1.0],
+        [0.411218955181, 0.443824085209, 0.86229344016, 0.86932938856, 0.92414390984],
+    ]
+    expected_profiles_alternatives = [
+        [
+            0.837728194726,
+            0.748768695495,
+            0.767981438515,
+            0.91935483871,
+            1.0,
+            0.825708061002,
+            0.75845410628,
+            0.76919662672,
+            0.991033035114,
+            1.0,
+            0.825708061002,
+            1.0,
+            0.896139083315,
+        ],
+        [
+            0.767981438515,
+            0.576271186441,
+            0.401237035818,
+            0.640657084189,
+            0.701694915254,
+            0.410526315789,
+            0.748110831234,
+            0.410526315789,
+            0.711661683041,
+            0.727891156463,
+            0.410526315789,
+            0.818632141852,
+            0.578947368421,
+        ],
+        [
+            0.580243458794,
+            0.33147113594,
+            0.4,
+            0.294736842105,
+            0.410526315789,
+            0.410526315789,
+            0.441471656456,
+            0.326315789474,
+            0.317878832766,
+            0.501133786848,
+            0.410526315789,
+            0.593676294332,
+            0.578947368421,
+        ],
+        [
+            0.445469556277,
+            0.126315789474,
+            0.353699170518,
+            0.21802054155,
+            0.252631578947,
+            0.392280701754,
+            0.190315789474,
+            0.252631578947,
+            0.285714285714,
+            0.319727891156,
+            0.410526315789,
+            0.367719298246,
+            0.489730833014,
+        ],
+        [
+            0.307158332228,
+            0.126315789474,
+            0.336842105263,
+            0.112511671335,
+            0.210526315789,
+            0.294736842105,
+            0.126315789474,
+            0.252631578947,
+            0.240362811791,
+            0.274376417234,
+            0.336842105263,
+            0.336842105263,
+            0.427150667877,
+        ],
+    ]
+
+    concordance_matrix_alt_prof: pd.DataFrame
+    concordance_matrix_prof_alt: pd.DataFrame
+    concordance_matrix_alt_prof, concordance_matrix_prof_alt = concordance_with_interactions(
+        performance_table,
+        scales,
+        weights,
+        indifference_thresholds,
+        preference_thresholds,
+        interactions,
+        profiles_perform=profiles_performance,
+    )
+
+    assert concordance_matrix_alt_prof.index.equals(performance_table.index)
+    assert concordance_matrix_alt_prof.columns.equals(profiles_performance.index)
+
+    assert concordance_matrix_prof_alt.index.equals(profiles_performance.index)
+    assert concordance_matrix_prof_alt.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(
+        expected_alternatives_profiles, concordance_matrix_alt_prof.to_numpy()
+    )
+    helpers.assert_array_values(
+        expected_profiles_alternatives, concordance_matrix_prof_alt.to_numpy()
+    )
+
+
+def test_interactions_mul_no_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    weights: pd.Series,
+    indifference_thresholds: pd.Series,
+    preference_thresholds: pd.Series,
+    interactions: pd.DataFrame,
+) -> None:
+    expected_values = [
+        [
+            1.0,
+            0.413407821229,
+            0.566434753097,
+            0.580583783518,
+            0.479373763759,
+            0.578947368421,
+            0.39049716803,
+            0.474105263158,
+            0.69387755102,
+            0.727891156463,
+            0.578947368421,
+            0.745762711864,
+            0.494736842105,
+        ],
+        [
+            0.689163518239,
+            1.0,
+            0.677419354839,
+            0.727891156463,
+            0.742721733243,
+            0.855560905152,
+            0.748110831234,
+            0.657142857143,
+            0.808467741935,
+            0.842726081258,
+            0.587998208688,
+            0.866488651535,
+            0.727891156463,
+        ],
+        [
+            0.799247848606,
+            0.510344827586,
+            1.0,
+            0.652095874059,
+            0.621604270504,
+            0.578947368421,
+            0.51299365664,
+            0.727891156463,
+            0.617316017316,
+            0.501133786848,
+            0.640591598742,
+            0.803536345776,
+            0.368421052632,
+        ],
+        [
+            0.767981438515,
+            0.304347826087,
+            0.609756097561,
+            1.0,
+            0.576271186441,
+            0.528225806452,
+            0.5841995842,
+            0.452631578947,
+            0.615157894737,
+            0.704225352113,
+            0.556451612903,
+            0.702308626974,
+            0.606912516197,
+        ],
+        [
+            0.5841995842,
+            0.302634491919,
+            0.588235294118,
+            0.717218265605,
+            1.0,
+            0.521505376344,
+            0.5841995842,
+            0.591836734694,
+            0.451447245565,
+            0.614829080404,
+            0.69696969697,
+            0.858638743455,
+            0.759700105732,
+        ],
+        [
+            0.449277775465,
+            0.616564417178,
+            0.588235294118,
+            0.584814922168,
+            0.647736117448,
+            1.0,
+            0.4025202781,
+            0.790286975717,
+            0.59502239082,
+            0.798619874876,
+            0.758436994841,
+            0.643148450245,
+            0.451247165533,
+        ],
+        [
+            0.877107940193,
+            0.681724845996,
+            0.498132586368,
+            0.632909455799,
+            0.451368421053,
+            0.640570130138,
+            1.0,
+            0.494736842105,
+            0.715789473684,
+            0.762278537789,
+            0.578947368421,
+            0.789473684211,
+            0.494736842105,
+        ],
+        [
+            0.5841995842,
+            0.358076563959,
+            0.70260185761,
+            0.626865671642,
+            0.7002997003,
+            0.739854318418,
+            0.5841995842,
+            1.0,
+            0.544817927171,
+            0.703654922621,
+            0.810642120778,
+            0.723756906077,
+            0.579265106719,
+        ],
+        [
+            0.582366589327,
+            0.246086956522,
+            0.582366589327,
+            0.670897978373,
+            0.670897978373,
+            0.46233246033,
+            0.260869565217,
+            0.533898305085,
+            1.0,
+            0.670897978373,
+            0.533898305085,
+            0.78601085915,
+            0.657748821244,
+        ],
+        [
+            0.609781113779,
+            0.252631578947,
+            0.4,
+            0.604701824453,
+            0.648047229791,
+            0.546699336985,
+            0.282040394063,
+            0.501026694045,
+            0.779446455917,
+            1.0,
+            0.557458046497,
+            0.454853939215,
+            0.539836970813,
+        ],
+        [
+            0.600173243065,
+            0.358076563959,
+            0.748942917548,
+            0.545771838851,
+            0.724157955865,
+            0.739854318418,
+            0.544817927171,
+            0.815452755906,
+            0.544817927171,
+            0.7002997003,
+            1.0,
+            0.748942917548,
+            0.625502085267,
+        ],
+        [
+            0.552572706935,
+            0.35766721044,
+            0.4,
+            0.59480800133,
+            0.691683746893,
+            0.442366306456,
+            0.389671361502,
+            0.348210526316,
+            0.43529524847,
+            0.477194594509,
+            0.410526315789,
+            1.0,
+            0.578947368421,
+        ],
+        [
+            0.526209677419,
+            0.252631578947,
+            0.588235294118,
+            0.662964090079,
+            0.720641102457,
+            0.690224873795,
+            0.526209677419,
+            0.657836644592,
+            0.455024311183,
+            0.630317310975,
+            0.757383966245,
+            0.675264385516,
+            1.0,
+        ],
+    ]
+
+    concordance_matrix: pd.DataFrame = concordance_with_interactions(
+        performance_table,
+        scales,
+        weights,
+        indifference_thresholds,
+        preference_thresholds,
+        interactions,
+        function_type=FunctionType.MUL,
+    )
+
+    assert concordance_matrix.index.equals(performance_table.index)
+    assert concordance_matrix.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(expected_values, concordance_matrix.to_numpy())
+
+
+def test_interactions_mul_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    weights: pd.Series,
+    indifference_thresholds: pd.Series,
+    preference_thresholds: pd.Series,
+    profiles_performance: pd.DataFrame,
+    interactions: pd.DataFrame,
+) -> None:
+    expected_alternatives_profiles = [
+        [0.124649859944, 0.46674593257, 0.719646799117, 1.0, 1.0],
+        [0.482426576793, 0.614829080404, 1.0, 1.0, 1.0],
+        [0.368421052632, 0.75593950583, 0.803536345776, 0.803536345776, 0.95265005287],
+        [0.2, 0.478260869565, 0.770068873865, 1.0, 1.0],
+        [0.21802054155, 0.544817927171, 0.763204872414, 1.0, 1.0],
+        [0.353448275862, 0.616362865621, 0.62249614792, 0.759328653613, 0.893918708504],
+        [0.273684210526, 0.467120181406, 0.796539372599, 1.0, 1.0],
+        [0.287524746441, 0.655095683133, 0.655095683133, 0.723756906077, 0.853687399966],
+        [0.314200366152, 0.406130268199, 0.693769799366, 0.820788530466, 0.837728194726],
+        [0.21802054155, 0.544817927171, 0.748942917548, 0.86758509998, 0.931102362205],
+        [0.31918104999, 0.544817927171, 0.692943801924, 0.914260763714, 0.975926817525],
+        [0.077964519141, 0.55039022735, 0.893194237457, 1.0, 1.0],
+        [0.411218955181, 0.443824085209, 0.86229344016, 0.86932938856, 0.92414390984],
+    ]
+    expected_profiles_alternatives = [
+        [
+            0.837728194726,
+            0.748768695495,
+            0.767981438515,
+            0.91935483871,
+            1.0,
+            0.825708061002,
+            0.75845410628,
+            0.76919662672,
+            0.991033035114,
+            1.0,
+            0.825708061002,
+            1.0,
+            0.896139083315,
+        ],
+        [
+            0.767981438515,
+            0.576271186441,
+            0.401237035818,
+            0.640657084189,
+            0.701694915254,
+            0.410526315789,
+            0.748110831234,
+            0.410526315789,
+            0.711661683041,
+            0.727891156463,
+            0.410526315789,
+            0.819176343192,
+            0.578947368421,
+        ],
+        [
+            0.580243458794,
+            0.33147113594,
+            0.4,
+            0.294736842105,
+            0.410526315789,
+            0.410526315789,
+            0.441471656456,
+            0.326315789474,
+            0.317878832766,
+            0.501133786848,
+            0.410526315789,
+            0.593676294332,
+            0.578947368421,
+        ],
+        [
+            0.445469556277,
+            0.126315789474,
+            0.353699170518,
+            0.21802054155,
+            0.252631578947,
+            0.392280701754,
+            0.190315789474,
+            0.252631578947,
+            0.285714285714,
+            0.319727891156,
+            0.410526315789,
+            0.367719298246,
+            0.489730833014,
+        ],
+        [
+            0.307158332228,
+            0.126315789474,
+            0.336842105263,
+            0.112511671335,
+            0.210526315789,
+            0.294736842105,
+            0.126315789474,
+            0.252631578947,
+            0.240362811791,
+            0.274376417234,
+            0.336842105263,
+            0.336842105263,
+            0.427150667877,
+        ],
+    ]
+
+    concordance_matrix_alt_prof: pd.DataFrame
+    concordance_matrix_prof_alt: pd.DataFrame
+    concordance_matrix_alt_prof, concordance_matrix_prof_alt = concordance_with_interactions(
+        performance_table,
+        scales,
+        weights,
+        indifference_thresholds,
+        preference_thresholds,
+        interactions,
+        FunctionType.MUL,
         profiles_performance,
     )
 
