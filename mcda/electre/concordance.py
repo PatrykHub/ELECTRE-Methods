@@ -193,6 +193,26 @@ def is_reinforcement_occur(
     )
 
 
+def _get_reinforced_criteria(
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    reinforced_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+) -> pd.Series:
+    """Return a series with information about reinforcement."""
+    result = pd.Series([False] * len(a_values), index=list(a_values.keys()))
+    for criterion_name in a_values.keys():
+        threshold = reinforced_thresholds[criterion_name]
+        if isinstance(threshold, Threshold):
+            result[criterion_name] = is_reinforcement_occur(
+                a_values[criterion_name],
+                b_values[criterion_name],
+                scales[criterion_name],
+                threshold,
+            )
+    return result
+
+
 def concordance_reinforced_comprehensive(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
@@ -218,47 +238,34 @@ def concordance_reinforced_comprehensive(
 
     :return: _description_
     """
-    reinforce_occur = pd.Series(
-        [
-            is_reinforcement_occur(
+    reinforce_occur = _get_reinforced_criteria(a_values, b_values, scales, reinforced_thresholds)
+    sum_weights_reinforced: NumericValue = 0
+    sum_weights_not_reinforced: NumericValue = 0
+    sum_concordances_not_reinforced: NumericValue = 0
+    for criterion_name in reinforce_occur.index:
+        if reinforce_occur[criterion_name]:
+            factor = reinforcement_factors[criterion_name]
+            if factor is None:
+                raise ValueError(
+                    "Reinforce threshold was provided, but there's missing factor "
+                    f"on {criterion_name} criterion."
+                )
+            else:
+                sum_weights_reinforced += weights[criterion_name] * factor
+        else:
+            sum_weights_not_reinforced += weights[criterion_name]
+            sum_concordances_not_reinforced += weights[criterion_name] * concordance_marginal(
                 a_values[criterion_name],
                 b_values[criterion_name],
                 scales[criterion_name],
-                reinforced_thresholds[criterion_name],
+                indifference_thresholds[criterion_name],
+                preference_thresholds[criterion_name],
+                inverse,
             )
-            if reinforced_thresholds[criterion_name] is not None
-            else False
-            for criterion_name in a_values.keys()
-        ],
-        index=list(a_values.keys()),
-    )
 
-    sum_weights = sum(
-        [
-            weights[criterion_name] * reinforcement_factors[criterion_name]
-            if reinforce_occur[criterion_name]
-            else weights[criterion_name]
-            for criterion_name in reinforce_occur.index
-        ]
+    return (sum_concordances_not_reinforced + sum_weights_reinforced) / (
+        sum_weights_reinforced + sum_weights_not_reinforced
     )
-
-    return (
-        sum(
-            [
-                weights[criterion_name]
-                * (reinforcement_factors[criterion_name] if reinforce_occur[criterion_name] else 1)
-                * concordance_marginal(
-                    a_values[criterion_name],
-                    b_values[criterion_name],
-                    scales[criterion_name],
-                    indifference_thresholds[criterion_name],
-                    preference_thresholds[criterion_name],
-                    inverse,
-                )
-                for criterion_name in reinforce_occur.keys()
-            ]
-        )
-    ) / sum_weights
 
 
 def concordance_reinforced(
@@ -404,7 +411,7 @@ def concordance_with_interactions_marginal(
             )
             for criterion_name in a_values.keys()
         ],
-        index=a_values.keys(),
+        index=list(a_values.keys()),
     )
 
     interaction_value = (

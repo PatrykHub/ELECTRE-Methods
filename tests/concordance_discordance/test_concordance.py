@@ -1,6 +1,6 @@
+# type: ignore
 from typing import List
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -453,8 +453,6 @@ def test_concordance_profiles(
         ],
     ]
 
-    concordance_matrix_alt_prof: pd.DataFrame
-    concordance_matrix_prof_alt: pd.DataFrame
     concordance_matrix_alt_prof, concordance_matrix_prof_alt = concordance(
         performance_table,
         scales,

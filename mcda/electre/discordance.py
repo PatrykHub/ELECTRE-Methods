@@ -13,7 +13,7 @@ def discordance_bin_marginal(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    veto_threshold: Threshold,
+    veto_threshold: Optional[Threshold],
     inverse: bool = False,
 ) -> int:
     """_summary_
@@ -28,6 +28,9 @@ def discordance_bin_marginal(
     """
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
+
+    if veto_threshold is None:
+        return 0
 
     if scale.preference_direction == PreferenceDirection.MAX:
         return 1 if b_value - a_value >= veto_threshold(a_value) else 0
@@ -51,23 +54,16 @@ def discordance_bin_comprehensive(
 
     :return: _description_
     """
-    return (
-        1
-        if 1
-        in [
-            discordance_bin_marginal(
-                a_values[criterion_name],
-                b_values[criterion_name],
-                scales[criterion_name],
-                veto_thresholds[criterion_name],
-                inverse,
-            )
-            if veto_thresholds[criterion_name] is not None
-            else 0
-            for criterion_name in a_values.keys()
-        ]
-        else 0
-    )
+    for criterion_name in a_values.keys():
+        if discordance_bin_marginal(
+            a_values[criterion_name],
+            b_values[criterion_name],
+            scales[criterion_name],
+            veto_thresholds[criterion_name],
+            inverse,
+        ):
+            return 1
+    return 0
 
 
 def discordance_bin(
@@ -125,7 +121,7 @@ def discordance_marginal(
     b_value: NumericValue,
     scale: QuantitativeScale,
     preference_threshold: Threshold,
-    veto_threshold: Threshold,
+    veto_threshold: Optional[Threshold],
     pre_veto_threshold: Optional[Threshold] = None,
     inverse: bool = False,
 ) -> NumericValue:
@@ -146,6 +142,9 @@ def discordance_marginal(
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
+    if veto_threshold is None:
+        return 0
+
     veto: NumericValue = veto_threshold(a_value)
     preference: NumericValue = preference_threshold(a_value)
     pre_veto: Optional[NumericValue] = (
@@ -159,18 +158,19 @@ def discordance_marginal(
             "Pre-veto must be less than the veto threshold and greater than the preference one."
         )
 
+    discordance_beginning = preference if pre_veto is None else pre_veto
     if scale.preference_direction == PreferenceDirection.MAX:
         if b_value - a_value > veto:
             return 1
-        elif b_value - a_value <= preference:
+        elif b_value - a_value <= discordance_beginning:
             return 0
-        return (veto - b_value + a_value) / (veto - preference)
+        return (veto - b_value + a_value) / (veto - discordance_beginning)
 
     if a_value - b_value > veto:
         return 1
-    elif a_value - b_value <= preference:
+    elif a_value - b_value <= discordance_beginning:
         return 0
-    return (veto - a_value + b_value) / (veto - preference)
+    return (veto - a_value + b_value) / (veto - discordance_beginning)
 
 
 def discordance_comprehensive(
@@ -180,9 +180,7 @@ def discordance_comprehensive(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
-    pre_veto_thresholds: Optional[
-        Union[Dict[Any, Optional[Threshold]], pd.Series]
-    ] = None,
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
 ) -> NumericValue:
     """_summary_
 
@@ -207,8 +205,6 @@ def discordance_comprehensive(
                 veto_thresholds[criterion_name],
                 pre_veto_thresholds[criterion_name] if pre_veto_thresholds else None,
             )
-            if veto_thresholds[criterion_name] is not None
-            else 0
             for criterion_name in a_values.keys()
         ]
     ) / sum(weights.values() if isinstance(weights, dict) else weights.values)
@@ -219,10 +215,8 @@ def discordance(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    pre_veto_thresholds: Optional[
-        Union[Dict[Any, Optional[Threshold]], pd.Series]
-    ] = None,
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """_summary_
