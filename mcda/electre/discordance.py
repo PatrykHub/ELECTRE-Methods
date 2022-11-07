@@ -305,11 +305,11 @@ def discordance(
     )
 
 
-def counter_veto_marginal(
+def is_counter_veto_occur(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    counter_veto_threshold: Threshold,
+    counter_veto_threshold: Optional[Threshold],
 ) -> bool:
     """_summary_
 
@@ -321,10 +321,13 @@ def counter_veto_marginal(
     :return: _description_
     """
     _both_values_in_scale(a_value, b_value, scale)
+    if counter_veto_threshold is None:
+        return False
+
     return (
-        b_value - a_value > counter_veto_threshold(a_value)
+        a_value - b_value > counter_veto_threshold(b_value)
         if scale.preference_direction == PreferenceDirection.MAX
-        else a_value - b_value > counter_veto_threshold(a_value)
+        else b_value - a_value > counter_veto_threshold(b_value)
     )
 
 
@@ -332,7 +335,7 @@ def counter_veto_pair(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
 ) -> pd.Series:
     """_summary_
 
@@ -345,7 +348,7 @@ def counter_veto_pair(
     """
     return pd.Series(
         [
-            counter_veto_marginal(
+            is_counter_veto_occur(
                 a_values[criterion_name],
                 b_values[criterion_name],
                 scales[criterion_name],
@@ -358,11 +361,11 @@ def counter_veto_pair(
 
 
 def counter_veto(
-    alt_values: Union[Dict[Any, NumericValue], pd.Series],
     performance_table: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-) -> pd.DataFrame:
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alt_values: _description_
@@ -372,53 +375,67 @@ def counter_veto(
 
     :return: _description_
     """
-    return pd.DataFrame(
-        [
-            counter_veto_pair(
-                alt_values,
-                performance_table.loc[alt_name],
-                scales,
-                counter_veto_thresholds,
-            )
-            for alt_name in performance_table.index
-        ],
+    if profiles_perform is not None:
+        result_alt_profs = pd.DataFrame(
+            [[[] * len(performance_table.index)] * len(profiles_perform.index)],
+            index=performance_table.index,
+            columns=profiles_perform.index,
+        )
+        for criterion_name_a in performance_table.index:
+            for criterion_name_b in profiles_perform.index:
+                cv_series = counter_veto_pair(
+                    performance_table.loc[criterion_name_a],
+                    profiles_perform.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                )
+                result_alt_profs[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+
+        result_profs_alt = pd.DataFrame(
+            [[[] * len(profiles_perform.index)] * len(performance_table.index)],
+            index=profiles_perform.index,
+            columns=performance_table.index,
+        )
+        for criterion_name_a in profiles_perform.index:
+            for criterion_name_b in performance_table.index:
+                cv_series = counter_veto_pair(
+                    profiles_perform.loc[criterion_name_a],
+                    performance_table.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                )
+                result_profs_alt[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+        return result_alt_profs, result_profs_alt
+
+    result = pd.DataFrame(
+        [[[] * len(performance_table.index)] * len(performance_table.index)],
         index=performance_table.index,
+        columns=performance_table.index,
     )
-
-
-def counter_veto_all(
-    alternatives_perform: pd.DataFrame,
-    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-) -> pd.Series:
-    """_summary_
-
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
-
-    :return: _description_
-    """
-    return pd.Series(
-        [
-            counter_veto(
-                alternatives_perform.loc[name],
-                alternatives_perform,
+    for criterion_name_a in performance_table.index:
+        for criterion_name_b in performance_table.index:
+            cv_series = counter_veto_pair(
+                performance_table.loc[criterion_name_a],
+                performance_table.loc[criterion_name_b],
                 scales,
                 counter_veto_thresholds,
             )
-            for name in alternatives_perform.index
-        ],
-        index=alternatives_perform.index,
-    )
+            result[criterion_name_b][criterion_name_a] = [
+                cv_name for cv_name, cv_value in cv_series.items() if cv_value
+            ]
+    return result
 
 
 def counter_veto_count(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -446,6 +463,23 @@ def counter_veto_count(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    sum(
+                        counter_veto_pair(
+                            profiles_perform.loc[prof_name],
+                            alternatives_perform.loc[alt_name],
+                            scales,
+                            counter_veto_thresholds,
+                        ).values
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
