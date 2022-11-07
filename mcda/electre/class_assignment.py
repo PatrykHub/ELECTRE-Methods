@@ -30,10 +30,10 @@ def get_relation_type(
 
 def assign_tri_c_class(
     alternatives: Union[Dict[Any, NumericValue], pd.Series],
-    categories_rank: dict,
-    categories_profiles: dict,
+    categories_rank: pd.Series,
+    categories_profiles: pd.Series,
     outranking: pd.DataFrame,
-    credibility: List[List[NumericValue]]
+    credibility: pd.DataFrame
 ):
     """
 
@@ -46,15 +46,13 @@ def assign_tri_c_class(
     """
     # sorted categories by ranks - ascending (worst to best)
     categories = [
-        i[0] for i in sorted(categories_rank.items(), key=lambda x: x[1], reverse=True)
+        i for i in categories_rank.sort_values(ascending=False)
     ]
 
     # list of profiles according to categories
     profiles = [
-        i[0]
-        for i in sorted(
-            categories_profiles.items(), key=lambda x: categories.index(x[1])
-        )
+        i
+        for i in sorted(categories_profiles, key=lambda x: categories.index(x))
     ]
     assignments_descending = []
     assignments_ascending = []
