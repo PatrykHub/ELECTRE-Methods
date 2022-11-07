@@ -48,6 +48,7 @@ def assign_tri_c_class(
     categories = [
         i[0] for i in sorted(categories_rank.items(), key=lambda x: x[1], reverse=True)
     ]
+
     # list of profiles according to categories
     profiles = [
         i[0]
@@ -99,8 +100,8 @@ def assign_tri_c_class(
 
 def assign_tri_b_class(
     alternatives: Union[Dict[Any, NumericValue], pd.Series],
-    categories_rank: dict,
-    categories_profiles: dict,
+    categories_rank: pd.Series,
+    categories_profiles: pd.Series,
     crisp_outranking: pd.DataFrame
 ):
     """
@@ -112,7 +113,7 @@ def assign_tri_b_class(
     """
     # Initiate categories to assign
     categories = [
-        i[0] for i in sorted(categories_rank.items(), key=lambda x: x[1], reverse=True)
+        i for i in categories_rank.sort_values(ascending=False)
     ]
     assignment = {}
     for alternative in alternatives:
