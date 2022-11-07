@@ -30,13 +30,19 @@
             <threshold mcdaConcept="veto">
                 <linear>
                     <slope><real>0.2</real></slope>
-                    <intercept><integer>35000</integer></intercept>
+                    <intercept><integer>40000</integer></intercept>
                 </linear>
             </threshold>
             <threshold mcdaConcept="pre_veto">
                 <linear>
-                    <slope><real>0.15</real></slope>
-                    <intercept><integer>25000</integer></intercept>
+                    <slope><real>0.2</real></slope>
+                    <intercept><integer>30000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <linear>
+                    <slope><real>0.17</real></slope>
+                    <intercept><integer>21370</integer></intercept>
                 </linear>
             </threshold>
         </thresholds>
@@ -68,6 +74,12 @@
                     <intercept><integer>10000</integer></intercept>
                 </linear>
             </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <linear>
+                    <slope><real>0.1</real></slope>
+                    <intercept><integer>50000</integer></intercept>
+                </linear>
+            </threshold>
         </thresholds>
     </criterion>
 
@@ -94,6 +106,9 @@
             <threshold mcdaConcept="veto">
                 <constant><integer>3</integer></constant>
             </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><real>4.5</real></constant>
+            </threshold>
         </thresholds>
     </criterion>
 
@@ -117,10 +132,13 @@
                 <constant><integer>90</integer></constant>
             </threshold>
             <threshold mcdaConcept="veto">
-                <constant><integer>80</integer></constant>
+                <constant><integer>100</integer></constant>
             </threshold>
             <threshold mcdaConcept="pre_veto">
-                <constant><integer>60</integer></constant>
+                <constant><integer>90</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>105</integer></constant>
             </threshold>
         </thresholds>
     </criterion>
@@ -153,6 +171,9 @@
             </threshold>
             <threshold mcdaConcept="pre_veto">
                 <constant><integer>25</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>49</integer></constant>
             </threshold>
         </thresholds>
     </criterion>
@@ -200,7 +221,7 @@
                     <integer>300</integer>
                 </constant>
             </threshold>
-            <threshold mcdaConcept="veto">
+                <threshold mcdaConcept="veto">
                 <constant><integer>500</integer></constant>
             </threshold>
         </thresholds>
@@ -233,7 +254,10 @@
                 <constant><integer>120</integer></constant>
             </threshold>
             <threshold mcdaConcept="pre_veto">
-                <constant><integer>40</integer></constant>
+                <constant><integer>80</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>110</integer></constant>
             </threshold>
         </thresholds>
     </criterion>

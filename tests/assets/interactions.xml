@@ -16,6 +16,34 @@
       </value>
     </criterionValue>
 
+    <criterionValue mcdaConcept="weakening">
+      <criteriaSet>
+        <element>
+          <criterionID>APPEARANCE</criterionID>
+        </element>
+        <element>
+          <criterionID>PRICE</criterionID>
+        </element>
+      </criteriaSet>
+      <value>
+        <real>-0.75</real>
+      </value>
+    </criterionValue>
+
+    <criterionValue mcdaConcept="strengthening">
+      <criteriaSet>
+        <element>
+          <criterionID>PRICE</criterionID>
+        </element>
+        <element>
+          <criterionID>LATENCY_TIME</criterionID>
+        </element>
+      </criteriaSet>
+      <value>
+        <real>3.1</real>
+      </value>
+    </criterionValue>
+
     <criterionValue mcdaConcept="strengthening">
       <criteriaSet>
         <element>
@@ -41,6 +69,20 @@
       </criteriaSet>
       <value>
         <real>1.7</real>
+      </value>
+    </criterionValue>
+
+    <criterionValue mcdaConcept="antagonistic">
+      <criteriaSet>
+        <element>
+          <criterionID>WEIGHT</criterionID>
+        </element>
+        <element>
+          <criterionID>LATENCY_TIME</criterionID>
+        </element>
+      </criteriaSet>
+      <value>
+        <real>2.33</real>
       </value>
     </criterionValue>
   </criteriaValues>
