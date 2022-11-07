@@ -1,11 +1,17 @@
 # type: ignore
 from typing import List
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from mcda.core.functions import Threshold
-from mcda.electre.discordance import counter_veto_count, discordance, discordance_bin
+from mcda.electre.discordance import (
+    counter_veto,
+    counter_veto_count,
+    discordance,
+    discordance_bin,
+)
 
 from .. import helpers
 
@@ -845,8 +851,217 @@ def test_discordance_profiles_pre_veto(
 
 
 @pytest.mark.skip
-def test_counter_veto_no_profiles() -> None:
-    ...
+def test_counter_veto_no_profiles(
+    performance_table: pd.DataFrame, scales: pd.Series, counter_veto_thresholds: pd.Series
+) -> None:
+    expected_values = [
+        [
+            [],
+            [],
+            [],
+            ["Latency time"],
+            ["Latency time"],
+            [],
+            [],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+        ],
+        [
+            ["Comfort", "Max speed", "Rating"],
+            [],
+            [],
+            ["Rating"],
+            ["Rating"],
+            ["Rating"],
+            ["Comfort", "Rating"],
+            ["Latency time"],
+            ["Comfort"],
+            ["Comfort", "Rating"],
+            ["Latency time", "Rating"],
+            ["Comfort"],
+            ["Latency time"],
+        ],
+        [
+            ["Rating"],
+            ["Latency time"],
+            [],
+            ["Latency time", "Rating"],
+            ["Latency time", "Rating"],
+            ["Latency time", "Rating"],
+            ["Price", "Rating"],
+            ["Latency time"],
+            ["Comfort", "Latency time"],
+            ["Latency time", "Rating"],
+            ["Latency time", "Rating"],
+            ["Latency time"],
+            ["Latency time"],
+        ],
+        [
+            ["Max speed"],
+            ["Price"],
+            ["Max speed"],
+            [],
+            [],
+            [],
+            ["Max speed", "Price"],
+            ["Latency time"],
+            ["Comfort", "Max speed"],
+            [],
+            ["Latency time"],
+            ["Max speed"],
+            [],
+        ],
+        [
+            ["Max speed"],
+            ["Price"],
+            ["Max speed"],
+            [],
+            [],
+            [],
+            ["Price"],
+            [],
+            ["Comfort", "Max speed"],
+            [],
+            ["Latency time"],
+            ["Max speed"],
+            [],
+        ],
+        [
+            ["Comfort", "Max speed", "Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Price"],
+            [],
+            ["Comfort", "Price"],
+            ["Latency time"],
+            ["Comfort", "Max speed"],
+            ["Comfort"],
+            ["Latency time"],
+            ["Max speed", "Price"],
+            [],
+        ],
+        [
+            [],
+            ["Latency time"],
+            [],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            [],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time"],
+        ],
+        [
+            ["Max speed", "Price", "Rating"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price", "Rating"],
+            ["Price"],
+            ["Rating"],
+            ["Max speed", "Price", "Rating"],
+            [],
+            ["Comfort", "Max speed"],
+            ["Rating"],
+            ["Rating"],
+            ["Max speed", "Price"],
+            [],
+        ],
+        [
+            ["Price", "Rating"],
+            ["Price"],
+            ["Price"],
+            ["Price", "Rating"],
+            ["Price", "Rating"],
+            ["Rating"],
+            ["Price", "Rating"],
+            ["Latency time"],
+            [],
+            ["Rating"],
+            ["Latency time", "Rating"],
+            ["Price"],
+            [],
+        ],
+        [
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Price"],
+            [],
+            ["Price"],
+            [],
+            ["Max speed"],
+            [],
+            ["Latency time"],
+            ["Max speed", "Price"],
+            [],
+        ],
+        [
+            ["Comfort", "Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Price"],
+            [],
+            ["Price"],
+            [],
+            ["Comfort", "Max speed"],
+            [],
+            [],
+            ["Max speed", "Price"],
+            [],
+        ],
+        [
+            [],
+            ["Price"],
+            [],
+            [],
+            [],
+            ["Rating"],
+            ["Price"],
+            ["Latency time"],
+            [],
+            ["Rating"],
+            ["Latency time", "Rating"],
+            [],
+            [],
+        ],
+        [
+            ["Comfort", "Max speed", "Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Price"],
+            ["Comfort", "Max speed"],
+            ["Comfort", "Price", "Rating"],
+            [],
+            ["Max speed", "Price"],
+            [],
+        ],
+    ]
+
+    cv_matrix: pd.DataFrame = counter_veto(performance_table, scales, counter_veto_thresholds)
+
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.max_rows", None)
+    print(cv_matrix)
+
+    assert cv_matrix.index.equals(performance_table.index)
+    assert cv_matrix.columns.equals(performance_table.index)
+
+    helpers.assert_cv_criteria_names(expected_values, cv_matrix.to_numpy())
 
 
 @pytest.mark.skip
@@ -878,7 +1093,15 @@ def test_counter_veto_count_no_profiles(
         performance_table, scales, counter_veto_thresholds
     )
 
-    print(cv_counted_matrix)
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.max_rows", None)
+    print(
+        pd.DataFrame(
+            np.isclose(np.array(expected_values), cv_counted_matrix.to_numpy()),
+            index=performance_table.index,
+            columns=performance_table.index,
+        )
+    )
 
     assert cv_counted_matrix.index.equals(performance_table.index)
     assert cv_counted_matrix.columns.equals(performance_table.index)
