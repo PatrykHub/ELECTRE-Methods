@@ -1,5 +1,5 @@
 """This module implements methods to compute discordance."""
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -71,7 +71,7 @@ def discordance_bin(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -97,6 +97,21 @@ def discordance_bin(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_bin_comprehensive(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        veto_thresholds,
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
@@ -164,13 +179,13 @@ def discordance_marginal(
             return 1
         elif b_value - a_value <= discordance_beginning:
             return 0
-        return (veto - b_value + a_value) / (veto - discordance_beginning)
+        return (b_value - a_value - discordance_beginning) / (veto - discordance_beginning)
 
     if a_value - b_value > veto:
         return 1
     elif a_value - b_value <= discordance_beginning:
         return 0
-    return (veto - a_value + b_value) / (veto - discordance_beginning)
+    return (a_value - b_value - discordance_beginning) / (veto - discordance_beginning)
 
 
 def discordance_comprehensive(
@@ -203,7 +218,7 @@ def discordance_comprehensive(
                 scales[criterion_name],
                 preference_thresholds[criterion_name],
                 veto_thresholds[criterion_name],
-                pre_veto_thresholds[criterion_name] if pre_veto_thresholds else None,
+                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
             )
             for criterion_name in a_values.keys()
         ]
@@ -218,7 +233,7 @@ def discordance(
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -250,6 +265,24 @@ def discordance(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_comprehensive(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        weights,
+                        preference_thresholds,
+                        veto_thresholds,
+                        pre_veto_thresholds,
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
