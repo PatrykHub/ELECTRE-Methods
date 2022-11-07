@@ -1,9 +1,9 @@
 """This module implements methods to compute
 an outranking credibility."""
 
+from typing import List, Union
+import pandas as pd
 import math
-from functools import reduce
-from typing import Dict, List, Union
 
 from ..core.aliases import NumericValue
 from ..core.scales import PreferenceDirection, QuantitativeScale
@@ -15,99 +15,83 @@ def credibility_cv_pair(
     counter_veto_occurs: List[Union[int, bool]],
 ) -> NumericValue:
     """_summary_
-    :param NumericValue concordance_comprehensive: _description_
-    :param NumericValue discordance_comprehensive: _description_
-    :param List[Union[int, bool]] counter_veto_occurs: _description_
-    :return NumericValue: _description_
+
+    :param concordance_comprehensive: _description_
+    :param discordance_comprehensive: _description_
+    :param counter_veto_occurs: _description_
+    :return: _description_
     """
-    try:
-        return concordance_comprehensive * discordance_comprehensive ** (
-            1 - sum(counter_veto_occurs) / len(counter_veto_occurs)
-        )
-    except TypeError as exc:
-        exc.args = ("",)
-        raise  # TODO
+    return concordance_comprehensive * discordance_comprehensive ** (
+        1 - sum(counter_veto_occurs) / len(counter_veto_occurs)
+    )
 
 
 def credibility_cv(
-    concordance_comprehensive: List[List[NumericValue]],
-    discordance_comprehensive: List[List[NumericValue]],
-    counter_veto_occurs: List[List[int]],
-) -> List[List[NumericValue]]:
+    concordance_comprehensive: pd.DataFrame,
+    discordance_comprehensive: pd.DataFrame,
+    counter_veto_occurs: pd.DataFrame,
+) -> pd.DataFrame:
     """_summary_
-    :param List[List[NumericValue]] concordance_comprehensive: _description_
-    :param List[List[NumericValue]] discordance_comprehensive: _description_
-    :param List[List[int]] counter_veto_occurs: _description_
-    :return List[List[NumericValue]]: _description_
+
+    :param concordance_comprehensive: _description_
+    :param discordance_comprehensive: _description_
+    :param counter_veto_occurs: _description_
+    :return: _description_
     """
-    try:
-        return [
+    return pd.DataFrame(
+        [
             [
-                credibility_cv_pair(concordance, discordance, [cv])
-                for concordance, discordance, cv in zip(
-                    concordance_row, discordance_row, cv_row
+                credibility_cv_pair(
+                    concordance_comprehensive[alt_name_b][alt_name_a],
+                    discordance_comprehensive[alt_name_b][alt_name_a],
+                    [counter_veto_occurs[alt_name_b][alt_name_a]],
                 )
+                for alt_name_b in concordance_comprehensive.index
             ]
-            for concordance_row, discordance_row, cv_row in zip(
-                concordance_comprehensive,
-                discordance_comprehensive,
-                counter_veto_occurs,
-            )
-        ]
-    except TypeError as exc:
-        exc.args = ("",)
-        raise  # TODO
+            for alt_name_a in concordance_comprehensive.index
+        ],
+        index=concordance_comprehensive.index,
+        columns=concordance_comprehensive.index,
+    )
 
 
-def credibility_marginal(
-    concordance: NumericValue, discordance: NumericValue
+def credibility_pair(
+    concordance_comprehensive: NumericValue,
+    discordance_comprehensive: NumericValue,
 ) -> NumericValue:
+    """_summary_
+
+    :param concordance_comprehensive: _description_
+    :param discordance_comprehensive: _description_
+    :return: _description_
     """
-    :param x:
-    :param y:
-    :param concordance:
-    :param discordance:
-    :return:
-    """
-    discordance_values = [discordance]
-    if set(discordance_values) == {0}:  # only zeros
-        c_idx = concordance
-    elif 1 in discordance_values:  # at least one '1'
-        c_idx = 0.0
-    else:
-        factors = []
-        for d in discordance_values:
-            factor = None
-            if d > concordance:
-                factor = (1 - d) / (1 - concordance)
-            if factor:
-                factors.append(factor)
-        if factors == []:
-            c_idx = concordance
-        else:
-            c_idx = concordance * reduce(lambda f1, f2: f1 * f2, factors)
-    return c_idx
+    return concordance_comprehensive * discordance_comprehensive
 
 
 def credibility_comprehensive(
-    comparables_a: List[int],
-    comparables_b: List[int],
-    concordance: List[List[NumericValue]],
-    discordance: List[List[NumericValue]],
-) -> Dict[int, Dict[int, NumericValue]]:
-    credibility: Dict[int, Dict[int, NumericValue]] = {}
-    for i in comparables_a:
-        for j in comparables_b:
-            credibility[i] = {}
-            credibility[i].update(
-                {j: credibility_marginal(concordance[i][j], discordance[i][j])}
-            )
-            credibility[j] = {}
-            credibility[j].update(
-                {i: credibility_marginal(concordance[j][i], discordance[j][i])}
-            )
+    concordance_comprehensive: pd.DataFrame,
+    discordance_comprehensive: pd.DataFrame,
+) -> pd.DataFrame:
+    """_summary_
 
-    return credibility
+    :param concordance_comprehensive: _description_
+    :param discordance_comprehensive: _description_
+    :return: _description_
+    """
+    return pd.DataFrame(
+        [
+            [
+                credibility_pair(
+                    concordance_comprehensive[alt_name_b][alt_name_a],
+                    discordance_comprehensive[alt_name_b][alt_name_a],
+                )
+                for alt_name_b in concordance_comprehensive.index
+            ]
+            for alt_name_a in concordance_comprehensive.index
+        ],
+        index=concordance_comprehensive.index,
+        columns=concordance_comprehensive.index,
+    )
 
 
 def _get_criteria_difference(
@@ -154,7 +138,8 @@ def _is_veto(
     for i in range(len(a_values)):
         if (
             veto_thresholds[i] is not None
-            and _get_criteria_difference(a_values[i], b_values[i], scales[i]) > veto_thresholds[i]
+            and _get_criteria_difference(a_values[i], b_values[i], scales[i])
+            > veto_thresholds[i]
         ):
             return True
     return False
