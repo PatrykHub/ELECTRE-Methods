@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, Union
 
 from ..core.aliases import NumericValue
 from ..electre.outranking import OutrankingRelation
@@ -33,7 +33,7 @@ def assign_tri_rc_class(
     categories_rank: pd.Series,
     categories_profiles: pd.Series,
     outranking: pd.DataFrame,
-    credibility: List[List[NumericValue]],
+    credibility: pd.DataFrame
 ) -> pd.Series:
     """
 
@@ -59,7 +59,7 @@ def assign_tri_rc_class(
             relation = get_relation_type(a, p, outranking)
             if (
                 relation == OutrankingRelation.PQ
-                and credibility[a][p_next] > credibility[p][a]
+                and credibility.loc[a][p_next] > credibility.loc[p][a]
             ):
                 category = categories_profiles.get(p_next)
                 assignments_descending.append((a, category))
@@ -75,7 +75,7 @@ def assign_tri_rc_class(
             relation = get_relation_type(p, a, outranking)
             if (
                 relation == OutrankingRelation.PQ
-                and credibility[p_prev][a] > credibility[a][p]
+                and credibility.loc[p_prev][a] > credibility.loc[a][p]
             ):
                 category = categories_profiles.get(p_prev)
                 assignments_ascending.append((a, category))
@@ -94,7 +94,7 @@ def assign_tri_c_class(
     categories_rank: pd.Series,
     categories_profiles: pd.Series,
     outranking: pd.DataFrame,
-    credibility: List[List[NumericValue]],
+    credibility: pd.DataFrame
 ) -> pd.Series:
     """
 
@@ -119,8 +119,8 @@ def assign_tri_c_class(
             relation = get_relation_type(a, p, outranking)
             relation_next = get_relation_type(a, p_next, outranking)
             if relation == OutrankingRelation.PQ and (
-                credibility[a][p_next] > credibility[p][a]
-                or credibility[a][p_next] >= credibility[p][a]
+                credibility.loc[a][p_next] > credibility.loc[p][a]
+                or credibility.loc[a][p_next] >= credibility.loc[p][a]
                 and relation_next == OutrankingRelation.R
             ):
                 category = categories_profiles.get(p_next)
@@ -136,8 +136,8 @@ def assign_tri_c_class(
             relation = get_relation_type(p, a, outranking)
             relation_prev = get_relation_type(a, p_prev, outranking)
             if relation == OutrankingRelation.PQ and (
-                credibility[p_prev][a] > credibility[a][p]
-                or credibility[p_prev][a] >= credibility[a][p]
+                credibility.loc[p_prev][a] > credibility.loc[a][p]
+                or credibility.loc[p_prev][a] >= credibility.loc[a][p]
                 and relation_prev == OutrankingRelation.R
             ):
                 category = categories_profiles.get(p_prev)
