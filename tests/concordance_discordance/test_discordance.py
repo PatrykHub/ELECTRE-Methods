@@ -1,7 +1,6 @@
 # type: ignore
 from typing import List
 
-import numpy as np
 import pandas as pd
 import pytest
 
@@ -850,7 +849,6 @@ def test_discordance_profiles_pre_veto(
     )
 
 
-@pytest.mark.skip
 def test_counter_veto_no_profiles(
     performance_table: pd.DataFrame, scales: pd.Series, counter_veto_thresholds: pd.Series
 ) -> None:
@@ -858,12 +856,12 @@ def test_counter_veto_no_profiles(
         [
             [],
             [],
-            [],
+            ["Repair cost"],
             ["Latency time"],
             ["Latency time"],
+            ["Repair cost"],
             [],
-            [],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             ["Latency time"],
             ["Latency time"],
             ["Latency time"],
@@ -873,17 +871,17 @@ def test_counter_veto_no_profiles(
         [
             ["Comfort", "Max speed", "Rating"],
             [],
-            [],
+            ["Repair cost"],
             ["Rating"],
-            ["Rating"],
-            ["Rating"],
+            ["Rating", "Repair cost"],
+            ["Rating", "Repair cost"],
             ["Comfort", "Rating"],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             ["Comfort"],
             ["Comfort", "Rating"],
-            ["Latency time", "Rating"],
-            ["Comfort"],
-            ["Latency time"],
+            ["Latency time", "Rating", "Repair cost"],
+            ["Comfort", "Repair cost"],
+            ["Latency time", "Repair cost"],
         ],
         [
             ["Rating"],
@@ -903,15 +901,15 @@ def test_counter_veto_no_profiles(
         [
             ["Max speed"],
             ["Price"],
-            ["Max speed"],
+            ["Max speed", "Repair cost"],
             [],
             [],
-            [],
+            ["Repair cost"],
             ["Max speed", "Price"],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             ["Comfort", "Max speed"],
             [],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             ["Max speed"],
             [],
         ],
@@ -948,17 +946,17 @@ def test_counter_veto_no_profiles(
         [
             [],
             ["Latency time"],
+            ["Repair cost"],
+            ["Latency time"],
+            ["Latency time", "Repair cost"],
+            ["Latency time", "Repair cost"],
             [],
+            ["Latency time", "Repair cost"],
             ["Latency time"],
             ["Latency time"],
-            ["Latency time"],
-            [],
-            ["Latency time"],
-            ["Latency time"],
-            ["Latency time"],
-            ["Latency time"],
-            ["Latency time"],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
+            ["Latency time", "Repair cost"],
+            ["Latency time", "Repair cost"],
         ],
         [
             ["Max speed", "Price", "Rating"],
@@ -978,35 +976,35 @@ def test_counter_veto_no_profiles(
         [
             ["Price", "Rating"],
             ["Price"],
-            ["Price"],
+            ["Price", "Repair cost"],
             ["Price", "Rating"],
             ["Price", "Rating"],
-            ["Rating"],
+            ["Rating", "Repair cost"],
             ["Price", "Rating"],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             [],
             ["Rating"],
-            ["Latency time", "Rating"],
-            ["Price"],
+            ["Latency time", "Rating", "Repair cost"],
+            ["Price", "Repair cost"],
             [],
         ],
         [
             ["Max speed", "Price"],
             ["Price"],
-            ["Max speed", "Price"],
+            ["Max speed", "Price", "Repair cost"],
             ["Price"],
             ["Price"],
-            [],
+            ["Repair cost"],
             ["Price"],
-            [],
+            ["Repair cost"],
             ["Max speed"],
             [],
-            ["Latency time"],
+            ["Latency time", "Repair cost"],
             ["Max speed", "Price"],
             [],
         ],
         [
-            ["Comfort", "Price"],
+            ["Comfort", "Max speed", "Price"],
             ["Price"],
             ["Max speed", "Price"],
             ["Price"],
@@ -1054,36 +1052,217 @@ def test_counter_veto_no_profiles(
 
     cv_matrix: pd.DataFrame = counter_veto(performance_table, scales, counter_veto_thresholds)
 
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.max_rows", None)
-    print(cv_matrix)
-
     assert cv_matrix.index.equals(performance_table.index)
     assert cv_matrix.columns.equals(performance_table.index)
 
     helpers.assert_cv_criteria_names(expected_values, cv_matrix.to_numpy())
 
 
-@pytest.mark.skip
-def test_counter_veto_profiles() -> None:
-    ...
+def test_counter_veto_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    counter_veto_thresholds: pd.Series,
+    profiles_performance: pd.DataFrame,
+) -> None:
+    expected_alternatives_profiles = [
+        [
+            [],
+            [],
+            [],
+            ["Latency time"],
+            ["Latency time"],
+        ],
+        [
+            [],
+            ["Comfort"],
+            ["Comfort", "Repair cost"],
+            ["Comfort", "Rating", "Repair cost"],
+            ["Comfort", "Latency time", "Max speed", "Rating", "Repair cost"],
+        ],
+        [
+            [],
+            ["Latency time"],
+            ["Latency time"],
+            ["Latency time", "Rating"],
+            ["Latency time", "Price", "Rating"],
+        ],
+        [
+            [],
+            ["Max speed"],
+            ["Max speed", "Price"],
+            ["Max speed", "Price"],
+            ["Max speed", "Price", "Repair cost"],
+        ],
+        [
+            [],
+            [],
+            ["Max speed", "Price"],
+            ["Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+        ],
+        [
+            [],
+            ["Comfort", "Price"],
+            ["Comfort", "Price"],
+            ["Comfort", "Max speed", "Price"],
+            ["Comfort", "Latency time", "Max speed", "Price"],
+        ],
+        [
+            [],
+            ["Latency time"],
+            ["Latency time", "Repair cost"],
+            ["Latency time", "Repair cost"],
+            ["Latency time", "Repair cost"],
+        ],
+        [
+            [],
+            ["Max speed", "Price"],
+            ["Max speed", "Price"],
+            ["Max speed", "Price", "Rating"],
+            ["Max speed", "Price", "Rating"],
+        ],
+        [
+            [],
+            ["Price"],
+            ["Price"],
+            ["Price", "Rating"],
+            ["Price", "Rating", "Repair cost"],
+        ],
+        [
+            [],
+            ["Price"],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Max speed", "Price"],
+        ],
+        [
+            [],
+            ["Price"],
+            ["Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+        ],
+        [
+            [],
+            [],
+            [],
+            [],
+            ["Latency time", "Price", "Rating"],
+        ],
+        [
+            [],
+            ["Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+            ["Comfort", "Max speed", "Price"],
+        ],
+    ]
+    expected_profiles_alternatives = [
+        [
+            ["Comfort", "Max speed", "Price", "Rating", "Repair cost"],
+            ["Price"],
+            ["Max speed", "Price", "Repair cost"],
+            ["Latency time", "Price", "Rating"],
+            ["Latency time", "Price", "Repair cost"],
+            ["Price", "Rating", "Repair cost"],
+            ["Comfort", "Price", "Rating"],
+            ["Latency time", "Price", "Repair cost"],
+            ["Comfort", "Latency time", "Max speed"],
+            ["Comfort", "Latency time", "Price", "Rating", "Repair cost"],
+            ["Latency time", "Rating", "Repair cost"],
+            ["Max speed", "Price", "Repair cost"],
+            ["Latency time", "Repair cost"],
+        ],
+        [
+            ["Rating", "Repair cost"],
+            ["Price"],
+            ["Repair cost"],
+            ["Rating"],
+            ["Repair cost"],
+            ["Rating", "Repair cost"],
+            ["Price", "Rating"],
+            ["Latency time", "Repair cost"],
+            [],
+            ["Rating", "Repair cost"],
+            ["Latency time", "Rating", "Repair cost"],
+            ["Repair cost"],
+            ["Latency time", "Repair cost"],
+        ],
+        [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            ["Latency time"],
+            [],
+            [],
+            ["Latency time"],
+            [],
+            ["Latency time"],
+        ],
+        [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            ["Latency time"],
+            [],
+            [],
+            ["Latency time"],
+            [],
+            [],
+        ],
+        [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+        ],
+    ]
+
+    cv_matrix_alt_prof, cv_matrix_prof_alt = counter_veto(
+        performance_table, scales, counter_veto_thresholds, profiles_performance
+    )
+
+    assert cv_matrix_alt_prof.index.equals(performance_table.index)
+    assert cv_matrix_alt_prof.columns.equals(profiles_performance.index)
+
+    assert cv_matrix_prof_alt.index.equals(profiles_performance.index)
+    assert cv_matrix_prof_alt.columns.equals(performance_table.index)
+
+    helpers.assert_cv_criteria_names(expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy())
+    helpers.assert_cv_criteria_names(expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy())
 
 
-@pytest.mark.skip
 def test_counter_veto_count_no_profiles(
     performance_table: pd.DataFrame, scales: pd.Series, counter_veto_thresholds: pd.Series
 ) -> None:
     expected_values = [
-        [0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1],
-        [3, 0, 0, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1],
+        [0, 0, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1],
+        [3, 0, 1, 1, 2, 2, 2, 2, 1, 2, 3, 2, 2],
         [1, 1, 0, 2, 2, 2, 2, 1, 2, 2, 2, 1, 1],
-        [1, 1, 1, 0, 0, 0, 2, 1, 2, 0, 1, 1, 0],
+        [1, 1, 2, 0, 0, 1, 2, 2, 2, 0, 2, 1, 0],
         [1, 1, 1, 0, 0, 0, 1, 0, 2, 0, 1, 1, 0],
         [3, 1, 2, 1, 1, 0, 2, 1, 2, 1, 1, 2, 0],
-        [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 2, 2, 0, 2, 1, 1, 2, 2, 2],
         [3, 1, 2, 2, 1, 1, 3, 0, 2, 1, 1, 2, 0],
-        [2, 1, 1, 2, 2, 1, 2, 1, 0, 1, 2, 1, 0],
-        [2, 1, 2, 1, 1, 0, 1, 0, 1, 0, 1, 2, 0],
+        [2, 1, 2, 2, 2, 2, 2, 2, 0, 1, 3, 2, 0],
+        [2, 1, 3, 1, 1, 1, 1, 1, 1, 0, 2, 2, 0],
         [3, 1, 2, 1, 1, 0, 1, 0, 2, 0, 0, 2, 0],
         [0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 2, 0, 0],
         [3, 1, 2, 1, 1, 1, 2, 1, 2, 3, 0, 2, 0],
@@ -1093,22 +1272,50 @@ def test_counter_veto_count_no_profiles(
         performance_table, scales, counter_veto_thresholds
     )
 
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.max_rows", None)
-    print(
-        pd.DataFrame(
-            np.isclose(np.array(expected_values), cv_counted_matrix.to_numpy()),
-            index=performance_table.index,
-            columns=performance_table.index,
-        )
-    )
-
     assert cv_counted_matrix.index.equals(performance_table.index)
     assert cv_counted_matrix.columns.equals(performance_table.index)
 
     helpers.assert_array_values(expected_values, cv_counted_matrix.to_numpy())
 
 
-@pytest.mark.skip
-def test_counter_veto_count_profiles() -> None:
-    ...
+def test_counter_veto_count_profiles(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    counter_veto_thresholds: pd.Series,
+    profiles_performance: pd.DataFrame,
+) -> None:
+    expected_alternatives_profiles = [
+        [0, 0, 0, 1, 1],
+        [0, 1, 2, 3, 5],
+        [0, 1, 1, 2, 3],
+        [0, 1, 2, 2, 3],
+        [0, 0, 2, 2, 3],
+        [0, 2, 2, 3, 4],
+        [0, 1, 2, 2, 2],
+        [0, 2, 2, 3, 3],
+        [0, 1, 1, 2, 3],
+        [0, 1, 1, 2, 2],
+        [0, 1, 2, 3, 3],
+        [0, 0, 0, 0, 3],
+        [0, 2, 3, 3, 3],
+    ]
+    expected_profiles_alternatives = [
+        [5, 1, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 2],
+        [2, 1, 1, 1, 1, 2, 2, 2, 0, 2, 3, 1, 2],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+
+    cv_matrix_alt_prof, cv_matrix_prof_alt = counter_veto_count(
+        performance_table, scales, counter_veto_thresholds, profiles_performance
+    )
+
+    assert cv_matrix_alt_prof.index.equals(performance_table.index)
+    assert cv_matrix_alt_prof.columns.equals(profiles_performance.index)
+
+    assert cv_matrix_prof_alt.index.equals(profiles_performance.index)
+    assert cv_matrix_prof_alt.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy())
+    helpers.assert_array_values(expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy())
