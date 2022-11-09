@@ -1,4 +1,3 @@
-# type: ignore
 import math
 from typing import Any, Dict, List, Optional, cast, get_args
 
