@@ -13,7 +13,7 @@ def discordance_bin_marginal(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    veto_threshold: Threshold,
+    veto_threshold: Optional[Threshold],
     inverse: bool = False,
 ) -> int:
     """_summary_
@@ -29,6 +29,9 @@ def discordance_bin_marginal(
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
+    if veto_threshold is None:
+        return 0
+
     if scale.preference_direction == PreferenceDirection.MAX:
         return 1 if b_value - a_value >= veto_threshold(a_value) else 0
     return 1 if a_value - b_value >= veto_threshold(a_value) else 0
@@ -38,7 +41,7 @@ def discordance_bin_comprehensive(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     inverse: bool = False,
 ) -> int:
     """_summary_
@@ -51,29 +54,24 @@ def discordance_bin_comprehensive(
 
     :return: _description_
     """
-    return (
-        1
-        if 1
-        in [
-            discordance_bin_marginal(
-                a_values[criterion_name],
-                b_values[criterion_name],
-                scales[criterion_name],
-                veto_thresholds[criterion_name],
-                inverse,
-            )
-            for criterion_name in a_values.keys()
-        ]
-        else 0
-    )
+    for criterion_name in a_values.keys():
+        if discordance_bin_marginal(
+            a_values[criterion_name],
+            b_values[criterion_name],
+            scales[criterion_name],
+            veto_thresholds[criterion_name],
+            inverse,
+        ):
+            return 1
+    return 0
 
 
 def discordance_bin(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -99,6 +97,21 @@ def discordance_bin(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_bin_comprehensive(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        veto_thresholds,
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
@@ -118,60 +131,12 @@ def discordance_bin(
     )
 
 
-def discordance_bin_profiles(
-    alternatives_perform: pd.DataFrame,
-    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    veto_thresholds: pd.DataFrame,
-    profiles_perform: pd.DataFrame,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """_summary_
-
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param veto_thresholds: _description_
-    :param profiles_perform: _description_
-
-    :return: _description_
-    """
-    return pd.DataFrame(
-        [
-            [
-                discordance_bin_comprehensive(
-                    alternatives_perform.loc[alt_name],
-                    profiles_perform.loc[prof_name],
-                    scales,
-                    veto_thresholds.loc[prof_name],
-                )
-                for prof_name in profiles_perform.index
-            ]
-            for alt_name in alternatives_perform.index
-        ],
-        index=alternatives_perform.index,
-        columns=profiles_perform.index,
-    ), pd.DataFrame(
-        [
-            [
-                discordance_bin_comprehensive(
-                    profiles_perform.loc[prof_name],
-                    alternatives_perform.loc[alt_name],
-                    scales,
-                    veto_thresholds.loc[prof_name],
-                )
-                for alt_name in alternatives_perform.index
-            ]
-            for prof_name in profiles_perform.index
-        ],
-        index=profiles_perform.index,
-        columns=alternatives_perform.index,
-    )
-
-
 def discordance_marginal(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
     preference_threshold: Threshold,
-    veto_threshold: Threshold,
+    veto_threshold: Optional[Threshold],
     pre_veto_threshold: Optional[Threshold] = None,
     inverse: bool = False,
 ) -> NumericValue:
@@ -192,6 +157,9 @@ def discordance_marginal(
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
+    if veto_threshold is None:
+        return 0
+
     veto: NumericValue = veto_threshold(a_value)
     preference: NumericValue = preference_threshold(a_value)
     pre_veto: Optional[NumericValue] = (
@@ -205,18 +173,19 @@ def discordance_marginal(
             "Pre-veto must be less than the veto threshold and greater than the preference one."
         )
 
+    discordance_beginning = preference if pre_veto is None else pre_veto
     if scale.preference_direction == PreferenceDirection.MAX:
         if b_value - a_value > veto:
             return 1
-        elif b_value - a_value <= preference:
+        elif b_value - a_value <= discordance_beginning:
             return 0
-        return (veto - b_value + a_value) / (veto - preference)
+        return (b_value - a_value - discordance_beginning) / (veto - discordance_beginning)
 
     if a_value - b_value > veto:
         return 1
-    elif a_value - b_value <= preference:
+    elif a_value - b_value <= discordance_beginning:
         return 0
-    return (veto - a_value + b_value) / (veto - preference)
+    return (a_value - b_value - discordance_beginning) / (veto - discordance_beginning)
 
 
 def discordance_comprehensive(
@@ -225,7 +194,7 @@ def discordance_comprehensive(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
 ) -> NumericValue:
     """_summary_
@@ -249,7 +218,7 @@ def discordance_comprehensive(
                 scales[criterion_name],
                 preference_thresholds[criterion_name],
                 veto_thresholds[criterion_name],
-                pre_veto_thresholds[criterion_name] if pre_veto_thresholds else None,
+                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
             )
             for criterion_name in a_values.keys()
         ]
@@ -261,10 +230,10 @@ def discordance(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
-    veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -296,6 +265,24 @@ def discordance(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_comprehensive(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        weights,
+                        preference_thresholds,
+                        veto_thresholds,
+                        pre_veto_thresholds,
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
@@ -318,71 +305,11 @@ def discordance(
     )
 
 
-def discordance_profiles(
-    alternatives_perform: pd.DataFrame,
-    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    weights: Union[Dict[Any, NumericValue], pd.Series],
-    preference_thresholds: pd.DataFrame,
-    veto_thresholds: pd.DataFrame,
-    profiles_perform: pd.DataFrame,
-    pre_veto_thresholds: Optional[pd.DataFrame] = None,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """_summary_
-
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param preference_thresholds: _description_
-    :param veto_thresholds: _description_
-    :param profiles_perform: _description_
-    :param pre_veto_thresholds: _description_
-
-    :return: _description_
-    """
-    return pd.DataFrame(
-        [
-            [
-                discordance_comprehensive(
-                    alternatives_perform.loc[alt_name],
-                    profiles_perform.loc[prof_name],
-                    scales,
-                    weights,
-                    preference_thresholds.loc[prof_name],
-                    veto_thresholds.loc[prof_name],
-                    pre_veto_thresholds.loc[prof_name] if pre_veto_thresholds else None,
-                )
-                for prof_name in profiles_perform.index
-            ]
-            for alt_name in alternatives_perform.index
-        ],
-        index=alternatives_perform.index,
-        columns=profiles_perform.index,
-    ), pd.DataFrame(
-        [
-            [
-                discordance_comprehensive(
-                    profiles_perform.loc[prof_name],
-                    alternatives_perform.loc[alt_name],
-                    scales,
-                    weights,
-                    preference_thresholds.loc[prof_name],
-                    veto_thresholds.loc[prof_name],
-                    pre_veto_thresholds.loc[prof_name] if pre_veto_thresholds else None,
-                )
-                for alt_name in alternatives_perform.index
-            ]
-            for prof_name in profiles_perform.index
-        ],
-        index=profiles_perform.index,
-        columns=alternatives_perform.index,
-    )
-
-
-def counter_veto_marginal(
+def is_counter_veto_occur(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    counter_veto_threshold: Threshold,
+    counter_veto_threshold: Optional[Threshold],
 ) -> bool:
     """_summary_
 
@@ -394,10 +321,13 @@ def counter_veto_marginal(
     :return: _description_
     """
     _both_values_in_scale(a_value, b_value, scale)
+    if counter_veto_threshold is None:
+        return False
+
     return (
-        b_value - a_value > counter_veto_threshold(a_value)
+        a_value - b_value > counter_veto_threshold(b_value)
         if scale.preference_direction == PreferenceDirection.MAX
-        else a_value - b_value > counter_veto_threshold(a_value)
+        else b_value - a_value > counter_veto_threshold(b_value)
     )
 
 
@@ -405,7 +335,7 @@ def counter_veto_pair(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
 ) -> pd.Series:
     """_summary_
 
@@ -418,7 +348,7 @@ def counter_veto_pair(
     """
     return pd.Series(
         [
-            counter_veto_marginal(
+            is_counter_veto_occur(
                 a_values[criterion_name],
                 b_values[criterion_name],
                 scales[criterion_name],
@@ -431,11 +361,11 @@ def counter_veto_pair(
 
 
 def counter_veto(
-    alt_values: Union[Dict[Any, NumericValue], pd.Series],
     performance_table: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-) -> pd.DataFrame:
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alt_values: _description_
@@ -445,53 +375,67 @@ def counter_veto(
 
     :return: _description_
     """
-    return pd.DataFrame(
-        [
-            counter_veto_pair(
-                alt_values,
-                performance_table.loc[alt_name],
-                scales,
-                counter_veto_thresholds,
-            )
-            for alt_name in performance_table.index
-        ],
+    if profiles_perform is not None:
+        result_alt_profs = pd.DataFrame(
+            [[[] * len(performance_table.index)] * len(profiles_perform.index)],
+            index=performance_table.index,
+            columns=profiles_perform.index,
+        )
+        for criterion_name_a in performance_table.index:
+            for criterion_name_b in profiles_perform.index:
+                cv_series = counter_veto_pair(
+                    performance_table.loc[criterion_name_a],
+                    profiles_perform.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                )
+                result_alt_profs[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+
+        result_profs_alt = pd.DataFrame(
+            [[[] * len(profiles_perform.index)] * len(performance_table.index)],
+            index=profiles_perform.index,
+            columns=performance_table.index,
+        )
+        for criterion_name_a in profiles_perform.index:
+            for criterion_name_b in performance_table.index:
+                cv_series = counter_veto_pair(
+                    profiles_perform.loc[criterion_name_a],
+                    performance_table.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                )
+                result_profs_alt[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+        return result_alt_profs, result_profs_alt
+
+    result = pd.DataFrame(
+        [[[] * len(performance_table.index)] * len(performance_table.index)],
         index=performance_table.index,
+        columns=performance_table.index,
     )
-
-
-def counter_veto_all(
-    alternatives_perform: pd.DataFrame,
-    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
-) -> pd.Series:
-    """_summary_
-
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
-
-    :return: _description_
-    """
-    return pd.Series(
-        [
-            counter_veto(
-                alternatives_perform.loc[name],
-                alternatives_perform,
+    for criterion_name_a in performance_table.index:
+        for criterion_name_b in performance_table.index:
+            cv_series = counter_veto_pair(
+                performance_table.loc[criterion_name_a],
+                performance_table.loc[criterion_name_b],
                 scales,
                 counter_veto_thresholds,
             )
-            for name in alternatives_perform.index
-        ],
-        index=alternatives_perform.index,
-    )
+            result[criterion_name_b][criterion_name_a] = [
+                cv_name for cv_name, cv_value in cv_series.items() if cv_value
+            ]
+    return result
 
 
 def counter_veto_count(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
     :param alternatives_perform: _description_
@@ -519,6 +463,23 @@ def counter_veto_count(
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    sum(
+                        counter_veto_pair(
+                            profiles_perform.loc[prof_name],
+                            alternatives_perform.loc[alt_name],
+                            scales,
+                            counter_veto_thresholds,
+                        ).values
+                    )
+                    for alt_name in alternatives_perform.index
+                ]
+                for prof_name in profiles_perform.index
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
     return pd.DataFrame(
         [
@@ -536,57 +497,5 @@ def counter_veto_count(
             for alt_name_a in alternatives_perform.index
         ],
         index=alternatives_perform.index,
-        columns=alternatives_perform.index,
-    )
-
-
-def counter_veto_count_profiles(
-    alternatives_perform: pd.DataFrame,
-    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
-    counter_veto_thresholds: pd.DataFrame,
-    profiles_perform: pd.DataFrame,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """_summary_
-
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
-    :param profiles_perform: _description_
-
-    :return: _description_
-    """
-    return pd.DataFrame(
-        [
-            [
-                sum(
-                    counter_veto_pair(
-                        alternatives_perform.loc[alt_name],
-                        profiles_perform.loc[prof_name],
-                        scales,
-                        counter_veto_thresholds.loc[prof_name],
-                    ).values
-                )
-                for prof_name in profiles_perform.index
-            ]
-            for alt_name in alternatives_perform.index
-        ],
-        index=alternatives_perform.index,
-        columns=profiles_perform.index,
-    ), pd.DataFrame(
-        [
-            [
-                sum(
-                    counter_veto_pair(
-                        profiles_perform.loc[prof_name],
-                        alternatives_perform.loc[alt_name],
-                        scales,
-                        counter_veto_thresholds.loc[prof_name],
-                    ).values
-                )
-                for alt_name in alternatives_perform.index
-            ]
-            for prof_name in profiles_perform.index
-        ],
-        index=profiles_perform.index,
         columns=alternatives_perform.index,
     )
