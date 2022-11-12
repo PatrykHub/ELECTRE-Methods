@@ -652,7 +652,7 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     for vertex in kernel:
         not_kernel = not_kernel + graph[vertex]
         graph.pop(vertex)
-    while graph.keys().size:
+    while len(graph.keys()) != 0:
         vertices = find_vertices_without_predecessor(graph)
         for vertex in vertices:
             if vertex not in not_kernel:
