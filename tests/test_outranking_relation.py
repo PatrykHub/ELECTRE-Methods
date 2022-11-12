@@ -322,18 +322,25 @@ def test_find_vertices_without_predecessor(
 
 
 def test_find_kernel() -> None:
-    alt_names: List[str] = ["A1", "A2", "A3"]
+    alt_names: List[str] = ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10"]
     assert find_kernel(
         pd.DataFrame(
             [
-                [1, 0, 0],
-                [1, 1, 0],
-                [1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                [1, 1, 0, 1, 0, 0, 1, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+                [1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+                [1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
+                [1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+                [1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+                [1, 1, 0, 1, 0, 0, 1, 1, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 0, 1, 0, 0, 1, 0, 0, 1],
             ],
             index=alt_names,
             columns=alt_names,
         )
-    ) == ["A2", "A3"]
+    ) == ["A9"]
 
 
 def test_net_flow_score() -> None:
