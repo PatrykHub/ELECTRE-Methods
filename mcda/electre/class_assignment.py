@@ -32,7 +32,7 @@ def assign_tri_rc_class(
     assignments_ascending = []
     for a in alternatives:
         found_descending = False
-        for p in profiles[len(profiles) - 2 :: -1]:
+        for p in profiles[len(profiles) - 2:: -1]:
             p_next = profiles[profiles.index(p) + 1]
             relation = outranking_relation_marginal(
                 outranking.loc[a][p], outranking.loc[p][a]
@@ -96,7 +96,7 @@ def assign_tri_c_class(
     assignments_ascending = []
     for a in alternatives:
         found_descending = False
-        for p in profiles[len(profiles) - 2 :: -1]:
+        for p in profiles[len(profiles) - 2:: -1]:
             p_next = profiles[profiles.index(p) + 1]
             relation = outranking_relation_marginal(
                 outranking.loc[a][p], outranking.loc[p][a]
