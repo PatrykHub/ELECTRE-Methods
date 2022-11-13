@@ -1,22 +1,23 @@
-from typing import List, Tuple, Union, Any
+from typing import Any, List, Tuple, Union
 
 import pandas as pd
 import pytest
+
 from mcda.electre.outranking import (
     OutrankingRelation,
+    aggregate,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
     crisp_outranking_cut,
     crisp_outranking_cut_marginal,
     crisp_outranking_Is,
     crisp_outranking_Is_marginal,
+    find_kernel,
+    find_vertices_without_predecessor,
+    net_flow_score,
     outranking_relation,
     outranking_relation_marginal,
     strongly_connected_components,
-    aggregate,
-    find_vertices_without_predecessor,
-    find_kernel,
-    net_flow_score,
 )
 
 
@@ -321,19 +322,89 @@ def test_find_vertices_without_predecessor(
     assert find_vertices_without_predecessor(graph) == expected
 
 
-def test_find_kernel() -> None:
-    alt_names: List[str] = ["A1", "A2", "A3"]
-    assert find_kernel(
-        pd.DataFrame(
+@pytest.mark.parametrize(
+    ("alt_names", "outranking", "expected"),
+    (
+        (
+            ["A1", "A2", "A3"],
             [
                 [1, 0, 0],
                 [1, 1, 0],
                 [1, 0, 1],
             ],
-            index=alt_names,
-            columns=alt_names,
+            ["A2", "A3"],
+        ),
+        (
+            ["APS", "AWF", "PW", "PWT", "SGGW", "SGH", "SGSP", "UKSW", "UW", "WAT"],
+            [
+                [True, False, False, False, False, False, True, False, False, False],
+                [True, True, False, True, False, False, True, False, False, True],
+                [True, True, True, True, True, True, True, True, False, True],
+                [True, False, False, True, False, False, True, False, False, False],
+                [True, True, False, True, True, False, True, True, False, True],
+                [True, True, False, True, True, True, True, True, False, True],
+                [True, False, False, True, False, False, True, False, False, False],
+                [True, True, False, True, False, False, True, True, False, True],
+                [True, True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, False, False, True, False, False, True],
+            ],
+            ['UW']
+        ),
+        (
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            [
+                [1, 1, 0, 0, 0, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 1, 1, 1],
+            ],
+            ['a', 'd', 'g']
+        ),
+        (
+            ['XD', '2137', 'AU', 'UWU', 'MERRY CHRISTMAS', 'F'],
+            [
+                [1, 0, 0, 1, 0, 0],
+                [0, 1, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0, 0],
+                [0, 1, 1, 1, 0, 0],
+                [0, 0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1],
+            ],
+            ['XD', '2137', 'AU', 'F']
+        ),
+        (
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            [
+                [1, 0, 0, 0, 1, 0, 0],
+                [0, 1, 1, 0, 0, 0, 0],
+                [0, 0, 1, 1, 0, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [1, 0, 0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 1, 1, 0],
+                [0, 0, 0, 0, 0, 0, 1],
+            ],
+            ['f', 'g']
         )
-    ) == ["A2", "A3"]
+    ),
+)
+def test_find_kernel(
+    alt_names: List[str],
+    outranking: List[List[Union[bool, int]]],
+    expected: List[str],
+) -> None:
+    assert (
+        sorted(find_kernel(
+            pd.DataFrame(
+                outranking,
+                index=alt_names,
+                columns=alt_names,
+            )
+        ))
+        == sorted(expected)
+    )
 
 
 def test_net_flow_score() -> None:

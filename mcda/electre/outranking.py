@@ -616,7 +616,7 @@ def aggregate(graph: pd.Series) -> pd.Series:
             set([v for key in vertices for v in graph[key] if v not in vertices])
         )
         new_graph = new_graph.drop(labels=vertices)
-        for key in new_graph:
+        for key in new_graph.index:
             for vertex in new_graph[key][:]:
                 if vertex in vertices:
                     new_graph[key].remove(vertex)
@@ -652,13 +652,13 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     for vertex in kernel:
         not_kernel = not_kernel + graph[vertex]
         graph.pop(vertex)
-    while graph.any():
+    while len(graph.keys()) != 0:
         vertices = find_vertices_without_predecessor(graph)
         for vertex in vertices:
             if vertex not in not_kernel:
                 kernel.append(vertex)
                 not_kernel = not_kernel + graph[vertex]
-                graph.pop(vertex)
+            graph.pop(vertex)
     return kernel
 
 
