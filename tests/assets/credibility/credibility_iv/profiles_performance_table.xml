@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2009/XMCDA-2.1.0">
+	<projectReference>
+		<title>SixRealCars - Profiles performances</title>
+		<comment>Only the performances of the profiles, from the "SixRealCars" data set.</comment>
+	</projectReference>
+	<performanceTable mcdaConcept="FICTIVE">
+		<alternativePerformances>
+			<alternativeID>pBM</alternativeID>
+			<performance>
+				<criterionID>c01</criterionID>
+				<value>
+					<real>30000.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c02</criterionID>
+				<value>
+					<real>100.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c03</criterionID>
+				<value>
+					<integer>11</integer>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c04</criterionID>
+				<value>
+					<real>8.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c05</criterionID>
+				<value>
+					<real>125.0</real>
+				</value>
+			</performance>
+		</alternativePerformances>
+		<alternativePerformances>
+			<alternativeID>pMG</alternativeID>
+			<performance>
+				<criterionID>c01</criterionID>
+				<value>
+					<real>23000.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c02</criterionID>
+				<value>
+					<real>160.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c03</criterionID>
+				<value>
+					<real>8.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c04</criterionID>
+				<value>
+					<real>7.0</real>
+				</value>
+			</performance>
+			<performance>
+				<criterionID>c05</criterionID>
+				<value>
+					<real>120.0</real>
+				</value>
+			</performance>
+		</alternativePerformances>
+	</performanceTable>
+
+	<alternatives mcdaConcept="Fictive">
+		<alternative id="pBM" name="profile bad to medium" />
+		<alternative id="pMG" name="profile medium to good" />
+	</alternatives>
+</xmcda:XMCDA>
+  

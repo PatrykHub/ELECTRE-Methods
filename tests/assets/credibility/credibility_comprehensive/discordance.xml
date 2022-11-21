@@ -1,0 +1,8009 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xmcda:XMCDA xmlns:xmcda='http://www.decision-deck.org/2012/XMCDA-2.2.0'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xsi:schemaLocation='http://www.decision-deck.org/2012/XMCDA-2.2.0 http://www.decision-deck.org/xmcda/_downloads/XMCDA-2.2.0.xsd'>
+<alternativesComparisons mcdaConcept="alternativesProfilesComparisons">
+  <pairs>
+    <pair>
+      <initial>
+        <alternativeID>a01</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a01</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a01</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a01</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a02</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a02</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a02</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a02</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a03</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a03</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a03</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a03</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a04</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a04</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a04</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a04</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a05</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a05</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a05</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a05</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a06</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a06</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a06</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a06</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a07</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a07</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a07</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a07</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a08</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a08</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a08</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a08</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a09</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a09</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a09</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a09</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a10</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a10</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a10</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a10</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a11</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a11</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a11</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a11</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a12</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a12</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a12</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a12</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a13</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a13</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a13</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a13</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a14</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a14</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a14</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a14</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a15</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a15</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a15</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a15</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a16</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a16</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a16</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a16</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a17</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a17</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a17</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a17</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a18</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a18</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a18</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a18</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a19</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a19</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a19</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a19</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a20</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a20</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a20</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a20</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a21</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a21</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a21</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a21</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a22</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a22</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a22</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a22</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a23</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a23</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a23</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a23</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a24</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a24</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a24</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a24</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a25</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a25</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a25</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a25</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a26</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a26</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a26</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a26</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a27</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a27</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a27</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a27</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a28</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a28</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a28</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a28</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a29</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a29</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a29</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a29</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a30</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a30</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a30</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a30</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a31</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a31</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a31</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a31</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a32</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a32</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a32</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a32</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a33</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a33</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a33</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a33</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a34</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a34</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a34</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a34</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a35</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a35</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a35</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a35</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a36</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a36</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a36</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a36</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a37</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a37</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a37</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a37</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a38</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a38</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a38</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a38</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a39</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a39</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a39</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a39</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a40</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b1</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a40</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b2</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a40</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b3</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>a40</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>b4</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a01</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a02</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a03</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a04</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a05</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a06</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a07</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a08</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a09</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a10</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a11</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a12</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a13</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a14</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a15</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a16</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a17</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a18</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a19</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a20</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a21</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a22</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a23</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a24</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a25</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a26</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a27</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a28</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a29</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a30</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a31</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a32</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a33</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a34</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a35</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a36</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a37</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a38</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a39</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b1</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a40</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a01</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a02</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a03</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a04</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a05</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a06</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a07</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a08</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a09</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a10</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a11</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a12</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a13</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a14</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a15</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a16</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a17</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a18</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a19</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a20</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a21</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a22</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a23</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a24</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a25</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a26</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a27</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a28</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a29</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a30</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a31</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a32</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a33</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a34</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a35</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a36</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a37</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a38</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0.526315789474</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a39</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>1</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b2</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a40</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>1</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a01</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a02</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a03</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a04</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a05</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a06</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a07</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a08</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a09</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a10</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a11</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a12</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a13</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a14</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a15</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a16</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a17</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a18</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a19</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a20</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a21</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>1</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a22</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a23</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a24</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a25</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a26</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a27</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a28</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a29</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a30</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a31</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a32</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a33</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a34</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a35</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a36</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a37</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a38</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a39</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b3</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a40</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>1</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a01</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a02</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a03</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a04</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a05</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a06</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a07</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a08</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a09</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a10</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a11</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a12</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a13</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a14</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a15</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a16</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a17</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a18</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a19</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a20</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a21</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a22</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a23</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a24</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a25</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a26</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a27</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a28</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a29</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a30</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a31</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a32</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a33</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a34</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a35</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a36</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a37</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a38</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a39</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>0</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+    <pair>
+      <initial>
+        <alternativeID>b4</alternativeID>
+      </initial>
+      <terminal>
+        <alternativeID>a40</alternativeID>
+      </terminal>
+      <values>
+        <value id="g1">
+          <real>1</real>
+        </value>
+        <value id="g2">
+          <real>0</real>
+        </value>
+        <value id="g3">
+          <real>0</real>
+        </value>
+        <value id="g4">
+          <real>0</real>
+        </value>
+        <value id="g5">
+          <real>0</real>
+        </value>
+      </values>
+    </pair>
+  </pairs>
+</alternativesComparisons>
+</xmcda:XMCDA>
