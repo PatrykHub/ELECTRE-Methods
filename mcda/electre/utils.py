@@ -1,6 +1,51 @@
 import pandas as pd
 
-from mcda.core.aliases import NumericValue
+from ..core.aliases import NumericValue
+from ..core.scales import PreferenceDirection, QualitativeScale
+
+
+def get_criterion_difference(
+    a_value: NumericValue, b_value: NumericValue, scale: QualitativeScale
+) -> NumericValue:
+    """Calculates criterion difference based on pair criterion values
+    including preference direction.
+
+    :param a_value: criterion value of first alternative
+    :param b_value: criterion value of second alternative
+    :param scale: criterion scale with specified preference direction
+
+    :return: Difference between criterion values
+    """
+    return (
+        a_value - b_value
+        if scale.preference_direction == PreferenceDirection.MAX
+        else b_value - a_value
+    )
+
+
+def is_veto(
+    a_values: pd.Series,
+    b_values: pd.Series,
+    scales: pd.Series,
+    veto_thresholds: pd.Series,
+) -> bool:
+    """Determines if veto is present between two alternatives
+
+    :param a_values: criteria values of first alternative
+    :param b_values: criteria values of second alternative
+    :param scales: criteria scales with specified preference direction
+    :param veto_thresholds: criteria veto thresholds
+
+    :return: ``True`` if is veto between a and b, ``False`` otherwise
+    """
+    for i in range(len(a_values)):
+        if (
+            veto_thresholds[i] is not None
+            and get_criterion_difference(a_values[i], b_values[i], scales[i])
+            > veto_thresholds[i](a_values[i])
+        ):
+            return True
+    return False
 
 
 def linear_function(
