@@ -101,7 +101,8 @@ def discordance_bin(
     :param alternatives_perform: _description_
     :param scales: _description_
     :param veto_thresholds: _description_
-    :param profiles_perform: _description_
+    :param profiles_perform: _description_, defaults to None
+    :param return_marginals: _description_, defaults to False
 
     :return: _description_
     """
@@ -313,8 +314,9 @@ def discordance(
     :param weights: _description_
     :param preference_thresholds: _description_
     :param veto_thresholds: _description_
-    :param pre_veto_thresholds: _description_
-    :param profiles_perform: _description_
+    :param pre_veto_thresholds: _description_, defaults to None
+    :param profiles_perform: _description_, defaults to None
+    :param return_marginals: _description_, defaults to False
 
     :return: _description_
     """
