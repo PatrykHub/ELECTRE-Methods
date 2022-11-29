@@ -745,3 +745,64 @@ def median_order(
         final_order[alternatives[initial_order[i]]] = level
 
     return reverse_transform_series(final_order)
+
+def assign_tri_nb_class(
+    crisp_outranking_ap: pd.DataFrame,
+    crisp_outranking_pa: pd.DataFrame,
+    categories: pd.Series,
+    optimistic: bool,
+) -> pd.Series:
+    """_summary_
+
+    :param crisp_outranking_ap: _description_
+    :param crisp_outranking_pa: _description_
+    :param profiles: _description_
+    :param optimistic: _description_
+    :return: _description_
+    """
+    assignment = pd.Series()
+    if not optimistic:
+        for alternative in crisp_outranking_ap.index:
+            for category, profiles in categories.items():
+                in_category=True
+                for profile in profiles:
+                    relation_profile = outranking_relation_marginal(
+                        crisp_outranking_pa.loc[profile][alternative],
+                        crisp_outranking_ap.loc[alternative][profile],
+                    )
+                    if crisp_outranking_ap.loc[alternative][profile]:
+                        in_category = False
+                    if relation_profile == OutrankingRelation.PQ:
+                        in_category = True
+                        break
+                if in_category:
+                    assignment[alternative] = category
+                    break
+            if not in_category:
+                assignment[alternative] = categories.index[0]
+
+    if optimistic:
+        for alternative in crisp_outranking_ap.index:
+            currrent_category = categories.index[-1]
+            for category, profiles in categories[-2::-1].items():
+                in_category=True
+                for profile in profiles:
+                    relation_alternative = outranking_relation_marginal(
+                        crisp_outranking_ap.loc[alternative][profile],
+                        crisp_outranking_pa.loc[profile][alternative],
+                    )
+                    relation_profile = outranking_relation_marginal(
+                        crisp_outranking_pa.loc[profile][alternative],
+                        crisp_outranking_ap.loc[alternative][profile],
+                    )
+                    if relation_profile == OutrankingRelation.PQ:
+                        in_category = False
+                    if relation_alternative == OutrankingRelation.PQ:
+                        in_category = True
+                        break
+                if in_category:
+                    assignment[alternative] = category
+                    break
+            if not in_category:
+                assignment[alternative] = categories.index[-1]
+    return assignment
