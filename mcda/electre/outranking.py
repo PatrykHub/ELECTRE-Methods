@@ -1,12 +1,12 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Callable, Optional, Tuple, Union, List, Any
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
-from ._validate import _check_index_value_interval
+from ._validation import _check_index_value_interval
 from .utils import linear_function, reverse_transform_series, transform_series
 
 
@@ -76,9 +76,7 @@ def crisp_outranking_Is_marginal(
     :return: ``True`` if a outranks b, ``False`` otherwise
     """
     _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
-    _check_index_value_interval(
-        concordance_cutting_level, "cutting level", minimal_val=0.5
-    )
+    _check_index_value_interval(concordance_cutting_level, "cutting level", minimal_val=0.5)
 
     if discordance_comprehensive_bin not in [0, 1]:
         raise ValueError(
@@ -339,8 +337,7 @@ def crisp_outranking_relation_distillation(
         1
         if credibility_pair_value_ab > minimal_credibility_index
         and credibility_pair_value_ab
-        > credibility_pair_value_ba
-        + linear_function(alpha, credibility_pair_value_ab, beta)
+        > credibility_pair_value_ba + linear_function(alpha, credibility_pair_value_ab, beta)
         else 0
     )
 
@@ -501,9 +498,7 @@ def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
 
     for position in order:
         outranking_matrix.loc[position, position] = 1
-        outranking_matrix.loc[
-            position, alternatives[alternatives.index(position[-1]) + 1:]
-        ] = 1
+        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
 
     return outranking_matrix
 
@@ -630,12 +625,8 @@ def aggregate(graph: pd.Series) -> pd.Series:
 
 
 def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
-    vertices_with_preedecessor = list(
-        set([v for key in graph.index for v in graph[key]])
-    )
-    return [
-        vertex for vertex in graph.index if vertex not in vertices_with_preedecessor
-    ]
+    vertices_with_preedecessor = list(set([v for key in graph.index for v in graph[key]]))
+    return [vertex for vertex in graph.index if vertex not in vertices_with_preedecessor]
 
 
 def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
@@ -671,17 +662,14 @@ def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     """
     return pd.Series(
         [
-            crisp_outranking_table.loc[alt_name].sum()
-            - crisp_outranking_table[alt_name].sum()
+            crisp_outranking_table.loc[alt_name].sum() - crisp_outranking_table[alt_name].sum()
             for alt_name in crisp_outranking_table.index
         ],
         index=crisp_outranking_table.index,
     ).sort_values(ascending=False)
 
 
-def median_order(
-    ranks: pd.Series, downward_order: pd.Series, upward_order: pd.Series
-) -> pd.Series:
+def median_order(ranks: pd.Series, downward_order: pd.Series, upward_order: pd.Series) -> pd.Series:
     """Constructs median preorder.
 
     :param ranks: nested list of ranks of the alternatives
@@ -711,9 +699,7 @@ def median_order(
                 )
 
             elif ranks[alt_name_a] == ranks[alt_name_b]:
-                downwards_difference = (
-                    downward_order[alt_name_a] - downward_order[alt_name_b]
-                )
+                downwards_difference = downward_order[alt_name_a] - downward_order[alt_name_b]
                 upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
 
                 if downwards_difference + upwards_difference < 0:
@@ -734,9 +720,7 @@ def median_order(
             level += 1
 
         elif ranks[alt_name_a] == ranks[alt_name_b]:
-            downwards_difference = (
-                downward_order[alt_name_a] - downward_order[alt_name_b]
-            )
+            downwards_difference = downward_order[alt_name_a] - downward_order[alt_name_b]
             upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
 
             if downwards_difference + upwards_difference > 0:

@@ -1,19 +1,23 @@
-from typing import Collection, List, Tuple, get_args
+from typing import Any, Collection, Dict, List, Literal, Tuple, Union, get_args
+
+import pandas as pd
 
 from ..core.aliases import NumericValue
+from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
+from . import exceptions
 
 
 def _both_values_in_scale(
-    aval: NumericValue, bval: NumericValue, scale: QuantitativeScale
+    a_value: NumericValue, b_value: NumericValue, scale: QuantitativeScale
 ) -> None:
     """Checks if both values are inside the given scale interval.
 
-    :raises ValueError:
-        * if `aval` or `bval` is outside its scale interval
+    :raises ValueOutsideScaleError (ValueError):
+        * if `a_value` or `b_value` is outside its scale interval
 
     :raises TypeError:
-        * if `aval` or `bval` is not a numeric value
+        * if `a_value` or `b_value` is not a numeric value
         * if `scale` is not a `QuantitativeScale` object
     """
     if not isinstance(scale, QuantitativeScale):
@@ -24,48 +28,74 @@ def _both_values_in_scale(
         )
 
     try:
-        if aval not in scale or bval not in scale:
-            raise ValueError(
-                "Both criteria values must be between the "
-                "min and max of the given interval."
+        if a_value not in scale or b_value not in scale:
+            raise exceptions.ValueOutsideScaleError(
+                "Both criteria values must be between the min and max of the given interval."
             )
     except TypeError as exc:
         exc.args = (
             "Both criteria values must be numeric values, but "
-            f"got {type(aval).__name__, type(bval).__name__} instead.",
+            f"got {type(a_value).__name__, type(b_value).__name__} instead.",
         )
         raise
 
 
-def _all_lens_equal(**kwargs: Collection) -> None:
-    """Checks if all lists given in args have the same length
-    as the base one.
-
-    :raises ValueError:
-        * if any list from args has a different length than the first
-          kwargs element value
+def _get_threshold_values(value: NumericValue, **kwargs: Threshold) -> List[NumericValue]:
+    """Computes all threshold values for given `value` argument.
 
     :raises TypeError:
-        * if any argument has no ``len`` function
+        * if any threshold is not callable
+
+    :return: list with calculated threshold values, arrange in the
+    same order as thresholds
     """
-    args_names, args_values = [list(kwargs.keys()), list(kwargs.values())]
-    for name, value in zip(args_names, args_values):
-        try:
-            if len(value) != len(args_values[0]):
-                raise ValueError(
-                    f"All lists provided in arguments should have the same length, "
-                    f"but len({name})={len(value)}, len({args_names[0]})={len(args_values[0])}."
-                )
-        except TypeError as exc:
-            exc.args = (
-                f"Wrong '{name}' argument type. Expected 'Collection', but got "
-                f"'{type(value).__name__}' instead.",
-            )
-            raise
+    result: List[NumericValue] = []
+    try:
+        for name, threshold in kwargs.items():
+            result.append(threshold(value))
+    except TypeError as exc:
+        exc.args = (
+            f"Wrong {name} type. Expected {Threshold.__name__}, but "
+            f"got {type(threshold).__name__} instead.",
+        )
+        raise
+    return result
+
+
+def _unique_names(
+    names_set: Collection, names_type: Literal["criteria", "variants", "profiles"]
+) -> None:
+    """Checks if passed `names_set` contains only
+    unique values
+
+    :param names_type: type of checked values set
+    (just to build clear message for the user)
+
+    :raises NotUniqueNamesError (ValueError):
+        * if values inside `names_set` are not unique
+    """
+    if len(set(names_set)) != len(names_set):
+        raise exceptions.NotUniqueNamesError(f"Names of {names_type} must contain unique values.")
+
+
+def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series]) -> None:
+    """Checks if all dictionaries / series contain the same set of keys.
+
+    :raises InconsistentCriteriaNamesError (ValueError):
+        * if criteria names are inconsistent, i.e. contain different values set
+
+    :raises NotUniqueNamesError (ValueError):
+        * because inside `pd.Series` object there's a possibility for multiple
+        existences of the same `key` value, if something like this occurs, the
+        error will be raised as well
+
+    :raises TypeError:
+        * if any kwarg has no ``keys`` method
+    """
 
 
 def _inverse_values(
-    aval: NumericValue, bval: NumericValue, scale: QuantitativeScale, inverse: bool
+    a_value: NumericValue, b_value: NumericValue, scale: QuantitativeScale, inverse: bool
 ) -> Tuple[NumericValue, NumericValue, QuantitativeScale]:
     """Inverses values and the preference direction, if inverse
     parameter is set to True.
@@ -74,7 +104,7 @@ def _inverse_values(
         * if preference direction of the given scale was not provided
 
     :return Tuple[NumericValue, NumericValue, QuantitativeScale]:
-        * if inverse was set to True - aval and bval are switched places
+        * if inverse was set to True - a_value and b_value are switched places
           (+ preference direction is changed)
     """
     try:
@@ -86,8 +116,8 @@ def _inverse_values(
                 if scale.preference_direction == PreferenceDirection.MAX
                 else PreferenceDirection.MAX
             )
-            return bval, aval, scale
-        return aval, bval, scale
+            return b_value, a_value, scale
+        return a_value, b_value, scale
     except AttributeError as exc:
         raise TypeError(
             f"Wrong scale type. Expected <{_inverse_values.__annotations__['scale'].__name__}>, "
@@ -95,23 +125,24 @@ def _inverse_values(
         ) from exc
 
 
-def _weights_proper_vals(weights: Collection[NumericValue]) -> None:
-    """Checks if all weights are >= 0
+def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> None:
+    """Checks if all weights are >= 1
 
-    :raises ValueError:
-        * if any weight is less than 0
+    :raises WrongWeightValueError (ValueError):
+        * if any weight is less than 1
 
     :raises TypeError:
         * if any weight is not a numeric type
     """
     try:
-        if not all(weight >= 0 for weight in weights):
-            raise ValueError("Weight value cannot be negative.")
+        if not all(
+            weight >= 1
+            for weight in (weights.values() if isinstance(weights, dict) else weights.values)
+        ):
+            raise exceptions.WrongWeightValueError("Weight value cannot be less than 1.")
     except TypeError as exc:
         non_numeric = [
-            weight
-            for weight in weights
-            if not isinstance(weight, get_args(NumericValue))
+            weight for weight in weights if not isinstance(weight, get_args(NumericValue))
         ][0]
         exc.args = (
             "All weights values must be a numeric type, but got "
@@ -120,18 +151,27 @@ def _weights_proper_vals(weights: Collection[NumericValue]) -> None:
         raise
 
 
-def _reinforcement_factors_vals(reinforcement_factors: List[NumericValue]) -> None:
-    """Checks if all reinforcement factors are >= 1
+def _reinforcement_factors_vals(
+    reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series]
+) -> None:
+    """Checks if all reinforcement factors are > 1
 
-    :raises ValueError:
-        * if any factor is less than 1
+    :raises WrongFactorValueError (ValueError):
+        * if any factor is less or equal 1
 
     :raises TypeError:
         * if any factor is not a numeric type
     """
     try:
-        if not all(factor >= 1 for factor in reinforcement_factors):
-            raise ValueError("Reinforcement factor cannot be less than 1.")
+        if not all(
+            factor > 1
+            for factor in (
+                reinforcement_factors.values()
+                if isinstance(reinforcement_factors, dict)
+                else reinforcement_factors.values
+            )
+        ):
+            raise exceptions.WrongFactorValueError("Reinforcement factor must be greater than 1.")
     except TypeError as exc:
         non_numeric = [
             factor
@@ -165,7 +205,7 @@ def _check_index_value_interval(
     :param include_max: decides if upper boundary of the interval is
     inside of it, defaults to True
 
-    :raises ValueError:
+    :raises WrongIndexValueError (ValueError:)
         * if `value` is outside its interval
 
     :raises TypeError:
@@ -188,7 +228,7 @@ def _check_index_value_interval(
             interval_str = f"({minimal_val}, {maximal_val})"
 
         if wrong_value_test_result:
-            raise ValueError(
+            raise exceptions.WrongIndexValueError(
                 f"Wrong {name} value. Expected value from a {interval_str} interval, "
                 f"but got {value} instead."
             )

@@ -4,10 +4,11 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
-from mcda.core.aliases import NumericValue
-from mcda.core.functions import Threshold
-from mcda.core.scales import PreferenceDirection, QuantitativeScale
-from mcda.electre._validate import _both_values_in_scale, _inverse_values
+from ..core.aliases import NumericValue
+from ..core.functions import Threshold
+from ..core.scales import PreferenceDirection, QuantitativeScale
+from . import exceptions
+from ._validation import _both_values_in_scale, _get_threshold_values, _inverse_values
 
 
 def concordance_marginal(
@@ -31,18 +32,25 @@ def concordance_marginal(
     with opposite scale preference direction, defaults to ``False``
 
     :raises ValueError:
-        * if the preference threshold is less than the indifference one
+        * if thresholds don't meet a condition: 0 <= indifference_threshold <= preference_threshold
 
     :return: marginal concordance index, value from the [0, 1] interval
     """
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
-    q_a: NumericValue = indifference_threshold(a_value)
-    p_a: NumericValue = preference_threshold(a_value)
+    q_a, p_a = _get_threshold_values(
+        a_value,
+        indifference_threshold=indifference_threshold,
+        preference_threshold=preference_threshold,
+    )
 
-    if q_a >= p_a:
-        raise ValueError("Indifference threshold can't be bigger than the preference threshold.")
+    if not 0 <= q_a <= p_a:
+        raise exceptions.WrongThresholdValueError(
+            "Threshold values must meet a condition: "
+            "0 <= indifference_threshold <= preference_threshold, but got "
+            f"0 <= {q_a} <= {p_a}"
+        )
 
     if scale.preference_direction == PreferenceDirection.MIN:
         if a_value - b_value <= q_a:
@@ -66,6 +74,7 @@ def concordance_comprehensive(
     indifference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     inverse: bool = False,
+    **kwargs,
 ) -> NumericValue:
     """_summary_
 
@@ -79,6 +88,9 @@ def concordance_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        # valudate input values
+        ...
     return sum(
         [
             weights[criterion_name]

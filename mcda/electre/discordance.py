@@ -7,7 +7,7 @@ import pandas as pd
 from ..core.aliases import NumericValue
 from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
-from ._validate import _both_values_in_scale, _inverse_values
+from ._validation import _both_values_in_scale, _inverse_values
 
 
 def discordance_bin_marginal(
