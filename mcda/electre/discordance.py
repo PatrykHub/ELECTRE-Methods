@@ -209,7 +209,9 @@ def discordance_marginal(
             return 1
         elif b_value - a_value <= discordance_beginning:
             return 0
-        return (b_value - a_value - discordance_beginning) / (veto - discordance_beginning)
+        return (b_value - a_value - discordance_beginning) / (
+            veto - discordance_beginning
+        )
 
     if a_value - b_value > veto:
         return 1
@@ -225,7 +227,9 @@ def discordance_comprehensive(
     weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
-    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    pre_veto_thresholds: Optional[
+        Union[Dict[Any, Optional[Threshold]], pd.Series]
+    ] = None,
 ) -> NumericValue:
     """_summary_
 
@@ -248,7 +252,11 @@ def discordance_comprehensive(
                 scales[criterion_name],
                 preference_thresholds[criterion_name],
                 veto_thresholds[criterion_name],
-                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
+                (
+                    pre_veto_thresholds[criterion_name]
+                    if pre_veto_thresholds is not None
+                    else None
+                ),
             )
             for criterion_name in a_values.keys()
         ]
@@ -261,7 +269,9 @@ def discordance_criteria_marginals(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
-    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    pre_veto_thresholds: Optional[
+        Union[Dict[Any, Optional[Threshold]], pd.Series]
+    ] = None,
 ) -> pd.Series:
     """Returns discordance marginals for all criteria between
     two alternatives."""
@@ -273,7 +283,11 @@ def discordance_criteria_marginals(
                 scales[criterion_name],
                 preference_thresholds[criterion_name],
                 veto_thresholds[criterion_name],
-                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
+                (
+                    pre_veto_thresholds[criterion_name]
+                    if pre_veto_thresholds is not None
+                    else None
+                ),
             )
             for criterion_name in a_values.keys()
         ],
@@ -281,13 +295,17 @@ def discordance_criteria_marginals(
     )
 
 
-def discordance_marginals(
+def discordance(
     alternatives_perform: pd.DataFrame,
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
-    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    pre_veto_thresholds: Optional[
+        Union[Dict[Any, Optional[Threshold]], pd.Series]
+    ] = None,
     profiles_perform: Optional[pd.DataFrame] = None,
+    return_marginals: bool = False,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
     """_summary_
 
@@ -302,17 +320,31 @@ def discordance_marginals(
 
     :return: _description_
     """
+    discordance_function: Callable = discordance_comprehensive
+
+    if return_marginals:
+        discordance_function = discordance_criteria_marginals
+
+    discordance_func_args = (
+        (scales, preference_thresholds, veto_thresholds, pre_veto_thresholds)
+        if return_marginals
+        else (
+            scales,
+            weights,
+            preference_thresholds,
+            veto_thresholds,
+            pre_veto_thresholds,
+        )
+    )
+
     if profiles_perform is not None:
         return pd.DataFrame(
             [
                 [
-                    discordance_criteria_marginals(
+                    discordance_function(
                         alternatives_perform.loc[alt_name],
                         profiles_perform.loc[prof_name],
-                        scales,
-                        preference_thresholds,
-                        veto_thresholds,
-                        pre_veto_thresholds,
+                        *discordance_func_args
                     )
                     for prof_name in profiles_perform.index
                 ]
@@ -323,13 +355,10 @@ def discordance_marginals(
         ), pd.DataFrame(
             [
                 [
-                    discordance_criteria_marginals(
+                    discordance_function(
                         profiles_perform.loc[prof_name],
                         alternatives_perform.loc[alt_name],
-                        scales,
-                        preference_thresholds,
-                        veto_thresholds,
-                        pre_veto_thresholds,
+                        *discordance_func_args
                     )
                     for alt_name in alternatives_perform.index
                 ]
@@ -341,13 +370,10 @@ def discordance_marginals(
     return pd.DataFrame(
         [
             [
-                discordance_criteria_marginals(
+                discordance_function(
                     alternatives_perform.loc[alt_name_a],
                     alternatives_perform.loc[alt_name_b],
-                    scales,
-                    preference_thresholds,
-                    veto_thresholds,
-                    pre_veto_thresholds,
+                    *discordance_func_args
                 )
                 for alt_name_b in alternatives_perform.index
             ]
@@ -355,34 +381,6 @@ def discordance_marginals(
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
-    )
-
-
-def discordance(
-    discordance_marginals: pd.DataFrame,
-    weights: Union[Dict[Any, NumericValue], pd.Series],
-) -> pd.DataFrame:
-    """Aggregates discordance marginals to comprehensive
-    index.
-
-    :param discordance_marginals: a data frame with marginal
-    discordance indices, which could be return from `discordance_bin`
-    or `discordance_marginals` functions.
-    :param weights: criteria weights
-
-    :return: a data frame with comprehensive discordance indices
-    """
-    weights_sum: NumericValue = sum(weights)
-    return pd.DataFrame(
-        [
-            [
-                sum(weights * discordance_marginals[alt_name_b][alt_name_a]) / weights_sum
-                for alt_name_b in discordance_marginals.columns
-            ]
-            for alt_name_a in discordance_marginals.index
-        ],
-        index=discordance_marginals.index,
-        columns=discordance_marginals.columns,
     )
 
 
@@ -397,7 +395,10 @@ def non_discordance_marginal(
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[NumericValue] = None,
 ) -> NumericValue:
-    if non_discordance_type == NonDiscordanceType.DM or concordance_comprehensive is None:
+    if (
+        non_discordance_type == NonDiscordanceType.DM
+        or concordance_comprehensive is None
+    ):
         return 1 - max(criteria_discordance_marginals)
 
     non_discordance = 1
@@ -417,7 +418,7 @@ def non_discordance_marginal(
 
 
 def non_discordance(
-    discordance_marginals: pd.DataFrame,
+    criteria_discordance_marginals: pd.DataFrame,
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
@@ -425,18 +426,18 @@ def non_discordance(
         [
             [
                 non_discordance_marginal(
-                    discordance_marginals.loc[alt_name_a, alt_name_b],
+                    criteria_discordance_marginals.loc[alt_name_a, alt_name_b],
                     non_discordance_type,
                     concordance_comprehensive.loc[alt_name_a, alt_name_b]
                     if concordance_comprehensive is not None
                     else None,
                 )
-                for alt_name_b in discordance_marginals.columns
+                for alt_name_b in criteria_discordance_marginals.columns
             ]
-            for alt_name_a in discordance_marginals.index
+            for alt_name_a in criteria_discordance_marginals.index
         ],
-        index=discordance_marginals.index,
-        columns=discordance_marginals.columns,
+        index=criteria_discordance_marginals.index,
+        columns=criteria_discordance_marginals.columns,
     )
 
 
