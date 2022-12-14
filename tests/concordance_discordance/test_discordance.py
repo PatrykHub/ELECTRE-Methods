@@ -10,6 +10,7 @@ from mcda.electre.discordance import (
     counter_veto_count,
     discordance,
     discordance_bin,
+    discordance_marginals,
 )
 
 from .. import helpers
@@ -133,6 +134,131 @@ def test_discordance_binary_profiles(
         veto_thresholds,
         profiles_performance,
     )
+
+    assert discordance_matrix_alt_prof.index.equals(performance_table.index)
+    assert discordance_matrix_alt_prof.columns.equals(profiles_performance.index)
+
+    assert discordance_matrix_prof_alt.index.equals(profiles_performance.index)
+    assert discordance_matrix_prof_alt.columns.equals(performance_table.index)
+
+    helpers.assert_array_values(
+        expected_alternatives_profiles, discordance_matrix_alt_prof.to_numpy()
+    )
+    helpers.assert_array_values(
+        expected_profiles_alternatives, discordance_matrix_prof_alt.to_numpy()
+    )
+
+
+def test_discordance_binary_weights(
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    veto_thresholds: pd.Series,
+    profiles_performance: pd.DataFrame,
+    weights: pd.Series,
+) -> None:
+    expected_alternatives_profiles = [
+        [0.505263157895, 0.0842105263158, 0.0842105263158, 0.0, 0.0],
+        [0.126315789474, 0.0, 0.0, 0.0, 0.0],
+        [0.252631578947, 0.0, 0.0, 0.0, 0.0],
+        [0.421052631579, 0.0842105263158, 0.0, 0.0, 0.0],
+        [0.252631578947, 0.0842105263158, 0.0, 0.0, 0.0],
+        [0.0842105263158, 0.0842105263158, 0.0842105263158, 0.0, 0.0],
+        [0.378947368421, 0.210526315789, 0.0, 0.0, 0.0],
+        [0.0421052631579, 0.0421052631579, 0.0421052631579, 0.0, 0.0],
+        [0.336842105263, 0.0, 0.0, 0.0, 0.0],
+        [0.294736842105, 0.0842105263158, 0.0842105263158, 0.0, 0.0],
+        [0.126315789474, 0.126315789474, 0.126315789474, 0.0421052631579, 0.0],
+        [0.421052631579, 0.0, 0.0, 0.0, 0.0],
+        [0.0421052631579, 0.0421052631579, 0.0421052631579, 0.0, 0.0],
+    ]
+    expected_profiles_alternatives = [
+        [
+            0.168421052632,
+            0.0,
+            0.168421052632,
+            0.0,
+            0.0,
+            0.0,
+            0.168421052632,
+            0.168421052632,
+            0.0,
+            0.0,
+            0.168421052632,
+            0.0,
+            0.0,
+        ],
+        [
+            0.168421052632,
+            0.168421052632,
+            0.210526315789,
+            0.126315789474,
+            0.126315789474,
+            0.463157894737,
+            0.210526315789,
+            0.421052631579,
+            0.126315789474,
+            0.126315789474,
+            0.294736842105,
+            0.0,
+            0.421052631579,
+        ],
+        [
+            0.168421052632,
+            0.421052631579,
+            0.294736842105,
+            0.126315789474,
+            0.294736842105,
+            0.463157894737,
+            0.210526315789,
+            0.421052631579,
+            0.210526315789,
+            0.126315789474,
+            0.589473684211,
+            0.0,
+            0.421052631579,
+        ],
+        [
+            0.210526315789,
+            0.421052631579,
+            0.294736842105,
+            0.126315789474,
+            0.463157894737,
+            0.589473684211,
+            0.210526315789,
+            0.673684210526,
+            0.210526315789,
+            0.252631578947,
+            0.589473684211,
+            0.252631578947,
+            0.505263157895,
+        ],
+        [
+            0.210526315789,
+            0.589473684211,
+            0.294736842105,
+            0.252631578947,
+            0.589473684211,
+            0.631578947368,
+            0.210526315789,
+            0.673684210526,
+            0.378947368421,
+            0.252631578947,
+            0.589473684211,
+            0.294736842105,
+            0.505263157895,
+        ],
+    ]
+
+    marginals_alt_prof, marginals_prof_alf = discordance_bin(
+        performance_table,
+        scales,
+        veto_thresholds,
+        profiles_perform=profiles_performance,
+        return_marginals=True,
+    )
+
+    discordance_matrix_alt_prof = discordance(marginals_alt_prof, weights)
+    discordance_matrix_prof_alt = discordance(marginals_prof_alf, weights)
 
     assert discordance_matrix_alt_prof.index.equals(performance_table.index)
     assert discordance_matrix_alt_prof.columns.equals(profiles_performance.index)
@@ -353,11 +479,11 @@ def test_discordance_no_profiles(
         ],
     ]
 
-    discordance_matrix: pd.DataFrame = discordance(
-        performance_table, scales, weights, preference_thresholds, veto_thresholds
+    marginals = discordance_marginals(
+        performance_table, scales, preference_thresholds, veto_thresholds
     )
 
-    print(discordance_matrix)
+    discordance_matrix: pd.DataFrame = discordance(marginals, weights)
 
     assert discordance_matrix.index.equals(performance_table.index)
     assert discordance_matrix.columns.equals(performance_table.index)
@@ -466,14 +592,16 @@ def test_discordance_profiles(
         ],
     ]
 
-    discordance_matrix_alt_prof, discordance_matrix_prof_alt = discordance(
+    marginals_alt_prof, marginals_prof_alf = discordance_marginals(
         performance_table,
         scales,
-        weights,
         preference_thresholds,
         veto_thresholds,
         profiles_perform=profiles_performance,
     )
+
+    discordance_matrix_alt_prof = discordance(marginals_alt_prof, weights)
+    discordance_matrix_prof_alt = discordance(marginals_prof_alf, weights)
 
     assert discordance_matrix_alt_prof.index.equals(performance_table.index)
     assert discordance_matrix_alt_prof.columns.equals(profiles_performance.index)
@@ -701,16 +829,15 @@ def test_discordance_no_profiles_pre_veto(
         ],
     ]
 
-    discordance_matrix: pd.DataFrame = discordance(
+    marginals = discordance_marginals(
         performance_table,
         scales,
-        weights,
         preference_thresholds,
         veto_thresholds,
         pre_veto_thresholds,
     )
 
-    print(discordance_matrix)
+    discordance_matrix: pd.DataFrame = discordance(marginals, weights)
 
     assert discordance_matrix.index.equals(performance_table.index)
     assert discordance_matrix.columns.equals(performance_table.index)
@@ -825,15 +952,17 @@ def test_discordance_profiles_pre_veto(
         ],
     ]
 
-    discordance_matrix_alt_prof, discordance_matrix_prof_alt = discordance(
+    marginals_alt_prof, marginals_prof_alt = discordance_marginals(
         performance_table,
         scales,
-        weights,
         preference_thresholds,
         veto_thresholds,
         pre_veto_thresholds,
         profiles_performance,
     )
+
+    discordance_matrix_alt_prof = discordance(marginals_alt_prof, weights)
+    discordance_matrix_prof_alt = discordance(marginals_prof_alt, weights)
 
     assert discordance_matrix_alt_prof.index.equals(performance_table.index)
     assert discordance_matrix_alt_prof.columns.equals(profiles_performance.index)
