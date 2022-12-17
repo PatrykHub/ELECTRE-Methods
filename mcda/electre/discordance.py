@@ -121,9 +121,9 @@ def discordance_bin(
                         scales,
                         veto_thresholds,
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -136,9 +136,9 @@ def discordance_bin(
                         scales,
                         veto_thresholds,
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -152,9 +152,9 @@ def discordance_bin(
                     scales,
                     veto_thresholds,
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
@@ -314,9 +314,9 @@ def discordance_marginals(
                         veto_thresholds,
                         pre_veto_thresholds,
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -331,9 +331,9 @@ def discordance_marginals(
                         veto_thresholds,
                         pre_veto_thresholds,
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -349,9 +349,9 @@ def discordance_marginals(
                     veto_thresholds,
                     pre_veto_thresholds,
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
@@ -379,7 +379,7 @@ def discordance(
                 sum(weights * discordance_marginals[alt_name_b][alt_name_a]) / weights_sum
                 for alt_name_b in discordance_marginals.columns
             ]
-            for alt_name_a in discordance_marginals.index
+            for alt_name_a in discordance_marginals.index.values
         ],
         index=discordance_marginals.index,
         columns=discordance_marginals.columns,
@@ -401,7 +401,7 @@ def non_discordance_marginal(
         return 1 - max(criteria_discordance_marginals)
 
     non_discordance = 1
-    for index in criteria_discordance_marginals.index:
+    for index in criteria_discordance_marginals.index.values:
         if (
             non_discordance_type == NonDiscordanceType.DC
             and criteria_discordance_marginals[index] > concordance_comprehensive
@@ -431,9 +431,9 @@ def non_discordance(
                     if concordance_comprehensive is not None
                     else None,
                 )
-                for alt_name_b in discordance_marginals.columns
+                for alt_name_b in discordance_marginals.columns.values
             ]
-            for alt_name_a in discordance_marginals.index
+            for alt_name_a in discordance_marginals.index.values
         ],
         index=discordance_marginals.index,
         columns=discordance_marginals.columns,
@@ -516,8 +516,8 @@ def counter_veto(
             index=performance_table.index,
             columns=profiles_perform.index,
         )
-        for criterion_name_a in performance_table.index:
-            for criterion_name_b in profiles_perform.index:
+        for criterion_name_a in performance_table.index.values:
+            for criterion_name_b in profiles_perform.index.values:
                 cv_series = counter_veto_pair(
                     performance_table.loc[criterion_name_a],
                     profiles_perform.loc[criterion_name_b],
@@ -592,9 +592,9 @@ def counter_veto_count(
                             counter_veto_thresholds,
                         ).values
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -609,9 +609,9 @@ def counter_veto_count(
                             counter_veto_thresholds,
                         ).values
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -627,9 +627,9 @@ def counter_veto_count(
                         counter_veto_thresholds,
                     ).values
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
