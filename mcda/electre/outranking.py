@@ -1,6 +1,6 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Callable, Optional, Tuple, Union, List, Any
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -51,9 +51,9 @@ def crisp_outranking_cut(
                 crisp_outranking_cut_marginal(
                     credibility_table.loc[alt_name_a][alt_name_b], cutting_level
                 )
-                for alt_name_b in credibility_table.index
+                for alt_name_b in credibility_table.index.values
             ]
-            for alt_name_a in credibility_table.index
+            for alt_name_a in credibility_table.index.values
         ],
         index=credibility_table.index,
         columns=credibility_table.index,
@@ -76,9 +76,7 @@ def crisp_outranking_Is_marginal(
     :return: ``True`` if a outranks b, ``False`` otherwise
     """
     _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
-    _check_index_value_interval(
-        concordance_cutting_level, "cutting level", minimal_val=0.5
-    )
+    _check_index_value_interval(concordance_cutting_level, "cutting level", minimal_val=0.5)
 
     if discordance_comprehensive_bin not in [0, 1]:
         raise ValueError(
@@ -116,9 +114,9 @@ def crisp_outranking_Is(
                     discordance_comprehensive_bin_table.loc[alt_name_a][alt_name_b],
                     concordance_cutting_level,
                 )
-                for alt_name_b in concordance_comprehensive_table.index
+                for alt_name_b in concordance_comprehensive_table.index.values
             ]
-            for alt_name_a in concordance_comprehensive_table.index
+            for alt_name_a in concordance_comprehensive_table.index.values
         ],
         index=concordance_comprehensive_table.index,
         columns=concordance_comprehensive_table.index,
@@ -182,9 +180,9 @@ def crisp_outranking_coal(
                     concordance_cutting_level,
                     discordance_cutting_level,
                 )
-                for alt_name_b in concordance_comprehensive_table.index
+                for alt_name_b in concordance_comprehensive_table.index.values
             ]
-            for alt_name_a in concordance_comprehensive_table.index
+            for alt_name_a in concordance_comprehensive_table.index.values
         ],
         index=concordance_comprehensive_table.index,
         columns=concordance_comprehensive_table.index,
@@ -240,9 +238,9 @@ def outranking_relation(
                         crisp_outranking_table.loc[alt_name][profile_name],
                         crisp_outranking_table_profiles.loc[profile_name][alt_name],
                     )
-                    for profile_name in crisp_outranking_table_profiles.index
+                    for profile_name in crisp_outranking_table_profiles.index.values
                 ]
-                for alt_name in crisp_outranking_table.index
+                for alt_name in crisp_outranking_table.index.values
             ],
             index=crisp_outranking_table.index,
             columns=crisp_outranking_table_profiles.index,
@@ -253,9 +251,9 @@ def outranking_relation(
                         crisp_outranking_table_profiles.loc[profile_name][alt_name],
                         crisp_outranking_table.loc[alt_name][profile_name],
                     )
-                    for alt_name in crisp_outranking_table.index
+                    for alt_name in crisp_outranking_table.index.values
                 ]
-                for profile_name in crisp_outranking_table_profiles.index
+                for profile_name in crisp_outranking_table_profiles.index.values
             ],
             index=crisp_outranking_table_profiles.index,
             columns=crisp_outranking_table.index,
@@ -268,9 +266,9 @@ def outranking_relation(
                     crisp_outranking_table.loc[alt_name_a][alt_name_b],
                     crisp_outranking_table.loc[alt_name_b][alt_name_a],
                 )
-                for alt_name_b in crisp_outranking_table.index
+                for alt_name_b in crisp_outranking_table.index.values
             ]
-            for alt_name_a in crisp_outranking_table.index
+            for alt_name_a in crisp_outranking_table.index.values
         ],
         index=crisp_outranking_table.index,
         columns=crisp_outranking_table.index,
@@ -308,8 +306,8 @@ def _get_minimal_credibility_index(
         maximal_credibility_index, alpha, beta
     )
 
-    for alt_name_a in credibility_matrix.index:
-        for alt_name_b in credibility_matrix.index:
+    for alt_name_a in credibility_matrix.index.values:
+        for alt_name_b in credibility_matrix.index.values:
             if threshold_value <= credibility_matrix.loc[alt_name_a][alt_name_b]:
                 credibility_matrix.loc[alt_name_a][alt_name_b] = 0.0
 
@@ -339,8 +337,7 @@ def crisp_outranking_relation_distillation(
         1
         if credibility_pair_value_ab > minimal_credibility_index
         and credibility_pair_value_ab
-        > credibility_pair_value_ba
-        + linear_function(alpha, credibility_pair_value_ab, beta)
+        > credibility_pair_value_ba + linear_function(alpha, credibility_pair_value_ab, beta)
         else 0
     )
 
@@ -381,9 +378,9 @@ def alternative_qualities(
                         beta,
                     )
                 )
-                for alt_name_b in credibility_matrix.index
+                for alt_name_b in credibility_matrix.index.values
             )
-            for alt_name_a in credibility_matrix.index
+            for alt_name_a in credibility_matrix.index.values
         }
     )
 
@@ -399,9 +396,9 @@ def alternative_qualities(
                         beta,
                     )
                 )
-                for alt_name_a in credibility_matrix.index
+                for alt_name_a in credibility_matrix.index.values
             )
-            for alt_name_b in credibility_matrix.index
+            for alt_name_b in credibility_matrix.index.values
         }
     )
 
@@ -501,9 +498,7 @@ def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
 
     for position in order:
         outranking_matrix.loc[position, position] = 1
-        outranking_matrix.loc[
-            position, alternatives[alternatives.index(position[-1]) + 1:]
-        ] = 1
+        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
 
     return outranking_matrix
 
@@ -535,9 +530,9 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
     while not remaining_alt_indices.empty:
         rank_level = []
-        for alt_name_a in remaining_alt_indices.index:
+        for alt_name_a in remaining_alt_indices.index.values:
             current_rank = True
-            for alt_name_b in remaining_alt_indices.index:
+            for alt_name_b in remaining_alt_indices.index.values:
                 if (
                     alt_name_a != alt_name_b
                     and final_ranking_matrix.loc[alt_name_b][alt_name_a] == 1
@@ -564,7 +559,7 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
                 for alt_name_a in crisp_outranking_table.index
                 if crisp_outranking_table.loc[alt_name_b][alt_name_a] != 0
             ]
-            for alt_name_b in crisp_outranking_table.index
+            for alt_name_b in crisp_outranking_table.index.values
         }
     )
 
@@ -616,26 +611,22 @@ def aggregate(graph: pd.Series) -> pd.Series:
             set([v for key in vertices for v in graph[key] if v not in vertices])
         )
         new_graph = new_graph.drop(labels=vertices)
-        for key in new_graph.index:
+        for key in new_graph.index.values:
             for vertex in new_graph[key][:]:
                 if vertex in vertices:
                     new_graph[key].remove(vertex)
                     if aggregated not in new_graph[key]:
                         new_graph[key].append(aggregated)
         new_graph[aggregated] = new_connections
-    for key in new_graph.index:
+    for key in new_graph.index.values:
         if key in new_graph[key]:
             new_graph[key].remove(key)
     return new_graph
 
 
 def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
-    vertices_with_preedecessor = list(
-        set([v for key in graph.index for v in graph[key]])
-    )
-    return [
-        vertex for vertex in graph.index if vertex not in vertices_with_preedecessor
-    ]
+    vertices_with_predecessor = list(set([v for key in graph.index.values for v in graph[key]]))
+    return [vertex for vertex in graph.index if vertex not in vertices_with_predecessor]
 
 
 def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
@@ -671,17 +662,14 @@ def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     """
     return pd.Series(
         [
-            crisp_outranking_table.loc[alt_name].sum()
-            - crisp_outranking_table[alt_name].sum()
-            for alt_name in crisp_outranking_table.index
+            crisp_outranking_table.loc[alt_name].sum() - crisp_outranking_table[alt_name].sum()
+            for alt_name in crisp_outranking_table.index.values
         ],
         index=crisp_outranking_table.index,
     ).sort_values(ascending=False)
 
 
-def median_order(
-    ranks: pd.Series, downward_order: pd.Series, upward_order: pd.Series
-) -> pd.Series:
+def median_order(ranks: pd.Series, downward_order: pd.Series, upward_order: pd.Series) -> pd.Series:
     """Constructs median preorder.
 
     :param ranks: nested list of ranks of the alternatives
@@ -711,9 +699,7 @@ def median_order(
                 )
 
             elif ranks[alt_name_a] == ranks[alt_name_b]:
-                downwards_difference = (
-                    downward_order[alt_name_a] - downward_order[alt_name_b]
-                )
+                downwards_difference = downward_order[alt_name_a] - downward_order[alt_name_b]
                 upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
 
                 if downwards_difference + upwards_difference < 0:
@@ -734,9 +720,7 @@ def median_order(
             level += 1
 
         elif ranks[alt_name_a] == ranks[alt_name_b]:
-            downwards_difference = (
-                downward_order[alt_name_a] - downward_order[alt_name_b]
-            )
+            downwards_difference = downward_order[alt_name_a] - downward_order[alt_name_b]
             upwards_difference = upward_order[alt_name_a] - upward_order[alt_name_b]
 
             if downwards_difference + upwards_difference > 0:

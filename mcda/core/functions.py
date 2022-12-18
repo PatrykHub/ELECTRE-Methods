@@ -251,9 +251,9 @@ class PieceWiseFunction:
 
     def __init__(
         self,
-        intervals: List[Interval] = None,
-        functions: List[NumericFunction] = None,
-        segments: List[List[List]] = None,
+        intervals: Optional[List[Interval]] = None,
+        functions: Optional[List[NumericFunction]] = None,
+        segments: Optional[List[List[List]]] = None,
     ):
         """Constructor method"""
         intervals = [] if intervals is None else intervals
@@ -337,9 +337,9 @@ class FuzzyNumber(PieceWiseFunction):
 
     def __init__(
         self,
-        intervals: List[Interval] = None,
-        functions: List[NumericFunction] = None,
-        segments: List[List[List]] = None,
+        intervals: Optional[List[Interval]] = None,
+        functions: Optional[List[NumericFunction]] = None,
+        segments: Optional[List[List[List]]] = None,
     ):
         """Constructor method"""
         PieceWiseFunction.__init__(self, intervals, functions, segments)

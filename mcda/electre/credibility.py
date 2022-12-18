@@ -41,12 +41,12 @@ def credibility_comprehensive(
         [
             [
                 credibility_pair(
-                    concordance_comprehensive.loc[alt_name_a, alt_name_b],
-                    non_discordance.loc[alt_name_a, alt_name_b],
+                    concordance_comprehensive[alt_name_b][alt_name_a],
+                    non_discordance[alt_name_b][alt_name_a],
                 )
-                for alt_name_b in concordance_comprehensive.columns
+                for alt_name_b in concordance_comprehensive.columns.values
             ]
-            for alt_name_a in concordance_comprehensive.index
+            for alt_name_a in concordance_comprehensive.index.values
         ],
         index=concordance_comprehensive.index,
         columns=concordance_comprehensive.columns,
@@ -96,14 +96,14 @@ def credibility_cv(
         [
             [
                 credibility_cv_pair(
-                    concordance_comprehensive.loc[alt_name_a, alt_name_b],
-                    non_discordance.loc[alt_name_a, alt_name_b],
-                    counter_veto_occurs.loc[alt_name_a, alt_name_b],
+                    concordance_comprehensive[alt_name_b][alt_name_a],
+                    non_discordance[alt_name_b][alt_name_a],
+                    counter_veto_occurs[alt_name_b][alt_name_a],
                     number_of_criteria,
                 )
-                for alt_name_b in concordance_comprehensive.columns
+                for alt_name_b in concordance_comprehensive.columns.values
             ]
-            for alt_name_a in concordance_comprehensive.index
+            for alt_name_a in concordance_comprehensive.index.values
         ],
         index=concordance_comprehensive.index,
         columns=concordance_comprehensive.columns,
@@ -163,9 +163,7 @@ def get_criteria_counts(
 
     :return: Matrix of criteria counts for each pair
     """
-    columns_content = (
-        profiles_perform if profiles_perform is not None else performance_table
-    )
+    columns_content = profiles_perform if profiles_perform is not None else performance_table
 
     return pd.DataFrame(
         [
@@ -177,9 +175,9 @@ def get_criteria_counts(
                     indifference_thresholds,
                     preference_thresholds,
                 )
-                for alt_name_b in columns_content.index
+                for alt_name_b in columns_content.index.values
             ]
-            for alt_name_a in performance_table.index
+            for alt_name_a in performance_table.index.values
         ],
         index=performance_table.index,
         columns=columns_content.index,
@@ -224,28 +222,26 @@ def _calculate_credibility_values(
         columns=profiles_perform.index,
     )
 
-    for alt_name_a in performance_table.index:
-        for alt_name_b in profiles_perform.index:
+    for alt_name_a in performance_table.index.values:
+        for alt_name_b in profiles_perform.index.values:
             if alt_name_a == alt_name_b:
-                credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SQ
+                credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
             else:
-                np_ab, nq_ab, ni_ab = criteria_counts.loc[alt_name_a, alt_name_b][:3]
-                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[
-                    alt_name_b, alt_name_a
-                ][:3]
+                np_ab, nq_ab, ni_ab = criteria_counts[alt_name_b][alt_name_a][:3]
+                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[alt_name_b, alt_name_a][:3]
 
                 if np_ba + nq_ba == 0 and ni_ba < np_ab + nq_ab + ni_ab:
-                    credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SQ
+                    credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
 
                 elif np_ba == 0:
                     if nq_ba <= np_ab and nq_ba + ni_ba < np_ab + nq_ab + ni_ab:
-                        credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SC
+                        credibility_matrix[alt_name_b][alt_name_a] = RelationType.SC
 
                     elif nq_ba <= np_ab + nq_ab:
-                        credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SP
+                        credibility_matrix[alt_name_b][alt_name_a] = RelationType.SP
 
                     else:
-                        credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SS
+                        credibility_matrix[alt_name_b][alt_name_a] = RelationType.SS
                 elif (
                     np_ba <= 1
                     and np_ab >= len(scales) // 2
@@ -257,10 +253,10 @@ def _calculate_credibility_values(
                     )
                     is False
                 ):
-                    credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SV
+                    credibility_matrix[alt_name_b][alt_name_a] = RelationType.SV
 
                 else:
-                    credibility_matrix.loc[alt_name_a, alt_name_b] = RelationType.SNone
+                    credibility_matrix[alt_name_b][alt_name_a] = RelationType.SNone
 
     return credibility_matrix
 
