@@ -227,6 +227,7 @@ def is_reinforcement_occur(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
+    preference_threshold: Threshold,
     reinforcement_threshold: Threshold,
 ) -> bool:
     """_summary_
@@ -239,13 +240,16 @@ def is_reinforcement_occur(
     :return: _description_
     """
     _both_values_in_scale(a_value, b_value, scale)
-    threshold_value = _get_threshold_values(
-        b_value, reinforcement_threshold=reinforcement_threshold
-    )[0]
-
-    if threshold_value <= 0:
+    threshold_value, preference_value = _get_threshold_values(
+        b_value,
+        reinforcement_threshold=reinforcement_threshold,
+        preference_threshold=preference_threshold,
+    )
+    if not 0 <= preference_value < threshold_value:
         raise exceptions.WrongThresholdValueError(
-            f"Reinforcement threshold value must be positive, but got {threshold_value} instead."
+            "Threshold values must meet a condition: "
+            "0 <= preference_threshold < reinforcement_threshold, but got "
+            f"0 <= {preference_value} < {threshold_value}"
         )
 
     return (
@@ -259,6 +263,7 @@ def _get_reinforced_criteria(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     reinforced_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
 ) -> pd.Series:
     """Return a series with information about reinforcement."""
@@ -270,6 +275,7 @@ def _get_reinforced_criteria(
                 a_values[criterion_name],
                 b_values[criterion_name],
                 scales[criterion_name],
+                preference_thresholds[criterion_name],
                 threshold,
             )
     return result
@@ -315,7 +321,9 @@ def concordance_reinforced_comprehensive(
         _weights_proper_vals(weights)
         _reinforcement_factors_vals(reinforcement_factors)
 
-    reinforce_occur = _get_reinforced_criteria(a_values, b_values, scales, reinforced_thresholds)
+    reinforce_occur = _get_reinforced_criteria(
+        a_values, b_values, scales, preference_thresholds, reinforced_thresholds
+    )
     sum_weights_reinforced: NumericValue = 0
     sum_weights_not_reinforced: NumericValue = 0
     sum_concordances_not_reinforced: NumericValue = 0
