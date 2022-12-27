@@ -653,7 +653,7 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     return kernel
 
 
-def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+def net_flow_score(outranking_table: pd.DataFrame) -> pd.Series:
     """This function computes net flow scores for all
     alternatives.
     :param crisp_outranking_table: table with crisp relations
@@ -662,10 +662,10 @@ def net_flow_score(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     """
     return pd.Series(
         [
-            crisp_outranking_table.loc[alt_name].sum() - crisp_outranking_table[alt_name].sum()
-            for alt_name in crisp_outranking_table.index.values
+            outranking_table.loc[alt_name].sum() - outranking_table[alt_name].sum()
+            for alt_name in outranking_table.index.values
         ],
-        index=crisp_outranking_table.index,
+        index=outranking_table.index,
     ).sort_values(ascending=False)
 
 
