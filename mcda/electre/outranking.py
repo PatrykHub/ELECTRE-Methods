@@ -729,3 +729,74 @@ def median_order(ranks: pd.Series, downward_order: pd.Series, upward_order: pd.S
         final_order[alternatives[initial_order[i]]] = level
 
     return reverse_transform_series(final_order)
+
+
+def assign_tri_nb_class(
+    crisp_outranking_ap: pd.DataFrame,
+    crisp_outranking_pa: pd.DataFrame,
+    categories: pd.Series,
+    optimistic: bool = True,
+) -> pd.Series:
+    """_summary_
+
+    :param crisp_outranking_ap: _description_
+    :param crisp_outranking_pa: _description_
+    :param profiles: _description_
+    :param optimistic: _description_
+    :return: _description_
+    """
+    assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
+    if not optimistic:
+        for alternative in crisp_outranking_ap.index.values:
+            for category, profiles in categories.items():
+                in_category = False
+                for profile in profiles:
+                    relation_pa = outranking_relation_marginal(
+                        crisp_outranking_pa.loc[profile][alternative],
+                        crisp_outranking_ap.loc[alternative][profile],
+                    )
+                    relation_ap = outranking_relation_marginal(
+                        crisp_outranking_ap.loc[alternative][profile],
+                        crisp_outranking_pa.loc[profile][alternative],
+                    )
+                    if relation_ap in {
+                        OutrankingRelation.PQ,
+                        OutrankingRelation.INDIFF,
+                    }:
+                        in_category = True
+                    if relation_pa == OutrankingRelation.PQ:
+                        in_category = False
+                        break
+                if in_category:
+                    assignment[alternative] = category
+                    break
+            if not in_category:
+                assignment[alternative] = categories.index.values[-1]
+
+    if optimistic:
+        for alternative in crisp_outranking_ap.index.values:
+            current_category = categories.index.values[-1]
+            in_category = False
+            for category, profiles in categories[-2::-1].items():
+                in_category = False
+                for profile in profiles:
+                    relation_pa = outranking_relation_marginal(
+                        crisp_outranking_pa.loc[profile][alternative],
+                        crisp_outranking_ap.loc[alternative][profile],
+                    )
+                    relation_ap = outranking_relation_marginal(
+                        crisp_outranking_ap.loc[alternative][profile],
+                        crisp_outranking_pa.loc[profile][alternative],
+                    )
+                    if relation_pa == OutrankingRelation.PQ:
+                        in_category = True
+                    if relation_ap == OutrankingRelation.PQ:
+                        in_category = False
+                        break
+                if in_category:
+                    assignment[alternative] = current_category
+                    break
+                current_category = category
+            if not in_category:
+                assignment[alternative] = categories.index.values[0]
+    return assignment
