@@ -20,8 +20,8 @@ class WrongWeightValueError(ValueError):
 
 
 class WrongFactorValueError(ValueError):
-    """Raised, if reinforcement factor has improper
-    value (is not greater than one)."""
+    """Raised, if reinforcement or interaction factor
+    has improper value."""
 
 
 class InconsistentCriteriaNamesError(ValueError):
@@ -40,3 +40,8 @@ class WrongIndexValueError(ValueError):
 
 class WrongInteractionTypeError(ValueError):
     """Raised, if the interaction type is not an enum type."""
+
+
+class PositiveNetBalanceError(ValueError):
+    """Raised, if the positive net balance condition is not fulfilled
+    during the concordance with interactions calculations."""

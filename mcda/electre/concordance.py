@@ -1,6 +1,6 @@
 """This module implements methods to compute concordance."""
 from enum import Enum
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Hashable, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -486,6 +486,68 @@ class Interaction:
         return f"{self.interaction.value} |" f" {self.factor} "
 
 
+def _check_interaction_factor_value(interaction: Interaction) -> None:
+    """Checks if interaction factor has proper value,
+    depending on its type.
+
+    :raises exception.WrongFactorValueError (ValueError):
+        * if factor has the wrong value
+
+    :raises TypeError:
+        * if `interaction` has wrong type
+        * if `interaction.factor` is not numeric
+    """
+    try:
+        if interaction.interaction == InteractionType.MW and not interaction.factor < 0:
+            raise exceptions.WrongFactorValueError(
+                "Interaction factor for mutual weakening effect should be "
+                f"negative, but got {interaction.factor} instead."
+            )
+        elif interaction.interaction != InteractionType.MW and not interaction.factor > 0:
+            raise exceptions.WrongFactorValueError(
+                "Interaction factor for mutual strengthening and antagonistic effect "
+                f"should be positive, but got {interaction.factor} instead."
+            )
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong interaction type. Expected {Interaction.__name__}, but "
+            f"got {type(interaction).__name__} instead."
+        ) from exc
+    except TypeError as exc:
+        exc.args = (
+            "Wrong interaction factor type. Expected numeric, but got "
+            f"{type(interaction.factor).__name__} instead.",
+        )
+        raise
+
+
+def _positive_net_balance(
+    criterion_name: Hashable,
+    weight: NumericValue,
+    criterion_interactions: pd.Series,
+) -> None:
+    """Checks if positive net balance condition is fulfilled.
+
+    :raises exceptions.PositiveNetBalanceError (ValueError):
+        * if pnb <= 0
+    """
+    if (
+        weight
+        - sum(
+            [
+                abs(x.factor)
+                for x in criterion_interactions
+                if isinstance(x, Interaction)
+                and x.interaction in (InteractionType.MW, InteractionType.A)
+            ]
+        )
+        <= 0
+    ):
+        raise exceptions.PositiveNetBalanceError(
+            f"Positive net balance condition is not fulfilled on a {criterion_name} criterion."
+        )
+
+
 def concordance_with_interactions_marginal(
     a_values: Union[Dict[Any, NumericValue], pd.Series],
     b_values: Union[Dict[Any, NumericValue], pd.Series],
@@ -556,37 +618,35 @@ def concordance_with_interactions_marginal(
                 c_i = marginal_concordances[i]
                 c_j = marginal_concordances[j]
 
-                try:
-                    if interactions[j][i].interaction in (
-                        InteractionType.MS,
-                        InteractionType.MW,
-                    ):
-                        mutual.append(interaction_value(c_i, c_j) * interactions[j][i].factor)
+                _check_interaction_factor_value(interactions[j][i])
+                _positive_net_balance(
+                    criterion_name=j, weight=weights[j], criterion_interactions=interactions.loc[j]
+                )
+                if interactions[j][i].interaction in (
+                    InteractionType.MS,
+                    InteractionType.MW,
+                ):
+                    mutual.append(interaction_value(c_i, c_j) * interactions[j][i].factor)
 
-                    elif interactions[j][i].interaction == InteractionType.A:
-                        antagonistic.append(
-                            interaction_value(
-                                c_i,
-                                concordance_marginal(
-                                    b_values[j],
-                                    a_values[j],
-                                    scales[j],
-                                    indifference_thresholds[j],
-                                    preference_thresholds[j],
-                                ),
-                            )
-                            * interactions[j][i].factor
+                elif interactions[j][i].interaction == InteractionType.A:
+                    antagonistic.append(
+                        interaction_value(
+                            c_i,
+                            concordance_marginal(
+                                b_values[j],
+                                a_values[j],
+                                scales[j],
+                                indifference_thresholds[j],
+                                preference_thresholds[j],
+                            ),
                         )
-                    else:
-                        raise exceptions.WrongInteractionTypeError(
-                            f"Interaction type should has a{InteractionType.__name__} type, "
-                            f"but got {type(interactions[j][i].interaction).__name__} instead."
-                        )
-                except AttributeError as exc:
-                    raise TypeError(
-                        f"Wrong interaction type. Expected {Interaction.__name__}, but "
-                        f"got {type(interactions[j][i]).__name__} instead."
-                    ) from exc
+                        * interactions[j][i].factor
+                    )
+                else:
+                    raise exceptions.WrongInteractionTypeError(
+                        f"Interaction type should has a{InteractionType.__name__} type, "
+                        f"but got {type(interactions[j][i].interaction).__name__} instead."
+                    )
 
     interaction_sum = sum(mutual) - sum(antagonistic)
     return (
