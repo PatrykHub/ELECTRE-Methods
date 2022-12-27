@@ -1,4 +1,14 @@
-from typing import Any, Collection, Dict, List, Literal, Tuple, Union, get_args
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+    get_args,
+)
 
 import pandas as pd
 
@@ -195,7 +205,7 @@ def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> 
 
 
 def _reinforcement_factors_vals(
-    reinforcement_factors: Union[Dict[Any, NumericValue], pd.Series]
+    reinforcement_factors: Union[Dict[Any, Optional[NumericValue]], pd.Series]
 ) -> None:
     """Checks if all reinforcement factors are > 1
 
@@ -203,11 +213,11 @@ def _reinforcement_factors_vals(
         * if any factor is less or equal 1
 
     :raises TypeError:
-        * if any factor is not a numeric type
+        * if any factor is not a numeric type and is not ``None``
     """
     try:
         if not all(
-            factor > 1
+            factor > 1 if factor is not None and pd.notna(factor) else True
             for factor in (
                 reinforcement_factors.values()
                 if isinstance(reinforcement_factors, dict)

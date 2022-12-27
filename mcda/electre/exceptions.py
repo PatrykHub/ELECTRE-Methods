@@ -36,3 +36,7 @@ class NotUniqueNamesError(ValueError):
 class WrongIndexValueError(ValueError):
     """Raised, if the provided index value is outside
     its permissible interval."""
+
+
+class WrongInteractionTypeError(ValueError):
+    """Raised, if the interaction type is not an enum type."""

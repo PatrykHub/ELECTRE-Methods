@@ -8,7 +8,15 @@ from ..core.aliases import NumericValue
 from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
 from . import exceptions
-from ._validation import _both_values_in_scale, _get_threshold_values, _inverse_values
+from ._validation import (
+    _both_values_in_scale,
+    _check_df_index,
+    _consistent_criteria_names,
+    _get_threshold_values,
+    _inverse_values,
+    _reinforcement_factors_vals,
+    _weights_proper_vals,
+)
 
 
 def concordance_marginal(
@@ -89,8 +97,16 @@ def concordance_comprehensive(
     :return: _description_
     """
     if "validated" not in kwargs:
-        # valudate input values
-        ...
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+        )
+        _weights_proper_vals(weights)
+
     return sum(
         [
             weights[criterion_name]
@@ -127,6 +143,18 @@ def concordance(
     :return: _description_
     """
     if profiles_perform is not None:
+        _consistent_criteria_names(
+            alternatives_perform=alternatives_perform,
+            scales=scales,
+            weights=weights,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            profiles_perform=profiles_perform,
+        )
+        _check_df_index(alternatives_perform, index_type="alternatives")
+        _check_df_index(profiles_perform, index_type="profiles")
+        _weights_proper_vals(weights)
+
         return pd.DataFrame(
             [
                 [
@@ -137,6 +165,7 @@ def concordance(
                         weights,
                         indifference_thresholds,
                         preference_thresholds,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -154,6 +183,7 @@ def concordance(
                         weights,
                         indifference_thresholds,
                         preference_thresholds,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -163,6 +193,15 @@ def concordance(
             columns=alternatives_perform.index,
         )
 
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        weights=weights,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _weights_proper_vals(weights)
     return pd.DataFrame(
         [
             [
@@ -173,6 +212,7 @@ def concordance(
                     weights,
                     indifference_thresholds,
                     preference_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
@@ -198,10 +238,20 @@ def is_reinforcement_occur(
 
     :return: _description_
     """
+    _both_values_in_scale(a_value, b_value, scale)
+    threshold_value = _get_threshold_values(
+        b_value, reinforcement_threshold=reinforcement_threshold
+    )[0]
+
+    if threshold_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            f"Reinforcement threshold value must be positive, but got {threshold_value} instead."
+        )
+
     return (
-        a_value - b_value > reinforcement_threshold(b_value)
+        a_value - b_value > threshold_value
         if scale.preference_direction == PreferenceDirection.MAX
-        else b_value - a_value > reinforcement_threshold(b_value)
+        else b_value - a_value > threshold_value
     )
 
 
@@ -235,6 +285,7 @@ def concordance_reinforced_comprehensive(
     reinforced_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     reinforcement_factors: Union[Dict[Any, Optional[NumericValue]], pd.Series],
     inverse: bool = False,
+    **kwargs,
 ) -> NumericValue:
     """_summary_
 
@@ -250,6 +301,20 @@ def concordance_reinforced_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            reinforced_thresholds=reinforced_thresholds,
+            reinforcement_factors=reinforcement_factors,
+        )
+        _weights_proper_vals(weights)
+        _reinforcement_factors_vals(reinforcement_factors)
+
     reinforce_occur = _get_reinforced_criteria(a_values, b_values, scales, reinforced_thresholds)
     sum_weights_reinforced: NumericValue = 0
     sum_weights_not_reinforced: NumericValue = 0
@@ -304,6 +369,21 @@ def concordance_reinforced(
     :return: _description_
     """
     if profiles_perform is not None:
+        _consistent_criteria_names(
+            alternatives_perform=alternatives_perform,
+            scales=scales,
+            weights=weights,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            reinforced_thresholds=reinforced_thresholds,
+            reinforcement_factors=reinforcement_factors,
+            profiles_perform=profiles_perform,
+        )
+        _check_df_index(alternatives_perform, index_type="alternatives")
+        _check_df_index(profiles_perform, index_type="profiles")
+        _weights_proper_vals(weights)
+        _reinforcement_factors_vals(reinforcement_factors)
+
         return pd.DataFrame(
             [
                 [
@@ -316,6 +396,7 @@ def concordance_reinforced(
                         preference_thresholds,
                         reinforced_thresholds,
                         reinforcement_factors,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -335,6 +416,7 @@ def concordance_reinforced(
                         preference_thresholds,
                         reinforced_thresholds,
                         reinforcement_factors,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -343,6 +425,19 @@ def concordance_reinforced(
             index=profiles_perform.index,
             columns=alternatives_perform.index,
         )
+
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        weights=weights,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        reinforced_thresholds=reinforced_thresholds,
+        reinforcement_factors=reinforcement_factors,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _weights_proper_vals(weights)
+    _reinforcement_factors_vals(reinforcement_factors)
     return pd.DataFrame(
         [
             [
@@ -355,6 +450,7 @@ def concordance_reinforced(
                     preference_thresholds,
                     reinforced_thresholds,
                     reinforcement_factors,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
@@ -399,6 +495,7 @@ def concordance_with_interactions_marginal(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     interactions: pd.DataFrame,
     function_type: FunctionType = FunctionType.MIN,
+    **kwargs,
 ) -> NumericValue:
     """
 
@@ -411,6 +508,30 @@ def concordance_with_interactions_marginal(
     :param preference_thresholds:
     :return:
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            interactions=interactions,
+        )
+        _check_df_index(interactions, index_type="criteria")
+        _weights_proper_vals(weights)
+
+        if set(interactions.index.values) != set(interactions.columns.values):
+            raise exceptions.InconsistentCriteriaNamesError(
+                "Interaction DataFrame index should contain the same values set as " "its columns."
+            )
+
+        if not isinstance(function_type, FunctionType):
+            raise TypeError(
+                f"Wrong FunctionType argument. Expected {FunctionType.__name__}, "
+                f"but got {type(function_type).__name__} instead."
+            )
+
     mutual, antagonistic = [], []
     marginal_concordances = pd.Series(
         [
@@ -425,7 +546,6 @@ def concordance_with_interactions_marginal(
         ],
         index=list(a_values.keys()),
     )
-
     interaction_value = (
         lambda c_i, c_j: min(c_i, c_j) if function_type == FunctionType.MIN else c_i * c_j
     )
@@ -436,29 +556,39 @@ def concordance_with_interactions_marginal(
                 c_i = marginal_concordances[i]
                 c_j = marginal_concordances[j]
 
-                if interactions[j][i].interaction in (
-                    InteractionType.MS,
-                    InteractionType.MW,
-                ):
-                    mutual.append(interaction_value(c_i, c_j) * interactions[j][i].factor)
+                try:
+                    if interactions[j][i].interaction in (
+                        InteractionType.MS,
+                        InteractionType.MW,
+                    ):
+                        mutual.append(interaction_value(c_i, c_j) * interactions[j][i].factor)
 
-                else:
-                    antagonistic.append(
-                        interaction_value(
-                            c_i,
-                            concordance_marginal(
-                                b_values[j],
-                                a_values[j],
-                                scales[j],
-                                indifference_thresholds[j],
-                                preference_thresholds[j],
-                            ),
+                    elif interactions[j][i].interaction == InteractionType.A:
+                        antagonistic.append(
+                            interaction_value(
+                                c_i,
+                                concordance_marginal(
+                                    b_values[j],
+                                    a_values[j],
+                                    scales[j],
+                                    indifference_thresholds[j],
+                                    preference_thresholds[j],
+                                ),
+                            )
+                            * interactions[j][i].factor
                         )
-                        * interactions[j][i].factor
-                    )
+                    else:
+                        raise exceptions.WrongInteractionTypeError(
+                            f"Interaction type should has a{InteractionType.__name__} type, "
+                            f"but got {type(interactions[j][i].interaction).__name__} instead."
+                        )
+                except AttributeError as exc:
+                    raise TypeError(
+                        f"Wrong interaction type. Expected {Interaction.__name__}, but "
+                        f"got {type(interactions[j][i]).__name__} instead."
+                    ) from exc
 
     interaction_sum = sum(mutual) - sum(antagonistic)
-
     return (
         sum(
             [
@@ -492,6 +622,27 @@ def concordance_with_interactions(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        weights=weights,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        interactions=interactions,
+        profiles_perform=profiles_perform if profiles_perform is not None else alternatives_perform,
+    )
+    _check_df_index(interactions, index_type="criteria")
+    _weights_proper_vals(weights)
+    if set(interactions.index.values) != set(interactions.columns.values):
+        raise exceptions.InconsistentCriteriaNamesError(
+            "Interaction DataFrame index should contain the same values set as " "its columns."
+        )
+    if not isinstance(function_type, FunctionType):
+        raise TypeError(
+            f"Wrong FunctionType argument. Expected {FunctionType.__name__}, "
+            f"but got {type(function_type).__name__} instead."
+        )
+
     if profiles_perform is not None:
         return pd.DataFrame(
             [
@@ -505,6 +656,7 @@ def concordance_with_interactions(
                         preference_thresholds,
                         interactions,
                         function_type,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -524,6 +676,7 @@ def concordance_with_interactions(
                         preference_thresholds,
                         interactions,
                         function_type,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -544,6 +697,7 @@ def concordance_with_interactions(
                     preference_thresholds,
                     interactions,
                     function_type,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
