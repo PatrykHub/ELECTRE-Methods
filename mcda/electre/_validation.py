@@ -63,7 +63,7 @@ def _get_threshold_values(value: NumericValue, **kwargs: Threshold) -> List[Nume
 
 
 def _unique_names(
-    names_set: Collection, names_type: Literal["criteria", "variants", "profiles"]
+    names_set: Collection, names_type: Literal["criteria", "alternatives", "profiles"]
 ) -> None:
     """Checks if passed `names_set` contains only
     unique values
@@ -78,7 +78,29 @@ def _unique_names(
         raise exceptions.NotUniqueNamesError(f"Names of {names_type} must contain unique values.")
 
 
-def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series]) -> None:
+def _check_df_index(
+    df_to_check: pd.DataFrame, index_type: Literal["criteria", "alternatives", "profiles"]
+) -> None:
+    """Checks if index in `pd.DataFrame` contains only
+    unique values.
+
+    :raises NotUniqueNamesError (ValueError):
+        * if index values are not unique
+
+    :raises TypeError:
+        * if `df_to_check` is not a `pd.DataFrame` type
+        (doesn't have the `.index.values` attribute)
+    """
+    try:
+        _unique_names(df_to_check.index.values, names_type=index_type)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong argument type. Expected {pd.DataFrame.__name__}, "
+            f"but got {type(df_to_check).__name__} instead."
+        ) from exc
+
+
+def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame]) -> None:
     """Checks if all dictionaries / series contain the same set of keys.
 
     :raises InconsistentCriteriaNamesError (ValueError):
@@ -92,6 +114,27 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series]) -> None:
     :raises TypeError:
         * if any kwarg has no ``keys`` method
     """
+    args = list(kwargs.items())
+    try:
+        i = 0
+        _unique_names(args[i][1].keys(), names_type="criteria")
+        base_criteria_set = set(args[i][1].keys())
+
+        for i in range(1, len(args)):
+            _unique_names(args[i][1].keys(), names_type="criteria")
+
+            if base_criteria_set != set(args[i][1].keys()):
+                raise exceptions.InconsistentCriteriaNamesError(
+                    "All arguments should have the same criteria names, but found "
+                    f"{base_criteria_set} inside the {args[0][0]} argument and "
+                    f"{set(args[i][1].keys())} inside the {args[i][0]} argument."
+                )
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong {args[i][0]} type. Expected "
+            f"{_consistent_criteria_names.__annotations__['kwargs']}, "
+            f"but got {type(args[i][1]).__name__} instead."
+        ) from exc
 
 
 def _inverse_values(
@@ -126,20 +169,20 @@ def _inverse_values(
 
 
 def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> None:
-    """Checks if all weights are >= 1
+    """Checks if all weights are > 0
 
     :raises WrongWeightValueError (ValueError):
-        * if any weight is less than 1
+        * if any weight is not positive
 
     :raises TypeError:
         * if any weight is not a numeric type
     """
     try:
         if not all(
-            weight >= 1
+            weight > 0
             for weight in (weights.values() if isinstance(weights, dict) else weights.values)
         ):
-            raise exceptions.WrongWeightValueError("Weight value cannot be less than 1.")
+            raise exceptions.WrongWeightValueError("Weight value must be positive.")
     except TypeError as exc:
         non_numeric = [
             weight for weight in weights if not isinstance(weight, get_args(NumericValue))

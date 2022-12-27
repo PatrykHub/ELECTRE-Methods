@@ -72,7 +72,7 @@ def test_inverse(a_value, b_value, scale, inverse, expected, match: str) -> None
     ("weights", "expected", "match"),
     [
         [pd.Series([2, 3, 4], index=["2137", "ABC", "..."]), None, ""],
-        [{"key1": 1.00000001, "abcdef": 44.00000002, "33": 9999}, None, ""],
+        [{"key1": 0.25, "abcdef": 0.7, "33": 0.05}, None, ""],
     ],
 )
 def test_weights(weights, expected, match: str) -> None:
