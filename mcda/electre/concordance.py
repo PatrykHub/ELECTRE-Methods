@@ -126,9 +126,9 @@ def concordance(
                         indifference_thresholds,
                         preference_thresholds,
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -143,9 +143,9 @@ def concordance(
                         indifference_thresholds,
                         preference_thresholds,
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -162,9 +162,9 @@ def concordance(
                     indifference_thresholds,
                     preference_thresholds,
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
@@ -242,7 +242,7 @@ def concordance_reinforced_comprehensive(
     sum_weights_reinforced: NumericValue = 0
     sum_weights_not_reinforced: NumericValue = 0
     sum_concordances_not_reinforced: NumericValue = 0
-    for criterion_name in reinforce_occur.index:
+    for criterion_name in reinforce_occur.index.values:
         if reinforce_occur[criterion_name]:
             factor = reinforcement_factors[criterion_name]
             if factor is None:
@@ -305,9 +305,9 @@ def concordance_reinforced(
                         reinforced_thresholds,
                         reinforcement_factors,
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -324,9 +324,9 @@ def concordance_reinforced(
                         reinforced_thresholds,
                         reinforcement_factors,
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -344,9 +344,9 @@ def concordance_reinforced(
                     reinforced_thresholds,
                     reinforcement_factors,
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
@@ -418,8 +418,8 @@ def concordance_with_interactions_marginal(
         lambda c_i, c_j: min(c_i, c_j) if function_type == FunctionType.MIN else c_i * c_j
     )
 
-    for i in interactions.index:
-        for j in interactions.columns:
+    for i in interactions.index.values:
+        for j in interactions.columns.values:
             if interactions[j][i] is not None:
                 c_i = marginal_concordances[i]
                 c_j = marginal_concordances[j]
@@ -494,9 +494,9 @@ def concordance_with_interactions(
                         interactions,
                         function_type,
                     )
-                    for prof_name in profiles_perform.index
+                    for prof_name in profiles_perform.index.values
                 ]
-                for alt_name in alternatives_perform.index
+                for alt_name in alternatives_perform.index.values
             ],
             index=alternatives_perform.index,
             columns=profiles_perform.index,
@@ -513,9 +513,9 @@ def concordance_with_interactions(
                         interactions,
                         function_type,
                     )
-                    for alt_name in alternatives_perform.index
+                    for alt_name in alternatives_perform.index.values
                 ]
-                for prof_name in profiles_perform.index
+                for prof_name in profiles_perform.index.values
             ],
             index=profiles_perform.index,
             columns=alternatives_perform.index,
@@ -533,9 +533,9 @@ def concordance_with_interactions(
                     interactions,
                     function_type,
                 )
-                for alt_name_b in alternatives_perform.index
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for alt_name_a in alternatives_perform.index
+            for alt_name_a in alternatives_perform.index.values
         ],
         index=alternatives_perform.index,
         columns=alternatives_perform.index,
