@@ -622,3 +622,197 @@ def median_order(
         final_order[alternatives[initial_order[i]]] = level
 
     return reverse_transform_series(final_order)
+
+
+def assign_tri_c_class(
+    categories_profiles: pd.Series,
+    crisp_outranking_alt_prof: pd.DataFrame,
+    crisp_outranking_prof_alt: pd.DataFrame,
+    credibility_alt_prof: pd.DataFrame,
+    credibility_prof_alt: pd.DataFrame,
+) -> pd.Series:
+    """
+    :param categories_profiles: dictionary with characteristic (central) profiles
+    :param crisp_outranking_alt_prof:
+    :param crisp_outranking_prof_alt:
+    :param credibility_alt_prof:
+    :param credibility_prof_alt:
+    :return:
+    """
+
+    assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
+
+    assignments_descending = []
+    assignments_ascending = []
+    for alternative in crisp_outranking_alt_prof.index.values:
+        found_descending = False
+        for i, profile in enumerate(
+            categories_profiles[len(categories_profiles) - 2:: -1]
+        ):
+            p_next = categories_profiles.iloc[len(categories_profiles) - i - 1]
+            relation = outranking_relation_marginal(
+                crisp_outranking_alt_prof.loc[alternative][profile],
+                crisp_outranking_prof_alt.loc[profile][alternative],
+            )
+            relation_next = outranking_relation_marginal(
+                crisp_outranking_alt_prof.loc[alternative][p_next],
+                crisp_outranking_prof_alt.loc[p_next][alternative],
+            )
+            if relation == OutrankingRelation.PQ and (
+                credibility_alt_prof.loc[alternative][p_next]
+                > credibility_prof_alt.loc[profile][alternative]
+                or credibility_alt_prof.loc[alternative][p_next]
+                >= credibility_prof_alt.loc[profile][alternative]
+                and relation_next == OutrankingRelation.R
+            ):
+                p_next = categories_profiles[categories_profiles == p_next].index[0]
+                category = categories_profiles[p_next]
+                assignments_descending.append((alternative, category))
+                found_descending = True
+                break
+        if not found_descending:
+            assignments_descending.append((alternative, categories_profiles[0]))
+
+        found_ascending = False
+        for i, profile in enumerate(categories_profiles[1:]):
+            p_prev = categories_profiles.iloc[i]
+            relation = outranking_relation_marginal(
+                crisp_outranking_prof_alt.loc[profile][alternative],
+                crisp_outranking_alt_prof.loc[alternative][profile],
+            )
+            relation_prev = outranking_relation_marginal(
+                crisp_outranking_alt_prof.loc[alternative][p_prev],
+                crisp_outranking_prof_alt.loc[p_prev][alternative],
+            )
+            if relation == OutrankingRelation.PQ and (
+                credibility_prof_alt.loc[p_prev][alternative]
+                > credibility_alt_prof.loc[alternative][profile]
+                or credibility_prof_alt.loc[p_prev][alternative]
+                >= credibility_alt_prof.loc[alternative][profile]
+                and relation_prev == OutrankingRelation.R
+            ):
+                p_prev = categories_profiles[categories_profiles == p_prev].index[0]
+                category = categories_profiles[p_prev]
+                assignments_ascending.append((alternative, category))
+                found_ascending = True
+                break
+        if not found_ascending:
+            assignments_ascending.append((alternative, categories_profiles[-1]))
+    for i in zip(assignments_descending, assignments_ascending):
+        assignment[i[0][0]] = (i[0][1], i[1][1])
+
+    return assignment
+
+
+def assign_tri_rc_class(
+    categories_profiles: pd.Series,
+    crisp_outranking_alt_prof: pd.DataFrame,
+    crisp_outranking_prof_alt: pd.DataFrame,
+    credibility_alt_prof: pd.DataFrame,
+    credibility_prof_alt: pd.DataFrame,
+) -> pd.Series:
+    """
+
+    :param categories_profiles:
+    :param crisp_outranking_alt_prof:
+    :param crisp_outranking_prof_alt:
+    :param credibility_alt_prof:
+    :param credibility_prof_alt:
+    :return:
+    """
+    assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
+
+    assignments_descending = []
+    assignments_ascending = []
+    for alternative in crisp_outranking_alt_prof.index.values:
+        found_descending = False
+        for i, profile in enumerate(
+            categories_profiles[len(categories_profiles) - 2:: -1]
+        ):
+            p_next = categories_profiles.iloc[len(categories_profiles) - i - 1]
+            relation = outranking_relation_marginal(
+                crisp_outranking_alt_prof.loc[alternative][profile],
+                crisp_outranking_prof_alt.loc[profile][alternative],
+            )
+            if (
+                relation == OutrankingRelation.PQ
+                and credibility_alt_prof.loc[alternative][p_next]
+                > credibility_prof_alt.loc[profile][alternative]
+            ):
+                p_next = categories_profiles[categories_profiles == p_next].index[0]
+                category = categories_profiles[p_next]
+                assignments_descending.append((alternative, category))
+                found_descending = True
+                break
+
+        if not found_descending:
+            assignments_descending.append((alternative, categories_profiles[0]))
+
+        found_ascending = False
+        for i, profile in enumerate(categories_profiles[1:]):
+            p_prev = categories_profiles.iloc[i]
+            relation = outranking_relation_marginal(
+                crisp_outranking_prof_alt.loc[profile][alternative],
+                crisp_outranking_alt_prof.loc[alternative][profile],
+            )
+            if (
+                relation == OutrankingRelation.PQ
+                and credibility_prof_alt.loc[p_prev][alternative]
+                > credibility_alt_prof.loc[alternative][profile]
+            ):
+                p_prev = categories_profiles[categories_profiles == p_prev].index[0]
+                category = categories_profiles[p_prev]
+                assignments_ascending.append((alternative, category))
+                found_ascending = True
+                break
+        if not found_ascending:
+            assignments_ascending.append((alternative, categories_profiles[-1]))
+    for i in zip(assignments_descending, assignments_ascending):
+        assignment[i[0][0]] = (i[0][1], i[1][1])
+    return assignment
+
+
+def assign_tri_class(
+    categories_profiles: pd.Series,
+    crisp_outranking_alt_prof: pd.DataFrame,
+    crisp_outranking_prof_alt: pd.DataFrame,
+) -> pd.Series:
+    """
+    This function assigns alternatives to classes according to the outranking.
+    :param categories_profiles: dictionary with boundary profiles
+    :param crisp_outranking_alt_prof: DataFrame containing crisp outranking values
+    :param crisp_outranking_prof_alt:
+    :return:
+    """
+    assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
+    # Flattening the structure of categories
+    ranking = pd.Series(sum(categories_profiles, ())).unique()
+
+    for alternative in crisp_outranking_alt_prof.index.values:
+        # Pessimistic assignment
+        pessimistic_idx = 0
+        for i, profile in list(enumerate(categories_profiles.index))[::-1]:
+            relation = outranking_relation_marginal(
+                crisp_outranking_alt_prof.loc[alternative][profile],
+                crisp_outranking_prof_alt.loc[profile][alternative],
+            )
+            if relation in (OutrankingRelation.INDIFF, OutrankingRelation.PQ):
+                pessimistic_idx = i + 1
+                break
+
+        # Optimistic assignment
+        optimistic_idx = len(categories_profiles)
+        for i, profile in enumerate(categories_profiles.index):
+            relation = outranking_relation_marginal(
+                crisp_outranking_prof_alt.loc[profile][alternative],
+                crisp_outranking_alt_prof.loc[alternative][profile],
+            )
+            if relation == OutrankingRelation.PQ:
+                optimistic_idx = i
+                break
+
+        assignment[alternative] = (
+            ranking[pessimistic_idx],
+            ranking[optimistic_idx],
+        )
+    return assignment
