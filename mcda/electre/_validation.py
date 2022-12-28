@@ -73,7 +73,8 @@ def _get_threshold_values(value: NumericValue, **kwargs: Threshold) -> List[Nume
 
 
 def _unique_names(
-    names_set: Collection, names_type: Literal["criteria", "alternatives", "profiles"]
+    names_set: Collection,
+    names_type: Literal["criteria", "alternatives", "profiles", "rows", "columns"],
 ) -> None:
     """Checks if passed `names_set` contains only
     unique values
@@ -89,7 +90,9 @@ def _unique_names(
 
 
 def _check_df_index(
-    df_to_check: Optional[pd.DataFrame], index_type: Literal["criteria", "alternatives", "profiles"]
+    df_to_check: Optional[pd.DataFrame],
+    index_type: Literal["criteria", "alternatives", "profiles", "rows", "columns"],
+    check_columns: bool = False,
 ) -> None:
     """Checks if index in `pd.DataFrame` contains only
     unique values.
@@ -104,7 +107,10 @@ def _check_df_index(
     if df_to_check is None:
         return
     try:
-        _unique_names(df_to_check.index.values, names_type=index_type)
+        _unique_names(
+            df_to_check.columns.values if check_columns else df_to_check.index.values,
+            names_type=index_type,
+        )
     except AttributeError as exc:
         raise TypeError(
             f"Wrong argument type. Expected {pd.DataFrame.__name__}, "

@@ -11,9 +11,11 @@ from . import exceptions
 from ._validation import (
     _both_values_in_scale,
     _check_df_index,
+    _check_index_value_interval,
     _consistent_criteria_names,
     _get_threshold_values,
     _inverse_values,
+    _unique_names,
     _weights_proper_vals,
 )
 
@@ -452,6 +454,40 @@ def discordance(
 
     :return: a data frame with comprehensive discordance indices
     """
+    _check_df_index(discordance_marginals, index_type="rows")
+    _check_df_index(discordance_marginals, index_type="columns", check_columns=True)
+
+    try:
+        _unique_names(weights.keys(), names_type="criteria")
+        _weights_proper_vals(weights)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
+            f"but got {type(weights).__name__} instead."
+        ) from exc
+
+    criteria_set = set(weights.keys())
+    try:
+        for column_name in discordance_marginals.columns.values:
+            for row_name in discordance_marginals[column_name].index.values:
+                _unique_names(
+                    discordance_marginals[column_name][row_name].keys(), names_type="criteria"
+                )
+                if set(discordance_marginals[column_name][row_name].keys()) != criteria_set:
+                    raise exceptions.InconsistentCriteriaNamesError(
+                        "A criteria set inside discordance marginals table is different from "
+                        "the set provided with weights."
+                    )
+                for value in discordance_marginals[column_name][row_name].values:
+                    _check_index_value_interval(value, "marginal discordance")
+
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong marginal discordance value type. Expected "
+            f"{pd.Series.__name__}, but got "
+            f"{type(discordance_marginals[column_name][row_name]).__name__} instead."
+        ) from exc
+
     weights_sum: NumericValue = sum(weights)
     return pd.DataFrame(
         [
