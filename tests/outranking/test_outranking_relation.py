@@ -1,17 +1,23 @@
-from typing import List, Tuple, Union
+from typing import Any, List, Tuple, Union
 
 import pandas as pd
 import pytest
+
 from mcda.electre.outranking import (
     OutrankingRelation,
+    aggregate,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
     crisp_outranking_cut,
     crisp_outranking_cut_marginal,
     crisp_outranking_Is,
     crisp_outranking_Is_marginal,
+    find_kernel,
+    find_vertices_without_predecessor,
+    net_flow_score,
     outranking_relation,
     outranking_relation_marginal,
+    strongly_connected_components,
 )
 
 
@@ -241,3 +247,182 @@ def test_outranking_relation(
     else:
         assert isinstance(result, pd.DataFrame)
         assert result.equals(expected)
+
+
+@pytest.mark.parametrize(
+    (
+        "graph",
+        "expected",
+    ),
+    (
+        (
+            pd.Series(
+                [["a", "b"], ["a", "c", "d"], [], [], []],
+                index=["a", "b", "c", "d", "e"],
+            ),
+            [["c"], ["d"], ["b", "a"], ["e"]],
+        ),
+        (
+            pd.Series([["b"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
+            [["c"], ["d"], ["b"], ["a"], ["e"]],
+        ),
+    ),
+)
+def test_strongly_connected_components(
+    graph,
+    expected: List[Any],
+) -> None:
+    assert strongly_connected_components(graph) == expected
+
+
+@pytest.mark.parametrize(
+    (
+        "graph",
+        "expected",
+    ),
+    (
+        (
+            pd.Series([["b"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
+            pd.Series([["b"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
+        ),
+    ),
+)
+def test_aggregate(
+    graph,
+    expected: pd.Series,
+) -> None:
+    pd.testing.assert_series_equal(aggregate(graph), expected)
+
+
+@pytest.mark.parametrize(
+    (
+        "graph",
+        "expected",
+    ),
+    (
+        (
+            pd.Series(
+                [["b"], ["c", "d"], [], [], []],
+                index=["a", "b", "c", "d", "e"],
+            ),
+            ["a", "e"],
+        ),
+        (
+            pd.Series(
+                [["b", "e"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]
+            ),
+            ["a"],
+        ),
+    ),
+)
+def test_find_vertices_without_predecessor(
+    graph,
+    expected: List[Any],
+) -> None:
+    assert find_vertices_without_predecessor(graph) == expected
+
+
+@pytest.mark.parametrize(
+    ("alt_names", "outranking", "expected"),
+    (
+        (
+            ["A1", "A2", "A3"],
+            [
+                [1, 0, 0],
+                [1, 1, 0],
+                [1, 0, 1],
+            ],
+            ["A2", "A3"],
+        ),
+        (
+            ["APS", "AWF", "PW", "PWT", "SGGW", "SGH", "SGSP", "UKSW", "UW", "WAT"],
+            [
+                [True, False, False, False, False, False, True, False, False, False],
+                [True, True, False, True, False, False, True, False, False, True],
+                [True, True, True, True, True, True, True, True, False, True],
+                [True, False, False, True, False, False, True, False, False, False],
+                [True, True, False, True, True, False, True, True, False, True],
+                [True, True, False, True, True, True, True, True, False, True],
+                [True, False, False, True, False, False, True, False, False, False],
+                [True, True, False, True, False, False, True, True, False, True],
+                [True, True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, False, False, True, False, False, True],
+            ],
+            ['UW']
+        ),
+        (
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            [
+                [1, 1, 0, 0, 0, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 1, 1, 1],
+            ],
+            ['a', 'd', 'g']
+        ),
+        (
+            ['XD', '2137', 'AU', 'UWU', 'MERRY CHRISTMAS', 'F'],
+            [
+                [1, 0, 0, 1, 0, 0],
+                [0, 1, 0, 0, 1, 0],
+                [0, 0, 1, 0, 0, 0],
+                [0, 1, 1, 1, 0, 0],
+                [0, 0, 1, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1],
+            ],
+            ['XD', '2137', 'AU', 'F']
+        ),
+        (
+            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            [
+                [1, 0, 0, 0, 1, 0, 0],
+                [0, 1, 1, 0, 0, 0, 0],
+                [0, 0, 1, 1, 0, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [1, 0, 0, 0, 1, 0, 0],
+                [0, 0, 1, 0, 1, 1, 0],
+                [0, 0, 0, 0, 0, 0, 1],
+            ],
+            ['f', 'g']
+        )
+    ),
+)
+def test_find_kernel(
+    alt_names: List[str],
+    outranking: List[List[Union[bool, int]]],
+    expected: List[str],
+) -> None:
+    assert (
+        sorted(find_kernel(
+            pd.DataFrame(
+                outranking,
+                index=alt_names,
+                columns=alt_names,
+            )
+        ))
+        == sorted(expected)
+    )
+
+
+def test_net_flow_score() -> None:
+    alt_names: List[str] = ["A1", "A2", "A3"]
+    pd.testing.assert_series_equal(
+        net_flow_score(
+            pd.DataFrame(
+                [
+                    [1, 0, 0],
+                    [1, 1, 0],
+                    [1, 0, 1],
+                ],
+                index=alt_names,
+                columns=alt_names,
+            )
+        ),
+        pd.Series(
+            [1, 1, -2],
+            index=["A2", "A3", "A1"],
+        ),
+    )

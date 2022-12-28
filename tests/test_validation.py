@@ -1,15 +1,19 @@
 import copy
 
+import pandas as pd
 import pytest
+
 from mcda.core.scales import QuantitativeScale
-from mcda.electre._validate import (_all_lens_equal, _both_values_in_scale,
-                                    _inverse_values,
-                                    _reinforcement_factors_vals,
-                                    _weights_proper_vals)
+from mcda.electre._validation import (
+    _both_values_in_scale,
+    _inverse_values,
+    _reinforcement_factors_vals,
+    _weights_proper_vals,
+)
 
 
 @pytest.mark.parametrize(
-    ("aval", "bval", "scale", "expected", "match"),
+    ("a_value", "b_value", "scale", "expected", "match"),
     (
         [3, 10, QuantitativeScale(3, 10), None, ""],
         [-0.0, -50, QuantitativeScale(-100, 0), None, ""],
@@ -30,76 +34,45 @@ from mcda.electre._validate import (_all_lens_equal, _both_values_in_scale,
         [1, 2, "aaaaa", TypeError, "got 'str'"],
     ),
 )
-def test_both_in_scale(aval, bval, scale, expected, match: str) -> None:
+def test_both_in_scale(a_value, b_value, scale, expected, match: str) -> None:
     if expected is None:
-        _both_values_in_scale(aval, bval, scale)
+        _both_values_in_scale(a_value, b_value, scale)
     else:
         with pytest.raises(expected, match=match):
-            _both_values_in_scale(aval, bval, scale)
+            _both_values_in_scale(a_value, b_value, scale)
 
 
 @pytest.mark.parametrize(
-    ("kwargs", "expected", "match"),
-    (
-        [{"a": [2, 3, 4], "b": [3, 4, 5], "c": ["a", "b", "c"]}, None, ""],
-        [{"qqq": "abc", "qqqq": "XDD", "nice_variable": "OMG", "XD": "WOW"}, None, ""],
-        [{":c": (3, 4), "arg2": [3, 4], "just_str": "ff"}, None, ""],
-        [{"factors": [3, 4, 5, 1000]}, None, ""],
-        [{"a1": [], "123": "", "": "", "--": ""}, None, ""],
-        [
-            {"a": [1, 1, 1, 1], "b": [2, 3], "c": [2, 3, 1, 2]},
-            ValueError,
-            " len\\(b\\)=2, len\\(a\\)=4",
-        ],
-        [
-            {"1": (3, 4, 4), "2": [2, 3, 6], "3": [2, 3, 1, 2]},
-            ValueError,
-            " len\\(3\\)=4, len\\(1\\)=3",
-        ],
-        [{"factors": 3}, TypeError, "got 'int' instead."],
-        [{"2333": 3, "xdd": []}, TypeError, " got 'int' instead"],
-        [{"q": [], "w": 5, "e": 6}, TypeError, " got 'int' instead"],
-    ),
-)
-def test_all_lens_equal(kwargs, expected, match: str) -> None:
-    if expected is None:
-        _all_lens_equal(**kwargs)
-    else:
-        with pytest.raises(expected, match=match):
-            _all_lens_equal(**kwargs)
-
-
-@pytest.mark.parametrize(
-    ("aval", "bval", "scale", "inverse", "expected", "match"),
+    ("a_value", "b_value", "scale", "inverse", "expected", "match"),
     (
         [3, 4, QuantitativeScale(0, 10), False, None, ""],
         [0, 10, QuantitativeScale(0, 10), True, None, ""],
     ),
 )
-def test_inverse(aval, bval, scale, inverse, expected, match: str) -> None:
+def test_inverse(a_value, b_value, scale, inverse, expected, match: str) -> None:
     if expected is None:
-        a, b, c = _inverse_values(aval, bval, copy.copy(scale), inverse)
+        a, b, c = _inverse_values(a_value, b_value, copy.copy(scale), inverse)
         if not inverse:
-            assert (aval, bval) == (a, b)
+            assert (a_value, b_value) == (a, b)
             assert c.preference_direction == scale.preference_direction
             assert c.dmin == scale.dmin
             assert c.dmax == scale.dmax
         else:
-            assert aval == b
-            assert bval == a
+            assert a_value == b
+            assert b_value == a
             assert c.preference_direction != scale.preference_direction
             assert c.dmin == scale.dmin
             assert c.dmax == scale.dmax
     else:
         with pytest.raises(expected, match=match):
-            _inverse_values(aval, bval, scale, inverse)
+            _inverse_values(a_value, b_value, scale, inverse)
 
 
 @pytest.mark.parametrize(
     ("weights", "expected", "match"),
     [
-        [(2, 3, 4), None, ""],
-        [[0.00000001, 0.00000002, 9999], None, ""],
+        [pd.Series([2, 3, 4], index=["2137", "ABC", "..."]), None, ""],
+        [{"key1": 0.25, "abcdef": 0.7, "33": 0.05}, None, ""],
     ],
 )
 def test_weights(weights, expected, match: str) -> None:
@@ -112,7 +85,10 @@ def test_weights(weights, expected, match: str) -> None:
 
 @pytest.mark.parametrize(
     ("factors", "expected", "match"),
-    [[(1.00000000001, 1.0, 99), None, ""], [[2, 3, 5], None, ""]],
+    [
+        [pd.Series([1.00000000001, 1.4, 99], index=["2137", "ABC", "..."]), None, ""],
+        [{"key a": 2, "qqq": 3, "ewq": 5}, None, ""],
+    ],
 )
 def test_reinforcement_factors(factors, expected, match: str) -> None:
     if expected is None:
