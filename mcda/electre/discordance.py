@@ -300,18 +300,16 @@ def discordance_comprehensive(
         )
         _weights_proper_vals(weights)
     return sum(
-        [
-            weights[criterion_name]
-            * discordance_marginal(
-                a_values[criterion_name],
-                b_values[criterion_name],
-                scales[criterion_name],
-                preference_thresholds[criterion_name],
-                veto_thresholds[criterion_name],
-                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
-            )
-            for criterion_name in a_values.keys()
-        ]
+        pd.Series(weights)
+        * discordance_criteria_marginals(
+            a_values,
+            b_values,
+            scales,
+            preference_thresholds,
+            veto_thresholds,
+            pre_veto_thresholds,
+            validated=True,
+        )
     ) / sum(weights.values() if isinstance(weights, dict) else weights.values)
 
 
