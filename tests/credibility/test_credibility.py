@@ -32,9 +32,7 @@ def test_credibility_comprehensive(
 
     credibility_matrix: pd.DataFrame = credibility_comprehensive(
         concordance_comprehensive,
-        non_discordance(
-            discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive
-        ),
+        non_discordance(discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive),
     )
 
     assert credibility_matrix.index.equals(concordance_comprehensive.index)
@@ -44,9 +42,7 @@ def test_credibility_comprehensive(
 
 
 @pytest.fixture
-def counter_veto_occurs(
-    alternative_names: List[str], profile_names: List[str]
-) -> pd.DataFrame:
+def counter_veto_occurs(alternative_names: List[str], profile_names: List[str]) -> pd.DataFrame:
     return pd.DataFrame(
         [
             [0, 0, 0, 1],
@@ -57,6 +53,26 @@ def counter_veto_occurs(
             [0, 2, 2, 3],
             [0, 1, 2, 2],
             [0, 2, 2, 3],
+        ],
+        index=alternative_names,
+        columns=profile_names,
+    )
+
+
+@pytest.fixture
+def counter_veto_occurs_lists(
+    alternative_names: List[str], profile_names: List[str]
+) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            [[], [], [], ["C1"]],
+            [[], ["C1"], ["C1", "C2"], ["C1", "C2", "C3"]],
+            [[], ["C1"], ["C1"], ["C1", "C2"]],
+            [[], ["C1"], ["C1", "C2"], ["C1", "C2"]],
+            [[], [], ["C1", "C2"], ["C1", "C2"]],
+            [[], ["C1", "C2"], ["C1", "C2"], ["C1", "C2", "C3"]],
+            [[], ["C1"], ["C1", "C2"], ["C1", "C2"]],
+            [[], ["C1", "C2"], ["C1", "C2"], ["C1", "C2", "C3"]],
         ],
         index=alternative_names,
         columns=profile_names,
@@ -81,10 +97,37 @@ def test_credibility_cv(
 
     credibility_matrix: pd.DataFrame = credibility_cv(
         concordance_comprehensive,
-        non_discordance(
-            discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive
-        ),
+        non_discordance(discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive),
         counter_veto_occurs,
+        number_of_criteria=3,
+    )
+
+    assert credibility_matrix.index.equals(concordance_comprehensive.index)
+    assert credibility_matrix.columns.equals(concordance_comprehensive.columns)
+
+    helpers.assert_array_values(expected_values, credibility_matrix.to_numpy())
+
+
+def test_credibility_cv_lists(
+    concordance_comprehensive: pd.DataFrame,
+    discordance_marginals: pd.DataFrame,
+    counter_veto_occurs_lists: pd.DataFrame,
+) -> None:
+    expected_values = [
+        [1.0, 1.0, 0.0, 0.0],
+        [1.0, 1.0, 1.0, 1.0],
+        [1.0, 0.0, 0.0, 0.0],
+        [1.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0, 0.307692307692],
+        [0.0, 0.0, 0.0, 0.0],
+        [1.0, 1.0, 0.878542510121, 0.615384615385],
+    ]
+
+    credibility_matrix: pd.DataFrame = credibility_cv(
+        concordance_comprehensive,
+        non_discordance(discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive),
+        counter_veto_occurs_lists,
         number_of_criteria=3,
     )
 
@@ -251,9 +294,7 @@ def prof_names() -> List[str]:
 
 
 @pytest.fixture
-def profiles_performance_table(
-    prof_names: List[str], criteria_names: List[str]
-) -> pd.DataFrame:
+def profiles_performance_table(prof_names: List[str], criteria_names: List[str]) -> pd.DataFrame:
     return pd.DataFrame(
         [
             [30000.0, 100.0, 11.0, 8.0, 125.0],
