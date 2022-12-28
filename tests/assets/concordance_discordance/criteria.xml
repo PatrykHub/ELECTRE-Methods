@@ -70,7 +70,7 @@
             </threshold>
             <threshold mcdaConcept="reinforced_preference">
                 <linear>
-                    <slope><real>0.15</real></slope>
+                    <slope><real>0.2</real></slope>
                     <intercept><integer>10000</integer></intercept>
                 </linear>
             </threshold>

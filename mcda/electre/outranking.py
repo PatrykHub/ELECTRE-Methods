@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
-from ._validate import _check_index_value_interval
+from ._validation import _check_index_value_interval
 from .utils import linear_function, reverse_transform_series, transform_series
 
 

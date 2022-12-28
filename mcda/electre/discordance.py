@@ -2,12 +2,24 @@
 from enum import Enum
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
 from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
-from ._validate import _both_values_in_scale, _inverse_values
+from . import exceptions
+from ._validation import (
+    _both_values_in_scale,
+    _check_df_index,
+    _check_index_value_interval,
+    _consistent_criteria_names,
+    _consistent_df_indexing,
+    _get_threshold_values,
+    _inverse_values,
+    _unique_names,
+    _weights_proper_vals,
+)
 
 
 def discordance_bin_marginal(
@@ -33,9 +45,15 @@ def discordance_bin_marginal(
     if veto_threshold is None:
         return 0
 
+    veto_threshold_value = _get_threshold_values(a_value, veto_threshold=veto_threshold)[0]
+    if veto_threshold_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            f"Veto threshold value must be positive, but got {veto_threshold_value} instead."
+        )
+
     if scale.preference_direction == PreferenceDirection.MAX:
-        return 1 if b_value - a_value >= veto_threshold(a_value) else 0
-    return 1 if a_value - b_value >= veto_threshold(a_value) else 0
+        return 1 if b_value - a_value >= veto_threshold_value else 0
+    return 1 if a_value - b_value >= veto_threshold_value else 0
 
 
 def discordance_bin_comprehensive(
@@ -44,6 +62,7 @@ def discordance_bin_comprehensive(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     inverse: bool = False,
+    **kwargs,
 ) -> int:
     """_summary_
 
@@ -55,6 +74,11 @@ def discordance_bin_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
     for criterion_name in a_values.keys():
         if discordance_bin_marginal(
             a_values[criterion_name],
@@ -72,9 +96,15 @@ def discordance_bin_criteria_marginals(
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    **kwargs,
 ) -> pd.Series:
     """Returns discordance marginals for all criteria between
     two alternatives."""
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
     return pd.Series(
         [
             discordance_bin_marginal(
@@ -111,6 +141,14 @@ def discordance_bin(
     if return_marginals:
         discordance_function = discordance_bin_criteria_marginals
 
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        veto_thresholds=veto_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
     if profiles_perform is not None:
         return pd.DataFrame(
             [
@@ -120,6 +158,7 @@ def discordance_bin(
                         profiles_perform.loc[prof_name],
                         scales,
                         veto_thresholds,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -135,6 +174,7 @@ def discordance_bin(
                         alternatives_perform.loc[alt_name],
                         scales,
                         veto_thresholds,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -143,6 +183,7 @@ def discordance_bin(
             index=profiles_perform.index,
             columns=alternatives_perform.index,
         )
+
     return pd.DataFrame(
         [
             [
@@ -151,6 +192,7 @@ def discordance_bin(
                     alternatives_perform.loc[alt_name_b],
                     scales,
                     veto_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
@@ -188,19 +230,30 @@ def discordance_marginal(
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
     if veto_threshold is None:
+        if pre_veto_threshold is not None:
+            raise exceptions.WrongThresholdValueError(
+                "Missing veto threshold for criterion with defined pre-veto."
+            )
         return 0
 
-    veto: NumericValue = veto_threshold(a_value)
-    preference: NumericValue = preference_threshold(a_value)
-    pre_veto: Optional[NumericValue] = (
-        pre_veto_threshold(a_value) if pre_veto_threshold is not None else None
+    preference, veto = _get_threshold_values(
+        a_value, preference_threshold=preference_threshold, veto_threshold=veto_threshold
+    )
+    pre_veto = (
+        _get_threshold_values(a_value, pre_veto_threshold=pre_veto_threshold)[0]
+        if pre_veto_threshold is not None
+        else None
     )
 
     if preference >= veto:
-        raise ValueError("Preference threshold must be less than the veto threshold.")
-    if pre_veto and (pre_veto >= veto or pre_veto <= preference):
-        raise ValueError(
-            "Pre-veto must be less than the veto threshold and greater than the preference one."
+        raise exceptions.WrongThresholdValueError(
+            "Preference threshold must be less than the veto threshold, but got "
+            f"preference_threshold={preference}, veto_threshold={veto}."
+        )
+    if pre_veto and not veto > pre_veto > preference:
+        raise exceptions.WrongThresholdValueError(
+            "Thresholds must meet a condition: veto > pre_veto > preference, but got "
+            f"{veto} > {pre_veto} > {preference} instead."
         )
 
     discordance_beginning = preference if pre_veto is None else pre_veto
@@ -226,6 +279,7 @@ def discordance_comprehensive(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
 ) -> NumericValue:
     """_summary_
 
@@ -239,19 +293,27 @@ def discordance_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+        )
+        _weights_proper_vals(weights)
     return sum(
-        [
-            weights[criterion_name]
-            * discordance_marginal(
-                a_values[criterion_name],
-                b_values[criterion_name],
-                scales[criterion_name],
-                preference_thresholds[criterion_name],
-                veto_thresholds[criterion_name],
-                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
-            )
-            for criterion_name in a_values.keys()
-        ]
+        pd.Series(weights)
+        * discordance_criteria_marginals(
+            a_values,
+            b_values,
+            scales,
+            preference_thresholds,
+            veto_thresholds,
+            pre_veto_thresholds,
+            validated=True,
+        )
     ) / sum(weights.values() if isinstance(weights, dict) else weights.values)
 
 
@@ -262,9 +324,18 @@ def discordance_criteria_marginals(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
 ) -> pd.Series:
     """Returns discordance marginals for all criteria between
     two alternatives."""
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+        )
     return pd.Series(
         [
             discordance_marginal(
@@ -302,6 +373,16 @@ def discordance_marginals(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        preference_thresholds=preference_thresholds,
+        veto_thresholds=veto_thresholds,
+        pre_veto_thresholds=pre_veto_thresholds,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
     if profiles_perform is not None:
         return pd.DataFrame(
             [
@@ -313,6 +394,7 @@ def discordance_marginals(
                         preference_thresholds,
                         veto_thresholds,
                         pre_veto_thresholds,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -330,6 +412,7 @@ def discordance_marginals(
                         preference_thresholds,
                         veto_thresholds,
                         pre_veto_thresholds,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -348,6 +431,7 @@ def discordance_marginals(
                     preference_thresholds,
                     veto_thresholds,
                     pre_veto_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
@@ -372,6 +456,40 @@ def discordance(
 
     :return: a data frame with comprehensive discordance indices
     """
+    _check_df_index(discordance_marginals, index_type="rows")
+    _check_df_index(discordance_marginals, index_type="columns", check_columns=True)
+
+    try:
+        _unique_names(weights.keys(), names_type="criteria")
+        _weights_proper_vals(weights)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
+            f"but got {type(weights).__name__} instead."
+        ) from exc
+
+    criteria_set = set(weights.keys())
+    try:
+        for column_name in discordance_marginals.columns.values:
+            for row_name in discordance_marginals[column_name].index.values:
+                _unique_names(
+                    discordance_marginals[column_name][row_name].keys(), names_type="criteria"
+                )
+                if set(discordance_marginals[column_name][row_name].keys()) != criteria_set:
+                    raise exceptions.InconsistentCriteriaNamesError(
+                        "A criteria set inside discordance marginals table is different from "
+                        "the set provided with weights."
+                    )
+                for value in discordance_marginals[column_name][row_name].values:
+                    _check_index_value_interval(value, "marginal discordance")
+
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong marginal discordance value type. Expected "
+            f"{pd.Series.__name__}, but got "
+            f"{type(discordance_marginals[column_name][row_name]).__name__} instead."
+        ) from exc
+
     weights_sum: NumericValue = sum(weights)
     return pd.DataFrame(
         [
@@ -397,23 +515,45 @@ def non_discordance_marginal(
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[NumericValue] = None,
 ) -> NumericValue:
-    if non_discordance_type == NonDiscordanceType.DM or concordance_comprehensive is None:
+    try:
+        _unique_names(criteria_discordance_marginals.keys(), names_type="criteria")
+
+        for value in criteria_discordance_marginals.values:
+            _check_index_value_interval(value, name="marginal discordance")
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong marginal discordance indices type. Expected {pd.Series.__name__}, "
+            f"but got {type(criteria_discordance_marginals).__name__} instead."
+        ) from exc
+
+    if non_discordance_type == NonDiscordanceType.DM:
         return 1 - max(criteria_discordance_marginals)
 
-    non_discordance = 1
-    for index in criteria_discordance_marginals.index.values:
-        if (
-            non_discordance_type == NonDiscordanceType.DC
-            and criteria_discordance_marginals[index] > concordance_comprehensive
-        ):
-            non_discordance *= (1 - criteria_discordance_marginals[index]) / (
-                1 - concordance_comprehensive
+    if non_discordance_type == NonDiscordanceType.D:
+        return np.prod(1 - criteria_discordance_marginals)
+
+    if non_discordance_type == NonDiscordanceType.DC:
+        if concordance_comprehensive is None:
+            raise exceptions.WrongIndexValueError(
+                "Missing comprehensive concordance index while computing "
+                "the non-discordance DC index value."
             )
+        _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
 
-        elif non_discordance_type == NonDiscordanceType.D:
-            non_discordance *= 1 - criteria_discordance_marginals[index]
+        return np.prod(
+            (
+                1
+                - criteria_discordance_marginals[
+                    criteria_discordance_marginals > concordance_comprehensive
+                ]
+            )
+            / (1 - concordance_comprehensive)
+        )
 
-    return non_discordance
+    raise TypeError(
+        f"Non-discordance type was not provided. Expected {NonDiscordanceType.__name__}, "
+        f"but got {type(non_discordance_type).__name__} instead."
+    )
 
 
 def non_discordance(
@@ -421,6 +561,12 @@ def non_discordance(
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
+
+    _consistent_df_indexing(
+        discordance_marginals=discordance_marginals,
+        concordance_comprehensive=concordance_comprehensive,
+    )
+
     return pd.DataFrame(
         [
             [
@@ -459,10 +605,18 @@ def is_counter_veto_occur(
     if counter_veto_threshold is None:
         return False
 
+    counter_veto_value = _get_threshold_values(
+        b_value, counter_veto_threshold=counter_veto_threshold
+    )[0]
+    if counter_veto_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            "Counter veto threshold value must be positive, but "
+            f"got {counter_veto_value} instead."
+        )
     return (
-        a_value - b_value > counter_veto_threshold(b_value)
+        a_value - b_value > counter_veto_value
         if scale.preference_direction == PreferenceDirection.MAX
-        else b_value - a_value > counter_veto_threshold(b_value)
+        else b_value - a_value > counter_veto_value
     )
 
 
@@ -471,6 +625,7 @@ def counter_veto_pair(
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    **kwargs,
 ) -> pd.Series:
     """_summary_
 
@@ -481,6 +636,14 @@ def counter_veto_pair(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            counter_veto_thresholds=counter_veto_thresholds,
+        )
+
     return pd.Series(
         [
             is_counter_veto_occur(
@@ -510,6 +673,15 @@ def counter_veto(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        performance_table=performance_table,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        counter_veto_thresholds=counter_veto_thresholds,
+    )
+    _check_df_index(performance_table, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+
     if profiles_perform is not None:
         result_alt_profs = pd.DataFrame(
             [[[] * len(performance_table.index)] * len(profiles_perform.index)],
@@ -523,6 +695,7 @@ def counter_veto(
                     profiles_perform.loc[criterion_name_b],
                     scales,
                     counter_veto_thresholds,
+                    validated=True,
                 )
                 result_alt_profs[criterion_name_b][criterion_name_a] = [
                     cv_name for cv_name, cv_value in cv_series.items() if cv_value
@@ -540,6 +713,7 @@ def counter_veto(
                     performance_table.loc[criterion_name_b],
                     scales,
                     counter_veto_thresholds,
+                    validated=True,
                 )
                 result_profs_alt[criterion_name_b][criterion_name_a] = [
                     cv_name for cv_name, cv_value in cv_series.items() if cv_value
@@ -558,6 +732,7 @@ def counter_veto(
                 performance_table.loc[criterion_name_b],
                 scales,
                 counter_veto_thresholds,
+                validated=True,
             )
             result[criterion_name_b][criterion_name_a] = [
                 cv_name for cv_name, cv_value in cv_series.items() if cv_value
@@ -580,6 +755,14 @@ def counter_veto_count(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        counter_veto_thresholds=counter_veto_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
     if profiles_perform is not None:
         return pd.DataFrame(
             [
@@ -590,6 +773,7 @@ def counter_veto_count(
                             profiles_perform.loc[prof_name],
                             scales,
                             counter_veto_thresholds,
+                            validated=True,
                         ).values
                     )
                     for prof_name in profiles_perform.index.values
@@ -607,6 +791,7 @@ def counter_veto_count(
                             alternatives_perform.loc[alt_name],
                             scales,
                             counter_veto_thresholds,
+                            validated=True,
                         ).values
                     )
                     for alt_name in alternatives_perform.index.values
@@ -625,6 +810,7 @@ def counter_veto_count(
                         alternatives_perform.loc[alt_name_b],
                         scales,
                         counter_veto_thresholds,
+                        validated=True,
                     ).values
                 )
                 for alt_name_b in alternatives_perform.index.values
