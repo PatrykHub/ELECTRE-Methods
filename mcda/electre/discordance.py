@@ -7,7 +7,14 @@ import pandas as pd
 from ..core.aliases import NumericValue
 from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
-from ._validation import _both_values_in_scale, _inverse_values
+from . import exceptions
+from ._validation import (
+    _both_values_in_scale,
+    _check_df_index,
+    _consistent_criteria_names,
+    _get_threshold_values,
+    _inverse_values,
+)
 
 
 def discordance_bin_marginal(
@@ -33,9 +40,15 @@ def discordance_bin_marginal(
     if veto_threshold is None:
         return 0
 
+    veto_threshold_value = _get_threshold_values(a_value, veto_threshold=veto_threshold)[0]
+    if veto_threshold_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            f"Veto threshold value must be positive, but got {veto_threshold_value} instead."
+        )
+
     if scale.preference_direction == PreferenceDirection.MAX:
-        return 1 if b_value - a_value >= veto_threshold(a_value) else 0
-    return 1 if a_value - b_value >= veto_threshold(a_value) else 0
+        return 1 if b_value - a_value >= veto_threshold_value else 0
+    return 1 if a_value - b_value >= veto_threshold_value else 0
 
 
 def discordance_bin_comprehensive(
@@ -44,6 +57,7 @@ def discordance_bin_comprehensive(
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     inverse: bool = False,
+    **kwargs,
 ) -> int:
     """_summary_
 
@@ -55,6 +69,11 @@ def discordance_bin_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
     for criterion_name in a_values.keys():
         if discordance_bin_marginal(
             a_values[criterion_name],
@@ -72,9 +91,15 @@ def discordance_bin_criteria_marginals(
     b_values: Union[Dict[Any, NumericValue], pd.Series],
     scales: Union[Dict[Any, QuantitativeScale], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    **kwargs,
 ) -> pd.Series:
     """Returns discordance marginals for all criteria between
     two alternatives."""
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
     return pd.Series(
         [
             discordance_bin_marginal(
@@ -112,6 +137,15 @@ def discordance_bin(
         discordance_function = discordance_bin_criteria_marginals
 
     if profiles_perform is not None:
+        _consistent_criteria_names(
+            alternatives_perform=alternatives_perform,
+            profiles_perform=profiles_perform,
+            scales=scales,
+            veto_thresholds=veto_thresholds,
+        )
+        _check_df_index(alternatives_perform, index_type="alternatives")
+        _check_df_index(profiles_perform, index_type="profiles")
+
         return pd.DataFrame(
             [
                 [
@@ -120,6 +154,7 @@ def discordance_bin(
                         profiles_perform.loc[prof_name],
                         scales,
                         veto_thresholds,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -135,6 +170,7 @@ def discordance_bin(
                         alternatives_perform.loc[alt_name],
                         scales,
                         veto_thresholds,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -143,6 +179,11 @@ def discordance_bin(
             index=profiles_perform.index,
             columns=alternatives_perform.index,
         )
+
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform, scales=scales, veto_thresholds=veto_thresholds
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
     return pd.DataFrame(
         [
             [
@@ -151,6 +192,7 @@ def discordance_bin(
                     alternatives_perform.loc[alt_name_b],
                     scales,
                     veto_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
