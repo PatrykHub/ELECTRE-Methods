@@ -623,6 +623,11 @@ def concordance_with_interactions_marginal(
     for i in interactions.index.values:
         for j in interactions.columns.values:
             if interactions[j][i] is not None:
+                if j == i:
+                    raise exceptions.WrongInteractionError(
+                        f"Criterion {i} cannot interact with itself."
+                    )
+
                 c_i = marginal_concordances[i]
                 c_j = marginal_concordances[j]
 
@@ -651,7 +656,7 @@ def concordance_with_interactions_marginal(
                         * interactions[j][i].factor
                     )
                 else:
-                    raise exceptions.WrongInteractionTypeError(
+                    raise exceptions.WrongInteractionError(
                         f"Interaction type should has a{InteractionType.__name__} type, "
                         f"but got {type(interactions[j][i].interaction).__name__} instead."
                     )

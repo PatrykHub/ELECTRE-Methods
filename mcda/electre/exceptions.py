@@ -38,8 +38,9 @@ class WrongIndexValueError(ValueError):
     its permissible interval."""
 
 
-class WrongInteractionTypeError(ValueError):
-    """Raised, if the interaction type is not an enum type."""
+class WrongInteractionError(ValueError):
+    """Raised, if the interaction type is not an enum type
+    or when criterion is interact with itself."""
 
 
 class PositiveNetBalanceError(ValueError):
