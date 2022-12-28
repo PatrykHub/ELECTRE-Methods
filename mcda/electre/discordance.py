@@ -14,6 +14,7 @@ from ._validation import (
     _consistent_criteria_names,
     _get_threshold_values,
     _inverse_values,
+    _weights_proper_vals,
 )
 
 
@@ -136,16 +137,15 @@ def discordance_bin(
     if return_marginals:
         discordance_function = discordance_bin_criteria_marginals
 
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        veto_thresholds=veto_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
     if profiles_perform is not None:
-        _consistent_criteria_names(
-            alternatives_perform=alternatives_perform,
-            profiles_perform=profiles_perform,
-            scales=scales,
-            veto_thresholds=veto_thresholds,
-        )
-        _check_df_index(alternatives_perform, index_type="alternatives")
-        _check_df_index(profiles_perform, index_type="profiles")
-
         return pd.DataFrame(
             [
                 [
@@ -180,10 +180,6 @@ def discordance_bin(
             columns=alternatives_perform.index,
         )
 
-    _consistent_criteria_names(
-        alternatives_perform=alternatives_perform, scales=scales, veto_thresholds=veto_thresholds
-    )
-    _check_df_index(alternatives_perform, index_type="alternatives")
     return pd.DataFrame(
         [
             [
@@ -230,19 +226,30 @@ def discordance_marginal(
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
     if veto_threshold is None:
+        if pre_veto_threshold is not None:
+            raise exceptions.WrongThresholdValueError(
+                "Missing veto threshold for criterion with defined pre-veto."
+            )
         return 0
 
-    veto: NumericValue = veto_threshold(a_value)
-    preference: NumericValue = preference_threshold(a_value)
-    pre_veto: Optional[NumericValue] = (
-        pre_veto_threshold(a_value) if pre_veto_threshold is not None else None
+    preference, veto = _get_threshold_values(
+        a_value, preference_threshold=preference_threshold, veto_threshold=veto_threshold
+    )
+    pre_veto = (
+        _get_threshold_values(a_value, pre_veto_threshold=pre_veto_threshold)[0]
+        if pre_veto_threshold is not None
+        else None
     )
 
     if preference >= veto:
-        raise ValueError("Preference threshold must be less than the veto threshold.")
-    if pre_veto and (pre_veto >= veto or pre_veto <= preference):
-        raise ValueError(
-            "Pre-veto must be less than the veto threshold and greater than the preference one."
+        raise exceptions.WrongThresholdValueError(
+            "Preference threshold must be less than the veto threshold, but got "
+            f"preference_threshold={preference}, veto_threshold={veto}."
+        )
+    if pre_veto and not veto > pre_veto > preference:
+        raise exceptions.WrongThresholdValueError(
+            "Thresholds must meet a condition: veto > pre_veto > preference, but got "
+            f"{veto} > {pre_veto} > {preference} instead."
         )
 
     discordance_beginning = preference if pre_veto is None else pre_veto
@@ -268,6 +275,7 @@ def discordance_comprehensive(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
 ) -> NumericValue:
     """_summary_
 
@@ -281,6 +289,16 @@ def discordance_comprehensive(
 
     :return: _description_
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+        )
+        _weights_proper_vals(weights)
     return sum(
         [
             weights[criterion_name]
@@ -304,9 +322,18 @@ def discordance_criteria_marginals(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
 ) -> pd.Series:
     """Returns discordance marginals for all criteria between
     two alternatives."""
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+        )
     return pd.Series(
         [
             discordance_marginal(
@@ -344,6 +371,16 @@ def discordance_marginals(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        preference_thresholds=preference_thresholds,
+        veto_thresholds=veto_thresholds,
+        pre_veto_thresholds=pre_veto_thresholds,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
     if profiles_perform is not None:
         return pd.DataFrame(
             [
@@ -355,6 +392,7 @@ def discordance_marginals(
                         preference_thresholds,
                         veto_thresholds,
                         pre_veto_thresholds,
+                        validated=True,
                     )
                     for prof_name in profiles_perform.index.values
                 ]
@@ -372,6 +410,7 @@ def discordance_marginals(
                         preference_thresholds,
                         veto_thresholds,
                         pre_veto_thresholds,
+                        validated=True,
                     )
                     for alt_name in alternatives_perform.index.values
                 ]
@@ -390,6 +429,7 @@ def discordance_marginals(
                     preference_thresholds,
                     veto_thresholds,
                     pre_veto_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in alternatives_perform.index.values
             ]
