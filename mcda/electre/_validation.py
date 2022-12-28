@@ -89,7 +89,7 @@ def _unique_names(
 
 
 def _check_df_index(
-    df_to_check: pd.DataFrame, index_type: Literal["criteria", "alternatives", "profiles"]
+    df_to_check: Optional[pd.DataFrame], index_type: Literal["criteria", "alternatives", "profiles"]
 ) -> None:
     """Checks if index in `pd.DataFrame` contains only
     unique values.
@@ -101,6 +101,8 @@ def _check_df_index(
         * if `df_to_check` is not a `pd.DataFrame` type
         (doesn't have the `.index.values` attribute)
     """
+    if df_to_check is None:
+        return
     try:
         _unique_names(df_to_check.index.values, names_type=index_type)
     except AttributeError as exc:
@@ -110,7 +112,7 @@ def _check_df_index(
         ) from exc
 
 
-def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame]) -> None:
+def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, None]) -> None:
     """Checks if all dictionaries / series contain the same set of keys.
 
     :raises InconsistentCriteriaNamesError (ValueError):
@@ -124,7 +126,7 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame]) -
     :raises TypeError:
         * if any kwarg has no ``keys`` method
     """
-    args = list(kwargs.items())
+    args = list((name, value) for (name, value) in kwargs.items() if value is not None)
     try:
         i = 0
         _unique_names(args[i][1].keys(), names_type="criteria")

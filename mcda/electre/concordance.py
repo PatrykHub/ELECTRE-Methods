@@ -142,19 +142,18 @@ def concordance(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        weights=weights,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+    _weights_proper_vals(weights)
     if profiles_perform is not None:
-        _consistent_criteria_names(
-            alternatives_perform=alternatives_perform,
-            scales=scales,
-            weights=weights,
-            indifference_thresholds=indifference_thresholds,
-            preference_thresholds=preference_thresholds,
-            profiles_perform=profiles_perform,
-        )
-        _check_df_index(alternatives_perform, index_type="alternatives")
-        _check_df_index(profiles_perform, index_type="profiles")
-        _weights_proper_vals(weights)
-
         return pd.DataFrame(
             [
                 [
@@ -193,15 +192,6 @@ def concordance(
             columns=alternatives_perform.index,
         )
 
-    _consistent_criteria_names(
-        alternatives_perform=alternatives_perform,
-        scales=scales,
-        weights=weights,
-        indifference_thresholds=indifference_thresholds,
-        preference_thresholds=preference_thresholds,
-    )
-    _check_df_index(alternatives_perform, index_type="alternatives")
-    _weights_proper_vals(weights)
     return pd.DataFrame(
         [
             [
@@ -376,22 +366,21 @@ def concordance_reinforced(
 
     :return: _description_
     """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        scales=scales,
+        weights=weights,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        reinforced_thresholds=reinforced_thresholds,
+        reinforcement_factors=reinforcement_factors,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+    _weights_proper_vals(weights)
+    _reinforcement_factors_vals(reinforcement_factors)
     if profiles_perform is not None:
-        _consistent_criteria_names(
-            alternatives_perform=alternatives_perform,
-            scales=scales,
-            weights=weights,
-            indifference_thresholds=indifference_thresholds,
-            preference_thresholds=preference_thresholds,
-            reinforced_thresholds=reinforced_thresholds,
-            reinforcement_factors=reinforcement_factors,
-            profiles_perform=profiles_perform,
-        )
-        _check_df_index(alternatives_perform, index_type="alternatives")
-        _check_df_index(profiles_perform, index_type="profiles")
-        _weights_proper_vals(weights)
-        _reinforcement_factors_vals(reinforcement_factors)
-
         return pd.DataFrame(
             [
                 [
@@ -434,18 +423,6 @@ def concordance_reinforced(
             columns=alternatives_perform.index,
         )
 
-    _consistent_criteria_names(
-        alternatives_perform=alternatives_perform,
-        scales=scales,
-        weights=weights,
-        indifference_thresholds=indifference_thresholds,
-        preference_thresholds=preference_thresholds,
-        reinforced_thresholds=reinforced_thresholds,
-        reinforcement_factors=reinforcement_factors,
-    )
-    _check_df_index(alternatives_perform, index_type="alternatives")
-    _weights_proper_vals(weights)
-    _reinforcement_factors_vals(reinforcement_factors)
     return pd.DataFrame(
         [
             [
@@ -702,7 +679,7 @@ def concordance_with_interactions(
         indifference_thresholds=indifference_thresholds,
         preference_thresholds=preference_thresholds,
         interactions=interactions,
-        profiles_perform=profiles_perform if profiles_perform is not None else alternatives_perform,
+        profiles_perform=profiles_perform,
     )
     _check_df_index(interactions, index_type="criteria")
     _weights_proper_vals(weights)
