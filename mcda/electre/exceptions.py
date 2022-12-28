@@ -29,13 +29,18 @@ class InconsistentCriteriaNamesError(ValueError):
     series are inconsistent, i.e. contain different values set."""
 
 
+class InconsistentDataFrameIndexingError(ValueError):
+    """Raised, if index/column values set is not the same for
+    at least two different data frames."""
+
+
 class NotUniqueNamesError(ValueError):
     """Raised, if column / index names are not unique."""
 
 
 class WrongIndexValueError(ValueError):
     """Raised, if the provided index value is outside
-    its permissible interval."""
+    its permissible interval (or is simply missing)."""
 
 
 class WrongInteractionError(ValueError):

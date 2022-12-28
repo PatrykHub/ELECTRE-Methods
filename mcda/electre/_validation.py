@@ -155,6 +155,55 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, No
         ) from exc
 
 
+def _consistent_df_indexing(**kwargs: Optional[pd.DataFrame]) -> None:
+    """Checks if for all provided data frames, the index and column values sets
+    are the same.
+
+    :raised exceptions.InconsistentDataFrameIndexingError (ValueError):
+        * if at least two dfs have different set of index (or columns) values
+
+    :raises NotUniqueNamesError (ValueError):
+        * because inside `pd.DataFrame` object there's a possibility for multiple
+        existences of the same `key` value, if something like this occurs, the
+        error will be raised as well
+
+    :raised TypeError:
+        * if any argument is not a ``df`` or ``None``
+    """
+    args = list((name, value) for (name, value) in kwargs.items() if value is not None)
+    try:
+        i = 0
+        _unique_names(args[i][1].index.values, names_type="rows")
+        _unique_names(args[i][1].columns.values, names_type="columns")
+
+        base_index_set = set(args[i][1].index.values)
+        base_columns_set = set(args[i][1].columns.values)
+
+        for i in range(1, len(args)):
+            _unique_names(args[i][1].index.values, names_type="rows")
+            _unique_names(args[i][1].columns.values, names_type="columns")
+
+            if base_index_set != set(args[i][1].index.values):
+                raise exceptions.InconsistentDataFrameIndexingError(
+                    "All arguments should have the same index (rows) names, but found "
+                    f"{base_index_set} inside the {args[0][0]} argument and "
+                    f"{set(args[i][1].index.values)} inside the {args[i][0]} argument."
+                )
+
+            if base_columns_set != set(args[i][1].columns.values):
+                raise exceptions.InconsistentDataFrameIndexingError(
+                    "All arguments should have the same columns names, but found "
+                    f"{base_columns_set} inside the {args[0][0]} argument and "
+                    f"{set(args[i][1].columns.values)} inside the {args[i][0]} argument."
+                )
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong {args[i][0]} type. Expected "
+            f"{_consistent_df_indexing.__annotations__['kwargs']}, "
+            f"but got {type(args[i][1]).__name__} instead."
+        ) from exc
+
+
 def _inverse_values(
     a_value: NumericValue, b_value: NumericValue, scale: QuantitativeScale, inverse: bool
 ) -> Tuple[NumericValue, NumericValue, QuantitativeScale]:
