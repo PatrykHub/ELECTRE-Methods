@@ -1,7 +1,7 @@
 """This module implements methods to compute an outranking credibility."""
 import math
 from enum import Enum
-from typing import Optional, Tuple, Union
+from typing import Optional, Sized, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -56,7 +56,7 @@ def credibility_comprehensive(
 def credibility_cv_pair(
     concordance_comprehensive: NumericValue,
     non_discordance: NumericValue,
-    counter_veto_occurs: int,
+    counter_veto_occurs: Union[int, Sized],
     number_of_criteria: int,
 ) -> NumericValue:
     """Computes the credibility value S(a, b) of an outranking relation, based on
@@ -71,7 +71,13 @@ def credibility_cv_pair(
     :return: Credibility value S(a, b), value from [0, 1] interval
     """
     return concordance_comprehensive * non_discordance ** (
-        1 - counter_veto_occurs / number_of_criteria
+        1
+        - (
+            len(counter_veto_occurs)
+            if isinstance(counter_veto_occurs, Sized)
+            else counter_veto_occurs
+        )
+        / number_of_criteria
     )
 
 
