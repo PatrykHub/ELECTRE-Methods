@@ -6,7 +6,12 @@ import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
-from ._validation import _check_index_value_interval
+from . import exceptions
+from ._validation import (
+    _check_index_value_binary,
+    _check_index_value_interval,
+    _consistent_df_indexing,
+)
 from .utils import linear_function, reverse_transform_series, transform_series
 
 
@@ -45,6 +50,7 @@ def crisp_outranking_cut(
 
     :return: Boolean table the same size as the credibility table
     """
+    _consistent_df_indexing(credibility_table=credibility_table)
     return pd.DataFrame(
         [
             [
@@ -77,13 +83,7 @@ def crisp_outranking_Is_marginal(
     """
     _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
     _check_index_value_interval(concordance_cutting_level, "cutting level", minimal_val=0.5)
-
-    if discordance_comprehensive_bin not in [0, 1]:
-        raise ValueError(
-            "Provided comprehensive discordance is not binary. Expected 0 or 1 value, but "
-            f"got {discordance_comprehensive_bin} instead."
-        )
-
+    _check_index_value_binary(discordance_comprehensive_bin, "binary discordance")
     return (
         concordance_comprehensive >= concordance_cutting_level
         and discordance_comprehensive_bin == 0
@@ -106,6 +106,10 @@ def crisp_outranking_Is(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
+    _consistent_df_indexing(
+        concordance_comprehensive_table=concordance_comprehensive_table,
+        discordance_comprehensive_bin_table=discordance_comprehensive_bin_table,
+    )
     return pd.DataFrame(
         [
             [
@@ -171,6 +175,10 @@ def crisp_outranking_coal(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
+    _consistent_df_indexing(
+        concordance_comprehensive_table=concordance_comprehensive_table,
+        discordance_comprehensive_table=discordance_comprehensive_table,
+    )
     return pd.DataFrame(
         [
             [
@@ -202,6 +210,8 @@ def outranking_relation_marginal(
         * None, if b is preferred to a
         * OutrankingRelation enum
     """
+    _check_index_value_binary(crisp_outranking_ab, name="crisp relation")
+    _check_index_value_binary(crisp_outranking_ba, name="crisp relation")
     if crisp_outranking_ab and crisp_outranking_ba:
         return OutrankingRelation.INDIFF
 
@@ -230,7 +240,24 @@ def outranking_relation(
     tables - first one with alternatives - profiles, second one with
     profiles - alternatives comparison.
     """
+    _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
     if crisp_outranking_table_profiles is not None:
+        _consistent_df_indexing(crisp_outranking_table_profiles=crisp_outranking_table_profiles)
+
+        if set(crisp_outranking_table_profiles.index.values) != set(
+            crisp_outranking_table.columns.values
+        ):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Profiles names are not the same for provided tables."
+            )
+
+        if set(crisp_outranking_table_profiles.columns.values) != set(
+            crisp_outranking_table.index.values
+        ):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Alternatives names are not the same for provided tables."
+            )
+
         return pd.DataFrame(
             [
                 [

@@ -70,10 +70,7 @@ def test_crisp_outranking_cut() -> None:
 def test_crisp_outranking_Is_marginal(
     concordance, discordance, cutting_level, expected: Union[bool, type]
 ) -> None:
-    assert (
-        crisp_outranking_Is_marginal(concordance, discordance, cutting_level)
-        == expected
-    )
+    assert crisp_outranking_Is_marginal(concordance, discordance, cutting_level) == expected
 
 
 def test_crisp_outranking_Is() -> None:
@@ -89,9 +86,7 @@ def test_crisp_outranking_Is() -> None:
         concordance_comprehensive,
         discordance_comprehensive_bin,
         0.74,
-    ).equals(
-        pd.DataFrame([[True, False], [True, True]], index=alt_names, columns=alt_names)
-    )
+    ).equals(pd.DataFrame([[True, False], [True, True]], index=alt_names, columns=alt_names))
 
 
 @pytest.mark.parametrize(
@@ -155,7 +150,7 @@ def test_crisp_outranking_coal() -> None:
         (True, False, OutrankingRelation.PQ),
         (True, True, OutrankingRelation.INDIFF),
         (False, False, OutrankingRelation.R),
-        ("", "", OutrankingRelation.R),
+        (0, 0, OutrankingRelation.R),
         (False, True, None),
     ),
 )
@@ -165,10 +160,7 @@ def test_outranking_relation_marginal(
     expected: Union[None, OutrankingRelation, type],
 ) -> None:
     if isinstance(expected, OutrankingRelation) or expected is None:
-        assert (
-            outranking_relation_marginal(crisp_outranking_1, crisp_outranking_2)
-            == expected
-        )
+        assert outranking_relation_marginal(crisp_outranking_1, crisp_outranking_2) == expected
     else:
         with pytest.raises(expected):
             outranking_relation_marginal(crisp_outranking_1, crisp_outranking_2)
@@ -236,9 +228,7 @@ def test_outranking_relation(
     crisp_outranking_table_profiles,
     expected: Union[Tuple, pd.DataFrame],
 ) -> None:
-    result = outranking_relation(
-        crisp_outranking_table, crisp_outranking_table_profiles
-    )
+    result = outranking_relation(crisp_outranking_table, crisp_outranking_table_profiles)
 
     if isinstance(expected, tuple):
         assert len(result) == 2
@@ -308,9 +298,7 @@ def test_aggregate(
             ["a", "e"],
         ),
         (
-            pd.Series(
-                [["b", "e"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]
-            ),
+            pd.Series([["b", "e"], ["c", "d"], [], [], []], index=["a", "b", "c", "d", "e"]),
             ["a"],
         ),
     ),
@@ -348,10 +336,10 @@ def test_find_vertices_without_predecessor(
                 [True, True, True, True, True, True, True, True, True, True],
                 [True, True, False, True, False, False, True, False, False, True],
             ],
-            ['UW']
+            ["UW"],
         ),
         (
-            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            ["a", "b", "c", "d", "e", "f", "g"],
             [
                 [1, 1, 0, 0, 0, 0, 0],
                 [0, 1, 0, 1, 0, 0, 0],
@@ -361,10 +349,10 @@ def test_find_vertices_without_predecessor(
                 [0, 0, 0, 0, 0, 1, 0],
                 [0, 0, 0, 0, 1, 1, 1],
             ],
-            ['a', 'd', 'g']
+            ["a", "d", "g"],
         ),
         (
-            ['XD', '2137', 'AU', 'UWU', 'MERRY CHRISTMAS', 'F'],
+            ["XD", "2137", "AU", "UWU", "MERRY CHRISTMAS", "F"],
             [
                 [1, 0, 0, 1, 0, 0],
                 [0, 1, 0, 0, 1, 0],
@@ -373,10 +361,10 @@ def test_find_vertices_without_predecessor(
                 [0, 0, 1, 0, 1, 0],
                 [0, 0, 0, 0, 0, 1],
             ],
-            ['XD', '2137', 'AU', 'F']
+            ["XD", "2137", "AU", "F"],
         ),
         (
-            ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            ["a", "b", "c", "d", "e", "f", "g"],
             [
                 [1, 0, 0, 0, 1, 0, 0],
                 [0, 1, 1, 0, 0, 0, 0],
@@ -386,8 +374,8 @@ def test_find_vertices_without_predecessor(
                 [0, 0, 1, 0, 1, 1, 0],
                 [0, 0, 0, 0, 0, 0, 1],
             ],
-            ['f', 'g']
-        )
+            ["f", "g"],
+        ),
     ),
 )
 def test_find_kernel(
@@ -395,16 +383,15 @@ def test_find_kernel(
     outranking: List[List[Union[bool, int]]],
     expected: List[str],
 ) -> None:
-    assert (
-        sorted(find_kernel(
+    assert sorted(
+        find_kernel(
             pd.DataFrame(
                 outranking,
                 index=alt_names,
                 columns=alt_names,
             )
-        ))
-        == sorted(expected)
-    )
+        )
+    ) == sorted(expected)
 
 
 def test_net_flow_score() -> None:

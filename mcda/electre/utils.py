@@ -67,7 +67,14 @@ def linear_function(alpha: NumericValue, x: NumericValue, beta: NumericValue) ->
 
     :return: Dependent variable
     """
-    return alpha * x + beta
+    try:
+        return alpha * x + beta
+    except TypeError as exc:
+        exc.args = (
+            "Wrong alpha or beta coefficient. Expected numeric types, but got "
+            f"alpha: {type(alpha).__name__}, beta: {type(beta).__name__} instead.",
+        )
+        raise
 
 
 def transform_series(series: pd.Series) -> pd.Series:

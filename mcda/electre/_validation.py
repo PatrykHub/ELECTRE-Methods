@@ -295,6 +295,21 @@ def _reinforcement_factors_vals(
         raise
 
 
+def _check_index_value_binary(
+    value: Union[int, bool],
+    name: str,
+) -> None:
+    """Checks if a value has binary type (is a bool or integer)
+
+    :raises WrongIndexValueError (ValueError:)
+        * if `value` is not binary
+    """
+    if value not in [0, 1, True, False]:
+        raise exceptions.WrongIndexValueError(
+            f"Wrong {name} value. Expected a binary value, " f"but got {value} instead."
+        )
+
+
 def _check_index_value_interval(
     value: NumericValue,
     name: str,
