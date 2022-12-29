@@ -1,25 +1,13 @@
-import pandas as pd
 from typing import Tuple
+
+import pandas as pd
 import pytest
 
-from mcda.electre.class_assignment import (
+from mcda.electre.outranking import (
     assign_tri_class,
     assign_tri_c_class,
     assign_tri_rc_class,
 )
-
-
-@pytest.fixture
-def alternatives() -> pd.Series:
-    return pd.Series(
-        ["Audi A3", "Audi A4", "BMW 118", "BMW 320", "Volvo C30", "Volvo S40"],
-        index=["A1", "A2", "A3", "A4", "A5", "A6"],
-    )
-
-
-@pytest.fixture
-def categories_rank() -> pd.Series:
-    return pd.Series(["Bad", "Medium", "Good"], index=[3, 2, 1])
 
 
 @pytest.fixture
@@ -83,40 +71,13 @@ def expected() -> pd.Series:
 
 
 def test_assign_tri_class(
-    alternatives, categories_rank, categories_profiles, crisp_outranking, expected
+        alternatives, categories_rank, categories_profiles, crisp_outranking, expected
 ) -> None:
     assert assign_tri_class(
-        alternatives,
-        categories_rank,
         categories_profiles,
         crisp_outranking[0],
         crisp_outranking[1],
     ).equals(expected)
-
-
-@pytest.fixture
-def alternatives_tri_c() -> pd.Series:
-    return pd.Series(
-        [
-            "France",
-            "Italy",
-            "Spain",
-            "Germany",
-            "Sweden",
-            "Denmark",
-            "Russia",
-            "Luxembourg",
-            "Portugal",
-            "Greece",
-            "Poland",
-        ],
-        index=["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11"],
-    )
-
-
-@pytest.fixture
-def categories_rank_tri_c() -> pd.Series:
-    return pd.Series(["C1", "C2", "C3", "C4", "C5"], index=[5, 4, 3, 2, 1])
 
 
 @pytest.fixture
@@ -275,16 +236,12 @@ def expected_tri_c() -> pd.Series:
 
 
 def test_assign_tri_c_class(
-    alternatives_tri_c,
-    categories_rank_tri_c,
-    categories_profiles_tri_c,
-    outranking_tri_c,
-    credibility_tri_c,
-    expected_tri_c,
+        categories_profiles_tri_c,
+        outranking_tri_c,
+        credibility_tri_c,
+        expected_tri_c,
 ) -> None:
     assert assign_tri_c_class(
-        alternatives_tri_c,
-        categories_rank_tri_c,
         categories_profiles_tri_c,
         outranking_tri_c[0],
         outranking_tri_c[1],
@@ -326,16 +283,14 @@ def expected_tri_rc() -> pd.Series:
 
 
 def test_assign_tri_rc_class(
-    alternatives_tri_c,
-    categories_rank_tri_c,
-    categories_profiles_tri_c,
-    outranking_tri_c,
-    credibility_tri_c,
-    expected_tri_rc,
-) -> None:
-    assert assign_tri_rc_class(
         alternatives_tri_c,
         categories_rank_tri_c,
+        categories_profiles_tri_c,
+        outranking_tri_c,
+        credibility_tri_c,
+        expected_tri_rc,
+) -> None:
+    assert assign_tri_rc_class(
         categories_profiles_tri_c,
         outranking_tri_c[0],
         outranking_tri_c[1],
