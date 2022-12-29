@@ -51,3 +51,7 @@ class WrongInteractionError(ValueError):
 class PositiveNetBalanceError(ValueError):
     """Raised, if the positive net balance condition is not fulfilled
     during the concordance with interactions calculations."""
+
+
+class GraphError(ValueError):
+    """Raised, if abnormalities in a graph was found."""

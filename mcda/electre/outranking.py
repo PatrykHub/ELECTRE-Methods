@@ -1,6 +1,6 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -634,14 +634,40 @@ def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
                     break
             result.append(connected_component)
 
-    for node in graph.index:
-        if node not in index:
-            _strong_connect(node)
+    try:
+        for node in graph.index.values:
+            if node not in index:
+                _strong_connect(node)
+    except KeyError as exc:
+        raise exceptions.GraphError(
+            "Graph contain an arc directed to a non-existent vertex "
+            f"(at least one values from: {graph[node]} doesn't exists in "
+            f"a {pd.Series.__name__} index values)."
+        ) from exc
+    except (TypeError, AttributeError) as exc:
+        if "node" in locals():
+            exc.args = (
+                f"Successors of a vertex inside graph should be iterable, but for node: {node} "
+                f"got {type(graph[node]).__name__}.",
+            )
+        else:
+            exc.args = (
+                f"Wrong graph type. Expected {pd.Series.__name__}, but "
+                f"got {type(graph).__name__} instead.",
+            )
+        raise
     return result
 
 
 def aggregate(graph: pd.Series) -> pd.Series:
-    new_graph = graph.copy()
+    try:
+        new_graph = graph.copy()
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong graph type. Expected {pd.Series.__name__}, "
+            f"but got {type(graph).__name__} instead."
+        ) from exc
+
     for vertices in _strongly_connected_components(graph):
         if len(vertices) == 1:
             continue
@@ -663,7 +689,29 @@ def aggregate(graph: pd.Series) -> pd.Series:
     return new_graph
 
 
-def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
+def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
+    if "validated" not in kwargs:
+        try:
+            vertex_set = set(graph.keys())
+            for successor_list in graph.values:
+                if not isinstance(successor_list, Iterable):
+                    raise TypeError(
+                        "Successor list of a graph vertex must be iterable, "
+                        f"but got {type(successor_list).__name__} instead."
+                    )
+
+                if set(successor_list) - vertex_set:
+                    raise exceptions.GraphError(
+                        "Graph contain an arc directed to a non-existent vertex "
+                        f"(at least one values from: {successor_list} doesn't exists in "
+                        f"a {pd.Series.__name__} index values)."
+                    )
+        except (TypeError, AttributeError) as exc:
+            raise TypeError(
+                f"Wrong graph type. Expected {pd.Series.__name__}, "
+                f"but got {type(graph).__name__} instead."
+            ) from exc
+
     vertices_with_predecessor = list(set([v for key in graph.index.values for v in graph[key]]))
     return [vertex for vertex in graph.index if vertex not in vertices_with_predecessor]
 
@@ -678,13 +726,13 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     graph = _change_to_series(crisp_outranking_table)
     graph = aggregate(graph)
     not_kernel: List = []
-    kernel = find_vertices_without_predecessor(graph)
+    kernel = find_vertices_without_predecessor(graph, validated=True)
 
     for vertex in kernel:
         not_kernel += graph.pop(vertex)
 
     while len(graph.keys()) != 0:
-        vertices = find_vertices_without_predecessor(graph)
+        vertices = find_vertices_without_predecessor(graph, validated=True)
         for vertex in vertices:
             if vertex not in not_kernel:
                 kernel.append(vertex)
