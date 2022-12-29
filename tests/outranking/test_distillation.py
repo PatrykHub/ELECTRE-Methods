@@ -35,6 +35,78 @@ def credibility_matrix() -> pd.DataFrame:
     return credibility_matrix
 
 
+@pytest.fixture
+def credibility_matrix_advanced() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            [1.0, 1.0, 0.9977, 0.606, 1.0, 0.9977, 0.8175, 1.0, 0.803, 0.8775, 0.548, 0.5318],
+            [1.0, 1.0, 0.9977, 0.4047, 0.9973, 0.9816, 0.7762, 1.0, 0.6612, 0.8775, 0.4951, 0.443],
+            [
+                0.7734,
+                0.8946,
+                1.0,
+                0.2775,
+                0.8041,
+                0.8014,
+                0.6083,
+                0.916,
+                0.499,
+                0.8775,
+                0.382,
+                0.3598,
+            ],
+            [0.85, 0.85, 0.9317, 1.0, 0.85, 0.9317, 0.7739, 0.916, 0.8742, 0.8775, 0.7464, 0.7912],
+            [
+                0.9786,
+                0.9854,
+                0.9977,
+                0.5903,
+                1.0,
+                0.9816,
+                0.7184,
+                1.0,
+                0.7288,
+                0.8775,
+                0.4546,
+                0.3839,
+            ],
+            [0.8946, 0.9014, 1.0, 0.5999, 0.916, 1.0, 0.7488, 0.916, 0.7128, 0.8775, 0.464, 0.464],
+            [1.0, 1.0, 1.0, 0.691, 1.0, 1.0, 1.0, 1.0, 0.803, 0.8775, 0.6875, 0.6875],
+            [
+                0.5299,
+                0.7279,
+                0.7849,
+                0.2795,
+                0.7057,
+                0.5066,
+                0.3148,
+                1.0,
+                0.3638,
+                0.8118,
+                0.2394,
+                0.1979,
+            ],
+            [0.8692, 0.934, 1.0, 0.773, 0.9352, 0.9352, 0.7297, 1.0, 1.0, 0.8775, 0.7647, 0.8393],
+            [
+                0.5803,
+                0.8033,
+                0.9186,
+                0.3486,
+                0.7385,
+                0.5779,
+                0.4384,
+                0.916,
+                0.5775,
+                1.0,
+                0.4959,
+                0.3625,
+            ],
+            [0.8692, 0.934, 0.9317, 0.773, 0.8692, 0.8669, 0.8669, 1.0, 0.9688, 1.0, 1.0, 0.9977],
+            [0.8692, 0.934, 0.9537, 0.7835, 0.8822, 0.8822, 0.8692, 1.0, 0.993, 1.0, 1.0, 1.0],
+        ]
+    )
+
+
 def test_get_maximal_credibility_index(credibility_matrix) -> None:
     assert _get_maximal_credibility_index(credibility_matrix) == 1.0
 
@@ -75,19 +147,70 @@ def test_alternative_qualities(credibility_matrix) -> None:
     assert result.equals(pd.Series([2, 0, -1, 0, -1], index=alt_names))
 
 
-def test_distillation(credibility_matrix) -> None:
-    expected_downward = pd.Series([["P1"], ["P2"], ["P3", "P4", "P5"]])
+def test_distillation_upward(credibility_matrix) -> None:
     expected_upward = pd.Series([["P3", "P5"], ["P4"], ["P1", "P2"]])
+    upward = distillation(credibility_matrix, upward_order=True)
 
+    for i in range(len(upward)):
+        assert upward[i + 1] == expected_upward[i]
+
+
+def test_distillation_downward(credibility_matrix) -> None:
+    expected_downward = pd.Series([["P1"], ["P2"], ["P3", "P4", "P5"]])
     downward = distillation(credibility_matrix)
 
     for i in range(len(downward)):
         assert downward[i + 1] == expected_downward[i]
 
-    upward = distillation(credibility_matrix, upward_order=True)
 
-    for i in range(len(upward)):
-        assert upward[i + 1] == expected_upward[i]
+def test_distillation_upward_advanced(credibility_matrix_advanced) -> None:
+    credibility_matrix_advanced.index = [
+        f"V{x}" for x in range(1, len(credibility_matrix_advanced) + 1)
+    ]
+    credibility_matrix_advanced.columns = [
+        f"V{x}" for x in range(1, len(credibility_matrix_advanced) + 1)
+    ]
+
+    expected = pd.Series(
+        [
+            ["V11", "V12", "V4"],
+            ["V7", "V9"],
+            ["V1"],
+            ["V2", "V5", "V6"],
+            ["V10"],
+            ["V3"],
+            ["V8"],
+        ],
+        index=[7, 6, 5, 4, 3, 2, 1],
+    )
+    results = distillation(credibility_matrix_advanced, upward_order=True)
+    for expected_list, result_list in zip(expected, results):
+        assert set(expected_list) == set(result_list)
+
+
+def test_distillation_downward_advanced(credibility_matrix_advanced) -> None:
+    credibility_matrix_advanced.index = [
+        f"V{x}" for x in range(1, len(credibility_matrix_advanced) + 1)
+    ]
+    credibility_matrix_advanced.columns = [
+        f"V{x}" for x in range(1, len(credibility_matrix_advanced) + 1)
+    ]
+
+    expected = pd.Series(
+        [
+            ["V11", "V12"],
+            ["V4", "V7"],
+            ["V9"],
+            ["V1", "V6"],
+            ["V5"],
+            ["V2"],
+            ["V10", "V3", "V8"],
+        ],
+        index=[1, 2, 3, 4, 5, 6, 7],
+    )
+    results = distillation(credibility_matrix_advanced)
+    for expected_list, result_list in zip(expected, results):
+        assert set(expected_list) == set(result_list)
 
 
 @pytest.fixture

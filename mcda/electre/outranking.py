@@ -338,6 +338,11 @@ def _get_minimal_credibility_index(
     threshold_value = maximal_credibility_index - linear_function(
         maximal_credibility_index, alpha, beta
     )
+    if threshold_value > maximal_credibility_index:
+        raise exceptions.ValueOutsideScaleError(
+            "Provided alpha and beta values make it impossible to "
+            "calculate a positive function value s = alpha * credibility + beta"
+        )
 
     for alt_name_a in credibility_matrix.index.values:
         for alt_name_b in credibility_matrix.index.values:
@@ -366,11 +371,20 @@ def crisp_outranking_relation_distillation(
 
     :return: 1 if undermentioned inequality is true, 0 otherwise
     """
+    _check_index_value_interval(credibility_pair_value_ab, name="credibility")
+    _check_index_value_interval(credibility_pair_value_ba, name="credibility")
+    _check_index_value_interval(minimal_credibility_index, name="minimal credibility index")
+
+    difference_threshold = linear_function(alpha, credibility_pair_value_ab, beta)
+    if difference_threshold < 0:
+        raise exceptions.ValueOutsideScaleError(
+            "Provided alpha and beta values make it impossible to "
+            "calculate a positive function value s = alpha * credibility + beta"
+        )
     return (
         1
         if credibility_pair_value_ab > minimal_credibility_index
-        and credibility_pair_value_ab
-        > credibility_pair_value_ba + linear_function(alpha, credibility_pair_value_ab, beta)
+        and credibility_pair_value_ab > credibility_pair_value_ba + difference_threshold
         else 0
     )
 
@@ -393,6 +407,14 @@ def alternative_qualities(
     :return: Quality of a computed as the difference of its strength and weakness,
     also maximal credibility index for possible inner distillation
     """
+    _consistent_df_indexing(credibility_matrix=credibility_matrix)
+    if set(credibility_matrix.columns) != set(credibility_matrix.index):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "Quality calculation is possible only for alternatives, but "
+            "for the provided credibility table, the set of values "
+            "in rows is different than in the columns."
+        )
+
     if maximal_credibility_index is None:
         maximal_credibility_index = _get_maximal_credibility_index(credibility_matrix)
     minimal_credibility_index = _get_minimal_credibility_index(
@@ -491,9 +513,16 @@ def distillation(
 
     :return: Nested list of complete upward or downward order
     """
-    np.fill_diagonal(credibility_matrix.values, 0)
-    preference_operator = min if upward_order else max
-    remaining_alt_indices = credibility_matrix.index.to_series()
+    try:
+        np.fill_diagonal(credibility_matrix.values, 0)
+        preference_operator = min if upward_order else max
+        remaining_alt_indices = credibility_matrix.index.to_series()
+    except (TypeError, AttributeError) as exc:
+        exc.args = (
+            f"Wrong credibility matrix type. Expected {pd.DataFrame.__name__}, "
+            f"but got {type(credibility_matrix).__name__} instead.",
+        )
+        raise
     order = pd.Series([], dtype="float64")
     level: int = 1
 
@@ -502,8 +531,9 @@ def distillation(
             credibility_matrix, remaining_alt_indices, preference_operator, alpha, beta
         )
 
-        if len(preferred_alternatives) > 1:
-            preferred_alternatives, _ = _distillation_process(
+        # inner distillation procedure
+        while len(preferred_alternatives) > 1 and minimal_credibility_index > 0:
+            preferred_alternatives, minimal_credibility_index = _distillation_process(
                 credibility_matrix,
                 preferred_alternatives.index.to_series(),
                 preference_operator,
