@@ -24,8 +24,8 @@ class WrongFactorValueError(ValueError):
     has improper value."""
 
 
-class InconsistentCriteriaNamesError(ValueError):
-    """Raised, if criteria names inside dictionaries or
+class InconsistentIndexNamesError(ValueError):
+    """Raised, if keys names inside dictionaries or
     series are inconsistent, i.e. contain different values set."""
 
 

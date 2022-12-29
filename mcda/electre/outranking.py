@@ -12,7 +12,12 @@ from ._validation import (
     _check_index_value_interval,
     _consistent_df_indexing,
 )
-from .utils import linear_function, reverse_transform_series, transform_series
+from .utils import (
+    linear_function,
+    order_to_outranking_matrix,
+    reverse_transform_series,
+    transform_series,
+)
 
 
 class OutrankingRelation(Enum):
@@ -513,26 +518,7 @@ def distillation(
     return order[::-1] if upward_order else order
 
 
-def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
-    """Transforms order (upward or downward) to outranking matrix.
-
-    :param order: nested list with order (upward or downward)
-
-    :return: Outranking matrix of given order
-    """
-    alternatives = order.explode().to_list()
-    outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
-
-    for position in order:
-        outranking_matrix.loc[position, position] = 1
-        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
-
-    return outranking_matrix
-
-
-def final_ranking_matrix(
-    descending_order_matrix: pd.DataFrame, ascending_order_matrix: pd.DataFrame
-) -> pd.DataFrame:
+def final_ranking_matrix(descending_order: pd.Series, ascending_order: pd.Series) -> pd.DataFrame:
     """Constructs final partial preorder intersection from downward and upward orders of
     alternatives derived from the descending and ascending distillation procedures, respectively.
 
@@ -541,6 +527,12 @@ def final_ranking_matrix(
 
     :return: Final outranking matrix
     """
+    descending_order_matrix = order_to_outranking_matrix(descending_order)
+    ascending_order_matrix = order_to_outranking_matrix(ascending_order)
+    _consistent_df_indexing(
+        descending_order_matrix=descending_order_matrix,
+        ascending_order_matrix=ascending_order_matrix,
+    )
     return descending_order_matrix * ascending_order_matrix
 
 
@@ -579,6 +571,12 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
 
 def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
+    for column_name in crisp_outranking_table.columns.values:
+        for row_name in crisp_outranking_table.index.values:
+            _check_index_value_binary(
+                crisp_outranking_table[column_name][row_name], name="crisp outranking relation"
+            )
     return pd.Series(
         {
             alt_name_b: [
@@ -591,7 +589,7 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     )
 
 
-def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
+def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
@@ -630,7 +628,7 @@ def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
 
 def aggregate(graph: pd.Series) -> pd.Series:
     new_graph = graph.copy()
-    for vertices in strongly_connected_components(graph):
+    for vertices in _strongly_connected_components(graph):
         if len(vertices) == 1:
             continue
         aggregated = ", ".join(str(v) for v in vertices)
@@ -667,16 +665,18 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     graph = aggregate(graph)
     not_kernel: List = []
     kernel = find_vertices_without_predecessor(graph)
+
     for vertex in kernel:
-        not_kernel = not_kernel + graph[vertex]
-        graph.pop(vertex)
+        not_kernel += graph.pop(vertex)
+
     while len(graph.keys()) != 0:
         vertices = find_vertices_without_predecessor(graph)
         for vertex in vertices:
             if vertex not in not_kernel:
                 kernel.append(vertex)
-                not_kernel = not_kernel + graph[vertex]
+                not_kernel += graph[vertex]
             graph.pop(vertex)
+
     return kernel
 
 
@@ -687,6 +687,18 @@ def net_flow_score(outranking_table: pd.DataFrame) -> pd.Series:
     between alternatives
     :return: net flow scores for all alternatives
     """
+    _consistent_df_indexing(outranking_table=outranking_table)
+    if set(outranking_table.columns) != set(outranking_table.index):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "NFS calculation is possible only for alternatives, but "
+            "for the provided outranking table, the set of values "
+            "in rows is different than in the columns."
+        )
+    for column_name in outranking_table.columns.values:
+        for row_name in outranking_table.index.values:
+            _check_index_value_interval(
+                outranking_table[column_name][row_name], name="outranking relation"
+            )
     return pd.Series(
         [
             outranking_table.loc[alt_name].sum() - outranking_table[alt_name].sum()

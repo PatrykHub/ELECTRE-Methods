@@ -12,9 +12,9 @@ from mcda.electre.outranking import (
     distillation,
     final_ranking_matrix,
     median_order,
-    order_to_outranking_matrix,
     ranks,
 )
+from mcda.electre.utils import order_to_outranking_matrix
 
 
 @pytest.fixture
@@ -132,9 +132,7 @@ def upward_order() -> pd.Series:
     return pd.Series([["FRA"], ["GER"], ["ITA"], ["BEL"], ["AUT"]])
 
 
-def test_order_to_outranking_matrix_downward(
-    downward_order, downward_order_matrix
-) -> None:
+def test_order_to_outranking_matrix_downward(downward_order, downward_order_matrix) -> None:
     assert order_to_outranking_matrix(downward_order).equals(downward_order_matrix)
 
 
@@ -158,12 +156,8 @@ def final_ranking() -> pd.DataFrame:
     )
 
 
-def test_final_ranking_matrix(
-    downward_order_matrix, upward_order_matrix, final_ranking
-) -> None:
-    assert final_ranking_matrix(downward_order_matrix, upward_order_matrix).equals(
-        final_ranking
-    )
+def test_final_ranking_matrix(downward_order, upward_order, final_ranking) -> None:
+    assert final_ranking_matrix(downward_order, upward_order).equals(final_ranking)
 
 
 @pytest.fixture

@@ -121,7 +121,7 @@ def _check_df_index(
 def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, None]) -> None:
     """Checks if all dictionaries / series contain the same set of keys.
 
-    :raises InconsistentCriteriaNamesError (ValueError):
+    :raises InconsistentIndexNamesError (ValueError):
         * if criteria names are inconsistent, i.e. contain different values set
 
     :raises NotUniqueNamesError (ValueError):
@@ -142,7 +142,7 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, No
             _unique_names(args[i][1].keys(), names_type="criteria")
 
             if base_criteria_set != set(args[i][1].keys()):
-                raise exceptions.InconsistentCriteriaNamesError(
+                raise exceptions.InconsistentIndexNamesError(
                     "All arguments should have the same criteria names, but found "
                     f"{base_criteria_set} inside the {args[0][0]} argument and "
                     f"{set(args[i][1].keys())} inside the {args[i][0]} argument."

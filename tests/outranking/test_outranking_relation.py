@@ -5,6 +5,7 @@ import pytest
 
 from mcda.electre.outranking import (
     OutrankingRelation,
+    _strongly_connected_components,
     aggregate,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
@@ -17,7 +18,6 @@ from mcda.electre.outranking import (
     net_flow_score,
     outranking_relation,
     outranking_relation_marginal,
-    strongly_connected_components,
 )
 
 
@@ -258,11 +258,11 @@ def test_outranking_relation(
         ),
     ),
 )
-def test_strongly_connected_components(
+def test__strongly_connected_components(
     graph,
     expected: List[Any],
 ) -> None:
-    assert strongly_connected_components(graph) == expected
+    assert _strongly_connected_components(graph) == expected
 
 
 @pytest.mark.parametrize(

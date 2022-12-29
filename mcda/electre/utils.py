@@ -88,6 +88,35 @@ def transform_series(series: pd.Series) -> pd.Series:
     return pd.Series(series.index.values, index=series)
 
 
+def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
+    """Transforms order (upward or downward) to outranking matrix.
+
+    :param order: nested list with order (upward or downward)
+
+    :return: Outranking matrix of given order
+    """
+    try:
+        if set(order.keys()) != {x for x in range(len(order))}:
+            raise exceptions.InconsistentIndexNamesError(
+                "Values in the upward or downward order should be "
+                "a sequential integers, starting with 0, but got "
+                f"{set(order.keys())} instead."
+            )
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong order type. Expected {pd.Series.__name__}, but "
+            f"got {type(order).__name__} instead."
+        ) from exc
+    alternatives = order.explode().to_list()
+    outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
+
+    for position in order:
+        outranking_matrix.loc[position, position] = 1
+        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
+
+    return outranking_matrix
+
+
 def reverse_transform_series(series: pd.Series) -> pd.Series:
     """Swaps keys with values and nests swapped values.
 

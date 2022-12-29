@@ -476,7 +476,7 @@ def discordance(
                     discordance_marginals[column_name][row_name].keys(), names_type="criteria"
                 )
                 if set(discordance_marginals[column_name][row_name].keys()) != criteria_set:
-                    raise exceptions.InconsistentCriteriaNamesError(
+                    raise exceptions.InconsistentIndexNamesError(
                         "A criteria set inside discordance marginals table is different from "
                         "the set provided with weights."
                     )
