@@ -544,6 +544,19 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
     :return: Nested list of ranks
     """
+    _consistent_df_indexing(final_ranking_matrix=final_ranking_matrix)
+    if set(final_ranking_matrix.columns.values) != set(final_ranking_matrix.index.values):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "Ranks calculation is possible only for alternatives, but "
+            "for the provided outranking table, the set of values "
+            "in rows is different than in the columns."
+        )
+    for column_name in final_ranking_matrix.columns.values:
+        for row_name in final_ranking_matrix.index.values:
+            _check_index_value_binary(
+                final_ranking_matrix[column_name][row_name], name="final ranking index"
+            )
+
     ranks_ranking = pd.Series([], dtype="float64")
     remaining_alt_indices = final_ranking_matrix.index.to_series()
     level: int = 1
