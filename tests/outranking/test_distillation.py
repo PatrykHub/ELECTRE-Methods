@@ -124,12 +124,12 @@ def upward_order_matrix() -> pd.DataFrame:
 
 @pytest.fixture
 def downward_order() -> pd.Series:
-    return pd.Series([["GER"], ["ITA"], ["BEL", "AUT", "FRA"]])
+    return pd.Series([["GER"], ["ITA"], ["BEL", "AUT", "FRA"]], index=[1, 2, 3])
 
 
 @pytest.fixture
 def upward_order() -> pd.Series:
-    return pd.Series([["FRA"], ["GER"], ["ITA"], ["BEL"], ["AUT"]])
+    return pd.Series([["FRA"], ["GER"], ["ITA"], ["BEL"], ["AUT"]], index=[1, 2, 3, 4, 5])
 
 
 def test_order_to_outranking_matrix_downward(downward_order, downward_order_matrix) -> None:

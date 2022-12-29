@@ -84,8 +84,14 @@ def transform_series(series: pd.Series) -> pd.Series:
 
     :return: Transformed pandas Series
     """
-    series = series.explode()
-    return pd.Series(series.index.values, index=series)
+    try:
+        series = series.explode()
+        return pd.Series(series.index.values, index=series)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong argument type. Expected {pd.Series.__name__}, "
+            f"but got {type(series).__name__} instead."
+        ) from exc
 
 
 def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
@@ -96,10 +102,10 @@ def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
     :return: Outranking matrix of given order
     """
     try:
-        if set(order.keys()) != {x for x in range(len(order))}:
+        if set(order.keys()) != {x for x in range(1, len(order) + 1)}:
             raise exceptions.InconsistentIndexNamesError(
                 "Values in the upward or downward order should be "
-                "a sequential integers, starting with 0, but got "
+                "a sequential integers, starting with 1, but got "
                 f"{set(order.keys())} instead."
             )
     except AttributeError as exc:
@@ -108,6 +114,12 @@ def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
             f"got {type(order).__name__} instead."
         ) from exc
     alternatives = order.explode().to_list()
+    if len(set(alternatives)) != len(alternatives):
+        raise exceptions.InconsistentIndexNamesError(
+            "In an upward or downward order, one alternative cannot "
+            "belong to more than one lists."
+        )
+
     outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
 
     for position in order:

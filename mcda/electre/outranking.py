@@ -11,6 +11,7 @@ from ._validation import (
     _check_index_value_binary,
     _check_index_value_interval,
     _consistent_df_indexing,
+    _unique_names,
 )
 from .utils import (
     linear_function,
@@ -717,10 +718,47 @@ def median_order(ranks: pd.Series, downward_order: pd.Series, upward_order: pd.S
 
     :return: Nested list of median preorder
     """
-    alternatives = ranks.explode().to_list()
+    try:
+        alternatives = ranks.explode().to_list()
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong ranks argument type. Expected {pd.Series.__name__}, "
+            f"but got {type(ranks).__name__} instead."
+        ) from exc
+
     ranks = transform_series(ranks)
     downward_order = transform_series(downward_order)
     upward_order = transform_series(upward_order)
+
+    _unique_names(ranks.keys(), names_type="alternatives")
+    _unique_names(downward_order.keys(), names_type="alternatives")
+    _unique_names(upward_order.keys(), names_type="alternatives")
+
+    ranks_set, downwards_set, upward_set = set(ranks), set(downward_order), set(upward_order)
+    if sum(ranks_set) != sum([x for x in range(1, len(ranks_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in ranks should be a sequential integers, "
+            f"starting with 0, but got {ranks_set} instead."
+        )
+    if sum(downwards_set) != sum([x for x in range(1, len(downwards_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in the downward order should be "
+            "a sequential integers, starting with 0, but got "
+            f"{downwards_set} instead."
+        )
+    if sum(upward_set) != sum([x for x in range(1, len(upward_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in the upward order should be "
+            "a sequential integers, starting with 0, but got "
+            f"{upward_set} instead."
+        )
+
+    base_keys_set = set(ranks.keys())
+    if base_keys_set != set(downward_order.keys()) or base_keys_set != set(upward_order.keys()):
+        raise exceptions.InconsistentIndexNamesError(
+            "Provided ranks and nested lists with order must contain "
+            "the same set of alternatives."
+        )
 
     initial_order = []
     for i in range(len(ranks)):
