@@ -6,11 +6,13 @@ import pytest
 
 from mcda.core.functions import Threshold
 from mcda.electre.discordance import (
+    NonDiscordanceType,
     counter_veto,
     counter_veto_count,
     discordance,
     discordance_bin,
     discordance_marginals,
+    non_discordance,
 )
 
 from .. import helpers
@@ -91,7 +93,9 @@ def test_discordance_binary_no_profiles(
         [1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0],
     ]
 
-    discordance_matrix: pd.DataFrame = discordance_bin(performance_table, scales, veto_thresholds)
+    discordance_matrix: pd.DataFrame = discordance_bin(
+        performance_table, scales, veto_thresholds
+    )
 
     assert discordance_matrix.index.equals(performance_table.index)
     assert discordance_matrix.columns.equals(performance_table.index)
@@ -508,7 +512,13 @@ def test_discordance_profiles(
         [0.195043347689, 0.0842105263158, 0.0842105263158, 0.0, 0.0],
         [0.378947368421, 0.210526315789, 0.0572631578947, 0.0, 0.0],
         [0.0661894736842, 0.0421052631579, 0.0421052631579, 0.0414035087719, 0.0],
-        [0.336842105263, 0.119242105263, 0.0779228070175, 0.045754385965, 0.0313263157895],
+        [
+            0.336842105263,
+            0.119242105263,
+            0.0779228070175,
+            0.045754385965,
+            0.0313263157895,
+        ],
         [0.372072785786, 0.105964912281, 0.104561403509, 0.0, 0.0],
         [0.126315789474, 0.126315789474, 0.126315789474, 0.0421052631579, 0.0],
         [0.48701754386, 0.0, 0.0, 0.0, 0.0],
@@ -979,7 +989,9 @@ def test_discordance_profiles_pre_veto(
 
 
 def test_counter_veto_no_profiles(
-    performance_table: pd.DataFrame, scales: pd.Series, counter_veto_thresholds: pd.Series
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    counter_veto_thresholds: pd.Series,
 ) -> None:
     expected_values = [
         [
@@ -1179,12 +1191,74 @@ def test_counter_veto_no_profiles(
         ],
     ]
 
-    cv_matrix: pd.DataFrame = counter_veto(performance_table, scales, counter_veto_thresholds)
+    cv_matrix: pd.DataFrame = counter_veto(
+        performance_table, scales, counter_veto_thresholds
+    )
 
     assert cv_matrix.index.equals(performance_table.index)
     assert cv_matrix.columns.equals(performance_table.index)
 
     helpers.assert_cv_criteria_names(expected_values, cv_matrix.to_numpy())
+
+
+def test_non_discordance_dc(discordance_marginals, concordance_comprehensive):
+    expected_non_discordance_dc = [
+        [1, 0.6666666666666664, 1],
+        [0.6, 0, 1],
+        [0.5555555555555557, 0.2, 0],
+        [0.128, 0, 0.375],
+    ]
+
+    non_discordance_dc_matrix = non_discordance(
+        discordance_marginals, NonDiscordanceType.DC, concordance_comprehensive
+    )
+
+    assert non_discordance_dc_matrix.index.equals(discordance_marginals.index)
+    assert non_discordance_dc_matrix.columns.equals(discordance_marginals.columns)
+
+    helpers.assert_array_values(
+        expected_non_discordance_dc, non_discordance_dc_matrix.to_numpy()
+    )
+
+
+def test_non_discordance_d(discordance_marginals, concordance_comprehensive):
+    expected_non_discordance_d = [
+        [0.021, 0.0168, 0.168],
+        [0.0675, 0, 0.018],
+        [0.112, 0.021, 0],
+        [0.0112, 0, 0.0168],
+    ]
+
+    non_discordance_d_matrix = non_discordance(
+        discordance_marginals, NonDiscordanceType.D, concordance_comprehensive
+    )
+
+    assert non_discordance_d_matrix.index.equals(discordance_marginals.index)
+    assert non_discordance_d_matrix.columns.equals(discordance_marginals.columns)
+
+    helpers.assert_array_values(
+        expected_non_discordance_d, non_discordance_d_matrix.to_numpy()
+    )
+
+
+def test_non_discordance_dm(discordance_marginals):
+    expected_non_discordance_dm = [
+        [0.1, 0.2, 0.5],
+        [0.3, 0, 0.2],
+        [0.4, 0.1, 0],
+        [0.2, 0, 0.2],
+    ]
+
+    non_discordance_dm_matrix = non_discordance(
+        discordance_marginals, NonDiscordanceType.DM
+    )
+
+    assert non_discordance_dm_matrix.index.equals(discordance_marginals.index)
+    assert non_discordance_dm_matrix.columns.equals(discordance_marginals.columns)
+
+    helpers.assert_array_values(
+        expected_non_discordance_dm, non_discordance_dm_matrix.to_numpy()
+    )
 
 
 def test_counter_veto_profiles(
@@ -1374,12 +1448,18 @@ def test_counter_veto_profiles(
     assert cv_matrix_prof_alt.index.equals(profiles_performance.index)
     assert cv_matrix_prof_alt.columns.equals(performance_table.index)
 
-    helpers.assert_cv_criteria_names(expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy())
-    helpers.assert_cv_criteria_names(expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy())
+    helpers.assert_cv_criteria_names(
+        expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy()
+    )
+    helpers.assert_cv_criteria_names(
+        expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy()
+    )
 
 
 def test_counter_veto_count_no_profiles(
-    performance_table: pd.DataFrame, scales: pd.Series, counter_veto_thresholds: pd.Series
+    performance_table: pd.DataFrame,
+    scales: pd.Series,
+    counter_veto_thresholds: pd.Series,
 ) -> None:
     expected_values = [
         [0, 0, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1],
@@ -1446,5 +1526,9 @@ def test_counter_veto_count_profiles(
     assert cv_matrix_prof_alt.index.equals(profiles_performance.index)
     assert cv_matrix_prof_alt.columns.equals(performance_table.index)
 
-    helpers.assert_array_values(expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy())
-    helpers.assert_array_values(expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy())
+    helpers.assert_array_values(
+        expected_alternatives_profiles, cv_matrix_alt_prof.to_numpy()
+    )
+    helpers.assert_array_values(
+        expected_profiles_alternatives, cv_matrix_prof_alt.to_numpy()
+    )

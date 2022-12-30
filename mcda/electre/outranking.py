@@ -745,7 +745,7 @@ def assign_tri_nb_class(
     :param optimistic: _description_
     :return: _description_
     """
-    assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
+    assignment = pd.Series([], dtype=pd.StringDtype())
     if not optimistic:
         for alternative in crisp_outranking_ap.index.values:
             for category, profiles in categories.items():
