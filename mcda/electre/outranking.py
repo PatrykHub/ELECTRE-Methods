@@ -51,12 +51,12 @@ def crisp_outranking_cut(
                 crisp_outranking_cut_marginal(
                     credibility_table.loc[alt_name_a][alt_name_b], cutting_level
                 )
-                for alt_name_b in credibility_table.index.values
+                for alt_name_b in credibility_table.columns.values
             ]
             for alt_name_a in credibility_table.index.values
         ],
         index=credibility_table.index,
-        columns=credibility_table.index,
+        columns=credibility_table.columns,
     )
 
 
@@ -180,12 +180,12 @@ def crisp_outranking_coal(
                     concordance_cutting_level,
                     discordance_cutting_level,
                 )
-                for alt_name_b in concordance_comprehensive_table.index.values
+                for alt_name_b in concordance_comprehensive_table.columns.values
             ]
             for alt_name_a in concordance_comprehensive_table.index.values
         ],
         index=concordance_comprehensive_table.index,
-        columns=concordance_comprehensive_table.index,
+        columns=concordance_comprehensive_table.columns,
     )
 
 
@@ -807,7 +807,6 @@ def assign_tri_c_class(
             assignments_ascending.append((alternative, categories_profiles[-1]))
     for zipped in zip(assignments_descending, assignments_ascending):
         assignment[zipped[0][0]] = (zipped[0][1], zipped[1][1])
-    print(assignment)
     return assignment
 
 
@@ -901,7 +900,7 @@ def assign_tri_class(
         for i, profile in list(enumerate(categories_profiles.index))[::-1]:
             relation = outranking_relation_marginal(
                 crisp_outranking_alt_prof.loc[alternative][profile],
-                crisp_outranking_prof_alt.loc[profile, alternative],
+                crisp_outranking_prof_alt.loc[profile][alternative],
             )
             if relation in (OutrankingRelation.INDIFF, OutrankingRelation.PQ):
                 pessimistic_idx = i + 1
@@ -911,7 +910,7 @@ def assign_tri_class(
         optimistic_idx = len(categories_profiles)
         for i, profile in enumerate(categories_profiles.index):
             relation = outranking_relation_marginal(
-                crisp_outranking_prof_alt.loc[profile, alternative],
+                crisp_outranking_prof_alt.loc[profile][alternative],
                 crisp_outranking_alt_prof.loc[alternative][profile],
             )
             if relation == OutrankingRelation.PQ:
