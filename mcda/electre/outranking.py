@@ -897,10 +897,10 @@ def assign_tri_class(
     for alternative in crisp_outranking_alt_prof.index.values:
         # Pessimistic assignment
         pessimistic_idx = 0
-        for i, profile in list(enumerate(categories_profiles.index))[::-1]:
+        for i, profile in list(enumerate(categories_profiles.index.values))[::-1]:
             relation = outranking_relation_marginal(
-                crisp_outranking_alt_prof.loc[alternative][profile],
-                crisp_outranking_prof_alt.loc[profile][alternative],
+                crisp_outranking_alt_prof.loc[alternative, profile],
+                crisp_outranking_prof_alt.loc[profile, alternative],
             )
             if relation in (OutrankingRelation.INDIFF, OutrankingRelation.PQ):
                 pessimistic_idx = i + 1
@@ -908,10 +908,10 @@ def assign_tri_class(
 
         # Optimistic assignment
         optimistic_idx = len(categories_profiles)
-        for i, profile in enumerate(categories_profiles.index):
+        for i, profile in enumerate(categories_profiles.index.values):
             relation = outranking_relation_marginal(
-                crisp_outranking_prof_alt.loc[profile][alternative],
-                crisp_outranking_alt_prof.loc[alternative][profile],
+                crisp_outranking_prof_alt.loc[profile, alternative],
+                crisp_outranking_alt_prof.loc[alternative, profile],
             )
             if relation == OutrankingRelation.PQ:
                 optimistic_idx = i
