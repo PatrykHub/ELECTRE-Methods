@@ -2,6 +2,8 @@ import pandas as pd
 
 from ..core.aliases import NumericValue
 from ..core.scales import PreferenceDirection, QualitativeScale
+from . import exceptions
+from ._validation import _both_values_in_scale, _get_threshold_values
 
 
 def get_criterion_difference(
@@ -16,6 +18,7 @@ def get_criterion_difference(
 
     :return: Difference between criterion values
     """
+    _both_values_in_scale(a_value, b_value, scale)
     return (
         a_value - b_value
         if scale.preference_direction == PreferenceDirection.MAX
@@ -39,18 +42,23 @@ def is_veto(
     :return: ``True`` if is veto between a and b, ``False`` otherwise
     """
     for i in range(len(a_values)):
-        if (
-            veto_thresholds[i] is not None
-            and get_criterion_difference(a_values[i], b_values[i], scales[i])
-            > veto_thresholds[i](a_values[i])
-        ):
-            return True
+        if veto_thresholds[i] is not None:
+            criterion_difference = get_criterion_difference(a_values[i], b_values[i], scales[i])
+            veto_threshold_value = _get_threshold_values(
+                a_values[i], veto_threshold=veto_thresholds[i]
+            )[0]
+            if veto_threshold_value <= 0:
+                raise exceptions.WrongThresholdValueError(
+                    "Veto threshold value must be positive, but got "
+                    f"{veto_threshold_value} instead."
+                )
+
+            if criterion_difference > veto_threshold_value:
+                return True
     return False
 
 
-def linear_function(
-    alpha: NumericValue, x: NumericValue, beta: NumericValue
-) -> NumericValue:
+def linear_function(alpha: NumericValue, x: NumericValue, beta: NumericValue) -> NumericValue:
     """Calculates linear function.
 
     :param alpha: coefficient of the independent variable
@@ -59,7 +67,14 @@ def linear_function(
 
     :return: Dependent variable
     """
-    return alpha * x + beta
+    try:
+        return alpha * x + beta
+    except TypeError as exc:
+        exc.args = (
+            "Wrong alpha or beta coefficient. Expected numeric types, but got "
+            f"alpha: {type(alpha).__name__}, beta: {type(beta).__name__} instead.",
+        )
+        raise
 
 
 def transform_series(series: pd.Series) -> pd.Series:
@@ -69,8 +84,49 @@ def transform_series(series: pd.Series) -> pd.Series:
 
     :return: Transformed pandas Series
     """
-    series = series.explode()
-    return pd.Series(series.index.values, index=series)
+    try:
+        series = series.explode()
+        return pd.Series(series.index.values, index=series)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong argument type. Expected {pd.Series.__name__}, "
+            f"but got {type(series).__name__} instead."
+        ) from exc
+
+
+def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
+    """Transforms order (upward or downward) to outranking matrix.
+
+    :param order: nested list with order (upward or downward)
+
+    :return: Outranking matrix of given order
+    """
+    try:
+        if set(order.keys()) != {x for x in range(1, len(order) + 1)}:
+            raise exceptions.InconsistentIndexNamesError(
+                "Values in the upward or downward order should be "
+                "a sequential integers, starting with 1, but got "
+                f"{set(order.keys())} instead."
+            )
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong order type. Expected {pd.Series.__name__}, but "
+            f"got {type(order).__name__} instead."
+        ) from exc
+    alternatives = order.explode().to_list()
+    if len(set(alternatives)) != len(alternatives):
+        raise exceptions.InconsistentIndexNamesError(
+            "In an upward or downward order, one alternative cannot "
+            "belong to more than one lists."
+        )
+
+    outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
+
+    for position in order:
+        outranking_matrix.loc[position, position] = 1
+        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
+
+    return outranking_matrix
 
 
 def reverse_transform_series(series: pd.Series) -> pd.Series:

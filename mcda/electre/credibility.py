@@ -7,6 +7,14 @@ import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
+from . import exceptions
+from ._validation import (
+    _check_df_index,
+    _check_index_value_interval,
+    _consistent_criteria_names,
+    _consistent_df_indexing,
+    _get_threshold_values,
+)
 from .utils import get_criterion_difference, is_veto
 
 
@@ -22,6 +30,8 @@ def credibility_pair(
 
     :return: Credibility value S(a, b), value from [0, 1] interval
     """
+    _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
+    _check_index_value_interval(non_discordance, "non-discordance index")
     return concordance_comprehensive * non_discordance
 
 
@@ -37,6 +47,9 @@ def credibility_comprehensive(
 
     :return: Credibility matrix with float values from [0, 1] interval
     """
+    _consistent_df_indexing(
+        concordance_comprehensive=concordance_comprehensive, non_discordance=non_discordance
+    )
     return pd.DataFrame(
         [
             [
@@ -70,15 +83,51 @@ def credibility_cv_pair(
 
     :return: Credibility value S(a, b), value from [0, 1] interval
     """
-    return concordance_comprehensive * non_discordance ** (
-        1
-        - (
-            len(counter_veto_occurs)
-            if isinstance(counter_veto_occurs, Sized)
-            else counter_veto_occurs
+    _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
+    _check_index_value_interval(non_discordance, name="non-discordance index")
+
+    try:
+        if int(number_of_criteria) != number_of_criteria:
+            raise TypeError
+
+        if number_of_criteria <= 0:
+            raise ValueError(
+                "Number of criteria must be a positive number, but "
+                f"got {number_of_criteria} instead."
+            )
+    except TypeError as exc:
+        exc.args = (
+            "Number of criteria should be an integer, but got "
+            f"{type(number_of_criteria).__name__} instead.",
         )
-        / number_of_criteria
-    )
+        raise
+
+    try:
+        if not isinstance(counter_veto_occurs, Sized):
+            if int(counter_veto_occurs) != counter_veto_occurs:
+                raise TypeError
+
+            if counter_veto_occurs < 0:
+                raise ValueError(
+                    "Counter veto occurrence count cannot be less than 0, "
+                    f"but got {counter_veto_occurs} instead."
+                )
+        return concordance_comprehensive * non_discordance ** (
+            1
+            - (
+                len(counter_veto_occurs)
+                if isinstance(counter_veto_occurs, Sized)
+                else counter_veto_occurs
+            )
+            / number_of_criteria
+        )
+    except TypeError as exc:
+        exc.args = (
+            "Wrong argument type with cv occurrence information. "
+            f"Expected {credibility_cv_pair.__annotations__['counter_veto_occurs']}, "
+            f"but got {type(counter_veto_occurs).__name__} instead.",
+        )
+        raise
 
 
 def credibility_cv(
@@ -98,6 +147,11 @@ def credibility_cv(
 
     :return: Credibility matrix with float values from [0, 1] interval
     """
+    _consistent_df_indexing(
+        concordance_comprehensive=concordance_comprehensive,
+        non_discordance=non_discordance,
+        counter_veto_occurs=counter_veto_occurs,
+    )
     return pd.DataFrame(
         [
             [
@@ -122,6 +176,7 @@ def get_criteria_counts_marginal(
     scales: pd.Series,
     indifference_thresholds: pd.Series,
     preference_thresholds: pd.Series,
+    **kwargs,
 ) -> pd.Series:
     """Calculates criteria counts for a pair.
 
@@ -134,21 +189,40 @@ def get_criteria_counts_marginal(
     :return: List of criteria counts for a pair
     """
     np = nq = ni = no = 0
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+        )
 
     for i in range(len(a_values)):
         difference = get_criterion_difference(a_values[i], b_values[i], scales[i])
+        indifference, preference = _get_threshold_values(
+            a_values[i],
+            indifference_threshold=indifference_thresholds[i],
+            preference_threshold=preference_thresholds[i],
+        )
+        if not 0 <= indifference <= preference:
+            raise exceptions.WrongThresholdValueError(
+                "Threshold values must meet a condition: "
+                "0 <= indifference_threshold <= preference_threshold, but got "
+                f"0 <= {indifference} <= {preference}"
+            )
 
         if difference > 0.0:
-            if difference >= preference_thresholds[i](a_values[i]):
+            if difference >= preference:
                 np += 1
-            elif difference > indifference_thresholds[i](a_values[i]):
+            elif difference > indifference:
                 nq += 1
             else:
                 ni += 1
         elif math.isclose(difference, 0.0):
             no += 1
 
-    return pd.Series([np, nq, ni, no])
+    return pd.Series([np, nq, ni, no], index=["np", "nq", "ni", "no"])
 
 
 def get_criteria_counts(
@@ -157,6 +231,7 @@ def get_criteria_counts(
     indifference_thresholds: pd.Series,
     preference_thresholds: pd.Series,
     profiles_perform: Optional[pd.DataFrame] = None,
+    **kwargs,
 ) -> pd.DataFrame:
     """Calculates criteria counts for each pair.
 
@@ -169,8 +244,18 @@ def get_criteria_counts(
 
     :return: Matrix of criteria counts for each pair
     """
-    columns_content = profiles_perform if profiles_perform is not None else performance_table
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            performance_table=performance_table,
+            scales=scales,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            profiles_perform=profiles_perform,
+        )
+        _check_df_index(performance_table, index_type="alternatives")
+        _check_df_index(profiles_perform, index_type="criteria")
 
+    columns_content = profiles_perform if profiles_perform is not None else performance_table
     return pd.DataFrame(
         [
             [
@@ -180,6 +265,7 @@ def get_criteria_counts(
                     scales,
                     indifference_thresholds,
                     preference_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in columns_content.index.values
             ]
@@ -267,7 +353,7 @@ def _calculate_credibility_values(
     return credibility_matrix
 
 
-def get_credibility_values(
+def _get_credibility_values(
     performance_table: pd.DataFrame,
     criteria_counts: pd.DataFrame,
     scales: pd.Series,
@@ -332,7 +418,18 @@ def credibility_electre_iv(
 
     :return: Credibility matrix
     """
-    return get_credibility_values(
+    _consistent_criteria_names(
+        performance_table=performance_table,
+        scales=scales,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        veto_thresholds=veto_thresholds,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(performance_table, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="criteria")
+
+    return _get_credibility_values(
         performance_table,
         get_criteria_counts(
             performance_table,
@@ -340,6 +437,7 @@ def credibility_electre_iv(
             indifference_thresholds,
             preference_thresholds,
             profiles_perform,
+            validated=True,
         ),
         scales,
         veto_thresholds,
@@ -350,6 +448,7 @@ def credibility_electre_iv(
             indifference_thresholds,
             preference_thresholds,
             performance_table,
+            validated=True,
         )
         if profiles_perform is not None
         else None,

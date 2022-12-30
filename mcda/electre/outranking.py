@@ -1,13 +1,24 @@
 """This module implements methods to make an outranking."""
 from enum import Enum
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
-from ._validation import _check_index_value_interval
-from .utils import linear_function, reverse_transform_series, transform_series
+from . import exceptions
+from ._validation import (
+    _check_index_value_binary,
+    _check_index_value_interval,
+    _consistent_df_indexing,
+    _unique_names,
+)
+from .utils import (
+    linear_function,
+    order_to_outranking_matrix,
+    reverse_transform_series,
+    transform_series,
+)
 
 
 class OutrankingRelation(Enum):
@@ -45,6 +56,7 @@ def crisp_outranking_cut(
 
     :return: Boolean table the same size as the credibility table
     """
+    _consistent_df_indexing(credibility_table=credibility_table)
     return pd.DataFrame(
         [
             [
@@ -77,13 +89,7 @@ def crisp_outranking_Is_marginal(
     """
     _check_index_value_interval(concordance_comprehensive, "comprehensive concordance")
     _check_index_value_interval(concordance_cutting_level, "cutting level", minimal_val=0.5)
-
-    if discordance_comprehensive_bin not in [0, 1]:
-        raise ValueError(
-            "Provided comprehensive discordance is not binary. Expected 0 or 1 value, but "
-            f"got {discordance_comprehensive_bin} instead."
-        )
-
+    _check_index_value_binary(discordance_comprehensive_bin, "binary discordance")
     return (
         concordance_comprehensive >= concordance_cutting_level
         and discordance_comprehensive_bin == 0
@@ -106,6 +112,10 @@ def crisp_outranking_Is(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
+    _consistent_df_indexing(
+        concordance_comprehensive_table=concordance_comprehensive_table,
+        discordance_comprehensive_bin_table=discordance_comprehensive_bin_table,
+    )
     return pd.DataFrame(
         [
             [
@@ -171,6 +181,10 @@ def crisp_outranking_coal(
 
     :return: Boolean table the same size as the concordance and discordance tables
     """
+    _consistent_df_indexing(
+        concordance_comprehensive_table=concordance_comprehensive_table,
+        discordance_comprehensive_table=discordance_comprehensive_table,
+    )
     return pd.DataFrame(
         [
             [
@@ -202,6 +216,8 @@ def outranking_relation_marginal(
         * None, if b is preferred to a
         * OutrankingRelation enum
     """
+    _check_index_value_binary(crisp_outranking_ab, name="crisp relation")
+    _check_index_value_binary(crisp_outranking_ba, name="crisp relation")
     if crisp_outranking_ab and crisp_outranking_ba:
         return OutrankingRelation.INDIFF
 
@@ -230,7 +246,24 @@ def outranking_relation(
     tables - first one with alternatives - profiles, second one with
     profiles - alternatives comparison.
     """
+    _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
     if crisp_outranking_table_profiles is not None:
+        _consistent_df_indexing(crisp_outranking_table_profiles=crisp_outranking_table_profiles)
+
+        if set(crisp_outranking_table_profiles.index.values) != set(
+            crisp_outranking_table.columns.values
+        ):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Profiles names are not the same for provided tables."
+            )
+
+        if set(crisp_outranking_table_profiles.columns.values) != set(
+            crisp_outranking_table.index.values
+        ):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Alternatives names are not the same for provided tables."
+            )
+
         return pd.DataFrame(
             [
                 [
@@ -305,6 +338,11 @@ def _get_minimal_credibility_index(
     threshold_value = maximal_credibility_index - linear_function(
         maximal_credibility_index, alpha, beta
     )
+    if threshold_value > maximal_credibility_index:
+        raise exceptions.ValueOutsideScaleError(
+            "Provided alpha and beta values make it impossible to "
+            "calculate a positive function value s = alpha * credibility + beta"
+        )
 
     for alt_name_a in credibility_matrix.index.values:
         for alt_name_b in credibility_matrix.index.values:
@@ -333,11 +371,20 @@ def crisp_outranking_relation_distillation(
 
     :return: 1 if undermentioned inequality is true, 0 otherwise
     """
+    _check_index_value_interval(credibility_pair_value_ab, name="credibility")
+    _check_index_value_interval(credibility_pair_value_ba, name="credibility")
+    _check_index_value_interval(minimal_credibility_index, name="minimal credibility index")
+
+    difference_threshold = linear_function(alpha, credibility_pair_value_ab, beta)
+    if difference_threshold < 0:
+        raise exceptions.ValueOutsideScaleError(
+            "Provided alpha and beta values make it impossible to "
+            "calculate a positive function value s = alpha * credibility + beta"
+        )
     return (
         1
         if credibility_pair_value_ab > minimal_credibility_index
-        and credibility_pair_value_ab
-        > credibility_pair_value_ba + linear_function(alpha, credibility_pair_value_ab, beta)
+        and credibility_pair_value_ab > credibility_pair_value_ba + difference_threshold
         else 0
     )
 
@@ -360,6 +407,14 @@ def alternative_qualities(
     :return: Quality of a computed as the difference of its strength and weakness,
     also maximal credibility index for possible inner distillation
     """
+    _consistent_df_indexing(credibility_matrix=credibility_matrix)
+    if set(credibility_matrix.columns) != set(credibility_matrix.index):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "Quality calculation is possible only for alternatives, but "
+            "for the provided credibility table, the set of values "
+            "in rows is different than in the columns."
+        )
+
     if maximal_credibility_index is None:
         maximal_credibility_index = _get_maximal_credibility_index(credibility_matrix)
     minimal_credibility_index = _get_minimal_credibility_index(
@@ -458,9 +513,16 @@ def distillation(
 
     :return: Nested list of complete upward or downward order
     """
-    np.fill_diagonal(credibility_matrix.values, 0)
-    preference_operator = min if upward_order else max
-    remaining_alt_indices = credibility_matrix.index.to_series()
+    try:
+        np.fill_diagonal(credibility_matrix.values, 0)
+        preference_operator = min if upward_order else max
+        remaining_alt_indices = credibility_matrix.index.to_series()
+    except (TypeError, AttributeError) as exc:
+        exc.args = (
+            f"Wrong credibility matrix type. Expected {pd.DataFrame.__name__}, "
+            f"but got {type(credibility_matrix).__name__} instead.",
+        )
+        raise
     order = pd.Series([], dtype="float64")
     level: int = 1
 
@@ -469,8 +531,9 @@ def distillation(
             credibility_matrix, remaining_alt_indices, preference_operator, alpha, beta
         )
 
-        if len(preferred_alternatives) > 1:
-            preferred_alternatives, _ = _distillation_process(
+        # inner distillation procedure
+        while len(preferred_alternatives) > 1 and minimal_credibility_index > 0:
+            preferred_alternatives, minimal_credibility_index = _distillation_process(
                 credibility_matrix,
                 preferred_alternatives.index.to_series(),
                 preference_operator,
@@ -486,26 +549,7 @@ def distillation(
     return order[::-1] if upward_order else order
 
 
-def order_to_outranking_matrix(order: pd.Series) -> pd.DataFrame:
-    """Transforms order (upward or downward) to outranking matrix.
-
-    :param order: nested list with order (upward or downward)
-
-    :return: Outranking matrix of given order
-    """
-    alternatives = order.explode().to_list()
-    outranking_matrix = pd.DataFrame(0, index=alternatives, columns=alternatives)
-
-    for position in order:
-        outranking_matrix.loc[position, position] = 1
-        outranking_matrix.loc[position, alternatives[alternatives.index(position[-1]) + 1:]] = 1
-
-    return outranking_matrix
-
-
-def final_ranking_matrix(
-    descending_order_matrix: pd.DataFrame, ascending_order_matrix: pd.DataFrame
-) -> pd.DataFrame:
+def final_ranking_matrix(descending_order: pd.Series, ascending_order: pd.Series) -> pd.DataFrame:
     """Constructs final partial preorder intersection from downward and upward orders of
     alternatives derived from the descending and ascending distillation procedures, respectively.
 
@@ -514,6 +558,12 @@ def final_ranking_matrix(
 
     :return: Final outranking matrix
     """
+    descending_order_matrix = order_to_outranking_matrix(descending_order)
+    ascending_order_matrix = order_to_outranking_matrix(ascending_order)
+    _consistent_df_indexing(
+        descending_order_matrix=descending_order_matrix,
+        ascending_order_matrix=ascending_order_matrix,
+    )
     return descending_order_matrix * ascending_order_matrix
 
 
@@ -524,6 +574,19 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
     :return: Nested list of ranks
     """
+    _consistent_df_indexing(final_ranking_matrix=final_ranking_matrix)
+    if set(final_ranking_matrix.columns.values) != set(final_ranking_matrix.index.values):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "Ranks calculation is possible only for alternatives, but "
+            "for the provided outranking table, the set of values "
+            "in rows is different than in the columns."
+        )
+    for column_name in final_ranking_matrix.columns.values:
+        for row_name in final_ranking_matrix.index.values:
+            _check_index_value_binary(
+                final_ranking_matrix[column_name][row_name], name="final ranking index"
+            )
+
     ranks_ranking = pd.Series([], dtype="float64")
     remaining_alt_indices = final_ranking_matrix.index.to_series()
     level: int = 1
@@ -552,6 +615,12 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
 
 def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
+    for column_name in crisp_outranking_table.columns.values:
+        for row_name in crisp_outranking_table.index.values:
+            _check_index_value_binary(
+                crisp_outranking_table[column_name][row_name], name="crisp outranking relation"
+            )
     return pd.Series(
         {
             alt_name_b: [
@@ -564,7 +633,7 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
     )
 
 
-def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
+def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
@@ -595,15 +664,41 @@ def strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
                     break
             result.append(connected_component)
 
-    for node in graph.index:
-        if node not in index:
-            _strong_connect(node)
+    try:
+        for node in graph.index.values:
+            if node not in index:
+                _strong_connect(node)
+    except KeyError as exc:
+        raise exceptions.GraphError(
+            "Graph contain an arc directed to a non-existent vertex "
+            f"(at least one values from: {graph[node]} doesn't exists in "
+            f"a {pd.Series.__name__} index values)."
+        ) from exc
+    except (TypeError, AttributeError) as exc:
+        if "node" in locals():
+            exc.args = (
+                f"Successors of a vertex inside graph should be iterable, but for node: {node} "
+                f"got {type(graph[node]).__name__}.",
+            )
+        else:
+            exc.args = (
+                f"Wrong graph type. Expected {pd.Series.__name__}, but "
+                f"got {type(graph).__name__} instead.",
+            )
+        raise
     return result
 
 
 def aggregate(graph: pd.Series) -> pd.Series:
-    new_graph = graph.copy()
-    for vertices in strongly_connected_components(graph):
+    try:
+        new_graph = graph.copy()
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong graph type. Expected {pd.Series.__name__}, "
+            f"but got {type(graph).__name__} instead."
+        ) from exc
+
+    for vertices in _strongly_connected_components(graph):
         if len(vertices) == 1:
             continue
         aggregated = ", ".join(str(v) for v in vertices)
@@ -624,7 +719,29 @@ def aggregate(graph: pd.Series) -> pd.Series:
     return new_graph
 
 
-def find_vertices_without_predecessor(graph: pd.Series) -> List[Any]:
+def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
+    if "validated" not in kwargs:
+        try:
+            vertex_set = set(graph.keys())
+            for successor_list in graph.values:
+                if not isinstance(successor_list, Iterable):
+                    raise TypeError(
+                        "Successor list of a graph vertex must be iterable, "
+                        f"but got {type(successor_list).__name__} instead."
+                    )
+
+                if set(successor_list) - vertex_set:
+                    raise exceptions.GraphError(
+                        "Graph contain an arc directed to a non-existent vertex "
+                        f"(at least one values from: {successor_list} doesn't exists in "
+                        f"a {pd.Series.__name__} index values)."
+                    )
+        except (TypeError, AttributeError) as exc:
+            raise TypeError(
+                f"Wrong graph type. Expected {pd.Series.__name__}, "
+                f"but got {type(graph).__name__} instead."
+            ) from exc
+
     vertices_with_predecessor = list(set([v for key in graph.index.values for v in graph[key]]))
     return [vertex for vertex in graph.index if vertex not in vertices_with_predecessor]
 
@@ -639,17 +756,19 @@ def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
     graph = _change_to_series(crisp_outranking_table)
     graph = aggregate(graph)
     not_kernel: List = []
-    kernel = find_vertices_without_predecessor(graph)
+    kernel = find_vertices_without_predecessor(graph, validated=True)
+
     for vertex in kernel:
-        not_kernel = not_kernel + graph[vertex]
-        graph.pop(vertex)
+        not_kernel += graph.pop(vertex)
+
     while len(graph.keys()) != 0:
-        vertices = find_vertices_without_predecessor(graph)
+        vertices = find_vertices_without_predecessor(graph, validated=True)
         for vertex in vertices:
             if vertex not in not_kernel:
                 kernel.append(vertex)
-                not_kernel = not_kernel + graph[vertex]
+                not_kernel += graph[vertex]
             graph.pop(vertex)
+
     return kernel
 
 
@@ -660,6 +779,18 @@ def net_flow_score(outranking_table: pd.DataFrame) -> pd.Series:
     between alternatives
     :return: net flow scores for all alternatives
     """
+    _consistent_df_indexing(outranking_table=outranking_table)
+    if set(outranking_table.columns) != set(outranking_table.index):
+        raise exceptions.InconsistentDataFrameIndexingError(
+            "NFS calculation is possible only for alternatives, but "
+            "for the provided outranking table, the set of values "
+            "in rows is different than in the columns."
+        )
+    for column_name in outranking_table.columns.values:
+        for row_name in outranking_table.index.values:
+            _check_index_value_interval(
+                outranking_table[column_name][row_name], name="outranking relation"
+            )
     return pd.Series(
         [
             outranking_table.loc[alt_name].sum() - outranking_table[alt_name].sum()
@@ -678,10 +809,47 @@ def median_order(ranks: pd.Series, downward_order: pd.Series, upward_order: pd.S
 
     :return: Nested list of median preorder
     """
-    alternatives = ranks.explode().to_list()
+    try:
+        alternatives = ranks.explode().to_list()
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong ranks argument type. Expected {pd.Series.__name__}, "
+            f"but got {type(ranks).__name__} instead."
+        ) from exc
+
     ranks = transform_series(ranks)
     downward_order = transform_series(downward_order)
     upward_order = transform_series(upward_order)
+
+    _unique_names(ranks.keys(), names_type="alternatives")
+    _unique_names(downward_order.keys(), names_type="alternatives")
+    _unique_names(upward_order.keys(), names_type="alternatives")
+
+    ranks_set, downwards_set, upward_set = set(ranks), set(downward_order), set(upward_order)
+    if sum(ranks_set) != sum([x for x in range(1, len(ranks_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in ranks should be a sequential integers, "
+            f"starting with 0, but got {ranks_set} instead."
+        )
+    if sum(downwards_set) != sum([x for x in range(1, len(downwards_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in the downward order should be "
+            "a sequential integers, starting with 0, but got "
+            f"{downwards_set} instead."
+        )
+    if sum(upward_set) != sum([x for x in range(1, len(upward_set) + 1)]):
+        raise exceptions.InconsistentIndexNamesError(
+            "Values in the upward order should be "
+            "a sequential integers, starting with 0, but got "
+            f"{upward_set} instead."
+        )
+
+    base_keys_set = set(ranks.keys())
+    if base_keys_set != set(downward_order.keys()) or base_keys_set != set(upward_order.keys()):
+        raise exceptions.InconsistentIndexNamesError(
+            "Provided ranks and nested lists with order must contain "
+            "the same set of alternatives."
+        )
 
     initial_order = []
     for i in range(len(ranks)):

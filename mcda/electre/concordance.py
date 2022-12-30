@@ -569,7 +569,7 @@ def concordance_with_interactions_marginal(
         _weights_proper_vals(weights)
 
         if set(interactions.index.values) != set(interactions.columns.values):
-            raise exceptions.InconsistentCriteriaNamesError(
+            raise exceptions.InconsistentIndexNamesError(
                 "Interaction DataFrame index should contain the same values set as " "its columns."
             )
 
@@ -684,7 +684,7 @@ def concordance_with_interactions(
     _check_df_index(interactions, index_type="criteria")
     _weights_proper_vals(weights)
     if set(interactions.index.values) != set(interactions.columns.values):
-        raise exceptions.InconsistentCriteriaNamesError(
+        raise exceptions.InconsistentIndexNamesError(
             "Interaction DataFrame index should contain the same values set as " "its columns."
         )
     if not isinstance(function_type, FunctionType):
