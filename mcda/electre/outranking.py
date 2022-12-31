@@ -902,7 +902,7 @@ def assign_tri_class(
 
         # Optimistic assignment
         optimistic_idx = len(categories_profiles) - 1
-        for i, profile in enumerate(categories_profiles.values[:-1]):
+        for i, profile in list(enumerate(categories_profiles.values))[:-1]:
             relation = outranking_relation_marginal(
                 crisp_outranking_prof_alt.loc[profile, alternative],
                 crisp_outranking_alt_prof.loc[alternative, profile],
