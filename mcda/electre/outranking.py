@@ -772,13 +772,12 @@ def assign_tri_c_class(
                 >= credibility_prof_alt.loc[profile][alternative]
                 and relation_next == OutrankingRelation.R
             ):
-                p_next = categories_profiles[categories_profiles == p_next].index[0]
-                category = categories_profiles[p_next]
+                category = categories_profiles[categories_profiles == p_next].index[0]
                 assignments_descending.append((alternative, category))
                 found_descending = True
                 break
         if not found_descending:
-            assignments_descending.append((alternative, categories_profiles[0]))
+            assignments_descending.append((alternative, categories_profiles.index[0]))
 
         found_ascending = False
         for i, profile in enumerate(categories_profiles[1:]):
@@ -798,13 +797,12 @@ def assign_tri_c_class(
                 >= credibility_alt_prof.loc[alternative][profile]
                 and relation_prev == OutrankingRelation.R
             ):
-                p_prev = categories_profiles[categories_profiles == p_prev].index[0]
-                category = categories_profiles[p_prev]
+                category = categories_profiles[categories_profiles == p_prev].index[0]
                 assignments_ascending.append((alternative, category))
                 found_ascending = True
                 break
         if not found_ascending:
-            assignments_ascending.append((alternative, categories_profiles[-1]))
+            assignments_ascending.append((alternative, categories_profiles.index[-1]))
     for zipped in zip(assignments_descending, assignments_ascending):
         assignment[zipped[0][0]] = (zipped[0][1], zipped[1][1])
     return assignment
@@ -845,14 +843,13 @@ def assign_tri_rc_class(
                 and credibility_alt_prof.loc[alternative][p_next]
                 > credibility_prof_alt.loc[profile][alternative]
             ):
-                p_next = categories_profiles[categories_profiles == p_next].index[0]
-                category = categories_profiles[p_next]
+                category = categories_profiles[categories_profiles == p_next].index[0]
                 assignments_descending.append((alternative, category))
                 found_descending = True
                 break
 
         if not found_descending:
-            assignments_descending.append((alternative, categories_profiles[0]))
+            assignments_descending.append((alternative, categories_profiles.index[0]))
 
         found_ascending = False
         for i, profile in enumerate(categories_profiles[1:]):
@@ -866,13 +863,12 @@ def assign_tri_rc_class(
                 and credibility_prof_alt.loc[p_prev][alternative]
                 > credibility_alt_prof.loc[alternative][profile]
             ):
-                p_prev = categories_profiles[categories_profiles == p_prev].index[0]
-                category = categories_profiles[p_prev]
+                category = categories_profiles[categories_profiles == p_prev].index[0]
                 assignments_ascending.append((alternative, category))
                 found_ascending = True
                 break
         if not found_ascending:
-            assignments_ascending.append((alternative, categories_profiles[-1]))
+            assignments_ascending.append((alternative, categories_profiles.index[-1]))
     for zipped in zip(assignments_descending, assignments_ascending):
         assignment[zipped[0][0]] = (zipped[0][1], zipped[1][1])
     return assignment
@@ -891,13 +887,11 @@ def assign_tri_class(
     :return:
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
-    # Flattening the structure of categories
-    ranking = pd.Series(sum(categories_profiles, ())).unique()
 
     for alternative in crisp_outranking_alt_prof.index.values:
         # Pessimistic assignment
         pessimistic_idx = 0
-        for i, profile in list(enumerate(categories_profiles.index.values))[::-1]:
+        for i, profile in list(enumerate(categories_profiles.values))[1::-1]:
             relation = outranking_relation_marginal(
                 crisp_outranking_alt_prof.loc[alternative, profile],
                 crisp_outranking_prof_alt.loc[profile, alternative],
@@ -907,8 +901,8 @@ def assign_tri_class(
                 break
 
         # Optimistic assignment
-        optimistic_idx = len(categories_profiles)
-        for i, profile in enumerate(categories_profiles.index.values):
+        optimistic_idx = len(categories_profiles) - 1
+        for i, profile in enumerate(categories_profiles.values[:-1]):
             relation = outranking_relation_marginal(
                 crisp_outranking_prof_alt.loc[profile, alternative],
                 crisp_outranking_alt_prof.loc[alternative, profile],
@@ -918,8 +912,8 @@ def assign_tri_class(
                 break
 
         assignment[alternative] = (
-            ranking[pessimistic_idx],
-            ranking[optimistic_idx],
+            categories_profiles.index.values[pessimistic_idx],
+            categories_profiles.index.values[optimistic_idx],
         )
     return assignment
 

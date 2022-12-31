@@ -12,7 +12,7 @@ from mcda.electre.outranking import (
 
 @pytest.fixture
 def categories_profiles() -> pd.Series:
-    return pd.Series([("Bad", "Medium"), ("Medium", "Good")], index=["p1", "p2"])
+    return pd.Series(["p1", "p2", None], index=["Bad", "Medium", "Good"])
 
 
 @pytest.fixture
@@ -83,7 +83,7 @@ def test_assign_tri_class(
 @pytest.fixture
 def categories_profiles_tri_c() -> pd.Series:
     return pd.Series(
-        ["C1", "C2", "C3", "C4", "C5"], index=["b1", "b2", "b3", "b4", "b5"]
+        ["C1", "C2", "C3", "C4", "C5"], index=["Bad", "Poor", "Okay", "Good", "Perfect"]
     )
 
 
@@ -207,17 +207,17 @@ def credibility_tri_c() -> Tuple[pd.DataFrame, pd.DataFrame]:
 def expected_tri_c() -> pd.Series:
     return pd.Series(
         [
-            ("C3", "C3"),
-            ("C4", "C4"),
-            ("C3", "C4"),
-            ("C3", "C3"),
-            ("C3", "C3"),
-            ("C3", "C4"),
-            ("C2", "C3"),
-            ("C3", "C4"),
-            ("C3", "C4"),
-            ("C3", "C5"),
-            ("C2", "C4"),
+            ("Okay", "Okay"),
+            ("Good", "Good"),
+            ("Okay", "Good"),
+            ("Okay", "Okay"),
+            ("Okay", "Okay"),
+            ("Okay", "Good"),
+            ("Poor", "Okay"),
+            ("Okay", "Good"),
+            ("Okay", "Good"),
+            ("Okay", "Perfect"),
+            ("Poor", "Good"),
         ],
         index=[
             "France",
@@ -252,19 +252,22 @@ def test_assign_tri_c_class(
 
 @pytest.fixture
 def expected_tri_rc() -> pd.Series:
+    pd.Series(
+        ["C1", "C2", "C3", "C4", "C5"], index=["Bad", "Poor", "Okay", "Good", "Perfect"]
+    )
     return pd.Series(
         [
-            ("C3", "C3"),
-            ("C4", "C4"),
-            ("C3", "C4"),
-            ("C3", "C3"),
-            ("C3", "C3"),
-            ("C3", "C4"),
-            ("C2", "C3"),
-            ("C3", "C4"),
-            ("C3", "C4"),
-            ("C3", "C5"),
-            ("C2", "C4"),
+            ("Okay", "Okay"),
+            ("Good", "Good"),
+            ("Okay", "Good"),
+            ("Okay", "Okay"),
+            ("Okay", "Okay"),
+            ("Okay", "Good"),
+            ("Poor", "Okay"),
+            ("Okay", "Good"),
+            ("Okay", "Good"),
+            ("Okay", "Perfect"),
+            ("Poor", "Good"),
         ],
         index=[
             "France",
