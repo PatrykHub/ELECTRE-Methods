@@ -49,6 +49,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Config constants --------------------------------------------------------
 
+autodoc_member_order = 'bysource'
 todo_include_todos = True
 bibtex_bibfiles = ['refs.bib']
 
