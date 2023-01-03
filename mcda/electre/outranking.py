@@ -63,12 +63,12 @@ def crisp_outranking_cut(
                 crisp_outranking_cut_marginal(
                     credibility_table.loc[alt_name_a][alt_name_b], cutting_level
                 )
-                for alt_name_b in credibility_table.index.values
+                for alt_name_b in credibility_table.columns.values
             ]
             for alt_name_a in credibility_table.index.values
         ],
         index=credibility_table.index,
-        columns=credibility_table.index,
+        columns=credibility_table.columns,
     )
 
 
@@ -124,12 +124,12 @@ def crisp_outranking_Is(
                     discordance_comprehensive_bin_table.loc[alt_name_a][alt_name_b],
                     concordance_cutting_level,
                 )
-                for alt_name_b in concordance_comprehensive_table.index.values
+                for alt_name_b in concordance_comprehensive_table.columns.values
             ]
             for alt_name_a in concordance_comprehensive_table.index.values
         ],
         index=concordance_comprehensive_table.index,
-        columns=concordance_comprehensive_table.index,
+        columns=concordance_comprehensive_table.columns,
     )
 
 
@@ -194,12 +194,12 @@ def crisp_outranking_coal(
                     concordance_cutting_level,
                     discordance_cutting_level,
                 )
-                for alt_name_b in concordance_comprehensive_table.index.values
+                for alt_name_b in concordance_comprehensive_table.columns.values
             ]
             for alt_name_a in concordance_comprehensive_table.index.values
         ],
         index=concordance_comprehensive_table.index,
-        columns=concordance_comprehensive_table.index,
+        columns=concordance_comprehensive_table.columns,
     )
 
 
