@@ -140,7 +140,7 @@ def assign_tri_c_class(
     for alternative in crisp_outranking_alt_prof.index.values:
         found_descending = False
         for i, profile in enumerate(
-            categories_profiles[len(categories_profiles) - 2 :: -1]
+            categories_profiles[len(categories_profiles) - 2:: -1]
         ):
             p_next = categories_profiles.iloc[len(categories_profiles) - i - 1]
             relation = outranking_relation_marginal(
@@ -217,7 +217,7 @@ def assign_tri_rc_class(
     for alternative in crisp_outranking_alt_prof.index.values:
         found_descending = False
         for i, profile in enumerate(
-            categories_profiles[len(categories_profiles) - 2 :: -1]
+            categories_profiles[len(categories_profiles) - 2:: -1]
         ):
             p_next = categories_profiles.iloc[len(categories_profiles) - i - 1]
             relation = outranking_relation_marginal(
