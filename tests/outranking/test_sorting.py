@@ -1,12 +1,13 @@
+from typing import Tuple
+
 import pandas as pd
 import pytest
 
-from typing import Tuple
-from mcda.electre.outranking import (
-    assign_tri_class,
+from mcda.electre.outranking.sorting import (
+    assign_tri_b_class,
     assign_tri_c_class,
+    assign_tri_nb_class,
     assign_tri_rc_class,
-    assign_tri_nb_class
 )
 
 
@@ -73,7 +74,7 @@ def expected() -> pd.Series:
 def test_assign_tri_class(
         categories_profiles, crisp_outranking, expected
 ) -> None:
-    assert assign_tri_class(
+    assert assign_tri_b_class(
         categories_profiles,
         crisp_outranking[0],
         crisp_outranking[1],

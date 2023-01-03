@@ -3,22 +3,24 @@ from typing import Any, List, Tuple, Union
 import pandas as pd
 import pytest
 
-from mcda.electre.outranking import (
-    OutrankingRelation,
+from mcda.electre.outranking.choice import (
     _strongly_connected_components,
     aggregate,
+    find_kernel,
+    find_vertices_without_predecessor,
+)
+from mcda.electre.outranking.crisp_outranking import (
+    OutrankingRelation,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
     crisp_outranking_cut,
     crisp_outranking_cut_marginal,
     crisp_outranking_Is,
     crisp_outranking_Is_marginal,
-    find_kernel,
-    find_vertices_without_predecessor,
-    net_flow_score,
     outranking_relation,
     outranking_relation_marginal,
 )
+from mcda.electre.outranking.ranking import net_flow_score
 
 
 @pytest.mark.parametrize(
