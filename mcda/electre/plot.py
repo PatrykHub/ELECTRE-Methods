@@ -19,8 +19,8 @@ def outranking_to_graph(
     otherwise returns None.
     """
     graph = nx.DiGraph()
-    for alt_name_a in outranking_matrix.index:
-        for alt_name_b in outranking_matrix.index:
+    for alt_name_a in outranking_matrix.index.values:
+        for alt_name_b in outranking_matrix.index.values:
             if (
                 outranking_matrix.loc[alt_name_a][alt_name_b] == 1
                 and alt_name_a != alt_name_b
