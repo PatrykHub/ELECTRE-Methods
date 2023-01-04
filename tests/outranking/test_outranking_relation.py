@@ -3,13 +3,7 @@ from typing import Any, List, Tuple, Union
 import pandas as pd
 import pytest
 
-from mcda.electre.outranking.choice import (
-    _strongly_connected_components,
-    aggregate,
-    find_kernel,
-    find_vertices_without_predecessor,
-)
-from mcda.electre.outranking.crisp_outranking import (
+from mcda.electre.outranking import (
     OutrankingRelation,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
@@ -19,6 +13,12 @@ from mcda.electre.outranking.crisp_outranking import (
     crisp_outranking_Is_marginal,
     outranking_relation,
     outranking_relation_marginal,
+)
+from mcda.electre.outranking.choice import (
+    _strongly_connected_components,
+    aggregate,
+    find_kernel,
+    find_vertices_without_predecessor,
 )
 from mcda.electre.outranking.ranking import net_flow_score
 

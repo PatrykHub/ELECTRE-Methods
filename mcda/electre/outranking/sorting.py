@@ -1,10 +1,7 @@
 """This module implements modules to explore outranking with sorting methods."""
 import pandas as pd
 
-from mcda.electre.outranking.crisp_outranking import (
-    OutrankingRelation,
-    outranking_relation_marginal,
-)
+from mcda.electre.outranking import OutrankingRelation, outranking_relation_marginal
 
 
 def assign_tri_b_class(
