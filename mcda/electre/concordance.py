@@ -1,4 +1,8 @@
-"""This module implements methods to compute concordance."""
+"""This module implements methods to compute concordance.
+
+.. todo:
+    References
+"""
 from enum import Enum
 from typing import Any, Dict, Hashable, Optional, Tuple, Union
 
