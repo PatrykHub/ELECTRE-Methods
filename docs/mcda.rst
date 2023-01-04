@@ -9,7 +9,6 @@ Subpackages
 
    mcda.core
    mcda.electre
-   mcda.plot
 
 Module contents
 ---------------
