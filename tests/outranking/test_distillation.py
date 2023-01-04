@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from mcda.electre.outranking import (
+from mcda.electre.outranking.ranking import (
     _get_maximal_credibility_index,
     _get_minimal_credibility_index,
     alternative_qualities,

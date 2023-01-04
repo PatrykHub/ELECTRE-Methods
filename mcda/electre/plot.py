@@ -19,8 +19,8 @@ def outranking_to_graph(
     otherwise returns None.
     """
     graph = nx.DiGraph()
-    for alt_name_a in outranking_matrix.index:
-        for alt_name_b in outranking_matrix.index:
+    for alt_name_a in outranking_matrix.index.values:
+        for alt_name_b in outranking_matrix.index.values:
             if (
                 outranking_matrix.loc[alt_name_a][alt_name_b] == 1
                 and alt_name_a != alt_name_b
@@ -31,6 +31,7 @@ def outranking_to_graph(
         return nx.transitive_reduction(graph) if transitive_reduction else graph
     except nx.NetworkXError:
         warnings.warn("Directed Acyclic Graph required for transitive_reduction")
+    return None
 
 
 def _networkx_graph_to_graphviz(graph: nx.DiGraph) -> graphviz.Digraph:
@@ -61,3 +62,4 @@ def plot_outranking(
     graph = outranking_to_graph(outranking_matrix, transitive_reduction)
     if graph is not None:
         return _networkx_graph_to_graphviz(graph)
+    return None
