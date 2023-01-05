@@ -12,7 +12,7 @@ from mcda.electre.outranking.sorting import (
 
 
 @pytest.fixture
-def categories_profiles() -> pd.Series:
+def boundary_profiles_tri_b() -> pd.Series:
     return pd.Series(["p1", "p2", None], index=["Bad", "Medium", "Good"])
 
 
@@ -71,18 +71,18 @@ def expected() -> pd.Series:
     )
 
 
-def test_assign_tri_class(
-        categories_profiles, crisp_outranking, expected
+def test_assign_tri_b_class(
+        crisp_outranking, boundary_profiles_tri_b, expected
 ) -> None:
     assert assign_tri_b_class(
-        categories_profiles,
         crisp_outranking[0],
         crisp_outranking[1],
+        boundary_profiles_tri_b,
     ).equals(expected)
 
 
 @pytest.fixture
-def categories_profiles_tri_c() -> pd.Series:
+def characteristic_profiles_tri_c() -> pd.Series:
     return pd.Series(
         ["C1", "C2", "C3", "C4", "C5"], index=["Bad", "Poor", "Okay", "Good", "Perfect"]
     )
@@ -237,17 +237,17 @@ def expected_tri_c() -> pd.Series:
 
 
 def test_assign_tri_c_class(
-        categories_profiles_tri_c,
         outranking_tri_c,
         credibility_tri_c,
+        characteristic_profiles_tri_c,
         expected_tri_c,
 ) -> None:
     assert assign_tri_c_class(
-        categories_profiles_tri_c,
         outranking_tri_c[0],
         outranking_tri_c[1],
         credibility_tri_c[0],
         credibility_tri_c[1],
+        characteristic_profiles_tri_c,
     ).equals(expected_tri_c)
 
 
@@ -287,17 +287,17 @@ def expected_tri_rc() -> pd.Series:
 
 
 def test_assign_tri_rc_class(
-        categories_profiles_tri_c,
         outranking_tri_c,
         credibility_tri_c,
         expected_tri_rc,
+        characteristic_profiles_tri_c,
 ) -> None:
     assert assign_tri_rc_class(
-        categories_profiles_tri_c,
         outranking_tri_c[0],
         outranking_tri_c[1],
         credibility_tri_c[0],
         credibility_tri_c[1],
+        characteristic_profiles_tri_c,
     ).equals(expected_tri_rc)
 
 

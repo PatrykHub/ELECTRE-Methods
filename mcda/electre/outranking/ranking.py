@@ -1,4 +1,4 @@
-"""This module implements modules to explore outranking relations with ranking problems."""
+"""This module implements methods to explore outranking relations with ranking problems."""
 from typing import Callable, Optional, Tuple
 
 import numpy as np
