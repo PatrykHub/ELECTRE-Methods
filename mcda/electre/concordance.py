@@ -37,9 +37,9 @@ def concordance_marginal(
 
     :param a_value: alternative's performance value on one criterion
     :param b_value: alternative's performance value on the same criterion as `a_value`
-    :param scale: criterion scale with specified preference direction
-    :param indifference_threshold: criterion indifference threshold
-    :param preference_threshold: criterion preference threshold
+    :param scale: criterion's scale with specified preference direction
+    :param indifference_threshold: criterion's indifference threshold
+    :param preference_threshold: criterion's preference threshold
     :param inverse: if ``True``, then function will calculate `c(b_value, a_value)`
         with opposite scale preference direction, defaults to ``False``
 
@@ -92,12 +92,12 @@ def concordance_comprehensive(
     """Computes comprehensive discordance index :math:`C^S(a, b) \\in [0, 1]`,
     which represents a degree to which alternative `a` outranks `b`.
 
-    :param a_values: alternative performance on all its criteria
-    :param b_values: alternative performance on all its criteria
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
     :param inverse: if ``True``, then function will calculate :math:`C^S(b, a)`
         with opposite scales preference direction, defaults to ``False``
 
@@ -142,13 +142,11 @@ def concordance(
     Comparison is possible for alternatives or between alternatives and
     profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: performance table of alternatives, where single
-        row is a performance of one alternative (which means that one column
-        represents single criterion values of all alternatives)
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
     :param profiles_perform: if provided, indices would be computed
         between alternatives from `alternatives_perform` and from this argument,
         defaults to ``None``
@@ -247,9 +245,9 @@ def is_reinforcement_occur(
 
     :param a_value: alternative's performance value on one criterion
     :param b_value: alternative's performance value on the same criterion as `a_value`
-    :param scale: criterion scale with specified preference direction
-    :param preference_threshold: criterion preference threshold
-    :param reinforcement_threshold: criterion reinforcement threshold
+    :param scale: criterion's scale with specified preference direction
+    :param preference_threshold: criterion's preference threshold
+    :param reinforcement_threshold: criterion's reinforcement threshold
 
     :raises exceptions.WrongThresholdValueError: if thresholds don't meet a condition:
     .. math::
@@ -322,13 +320,13 @@ def concordance_reinforced_comprehensive(
     to which alternative `a` outranks `b` with considering the
     reinforcement effect.
 
-    :param a_values: alternative performance on all its criteria
-    :param b_values: alternative performance on all its criteria
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
-    :param reinforced_thresholds: all criteria reinforcement thresholds;
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param reinforced_thresholds: all criteria's reinforcement thresholds;
         for each criterion, providing a ``Threshold`` is optional and it
         can be set to ``None``
     :param reinforcement_factors: if criterion has specified reinforcement
@@ -402,14 +400,12 @@ def concordance_reinforced(
     Comparison is possible for alternatives or between alternatives and
     profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: performance table of alternatives, where single
-        row is a performance of one alternative (which means that one column
-        represents single criterion values of all alternatives)
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
-    :param reinforced_thresholds: all criteria reinforcement thresholds;
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param reinforced_thresholds: all criteria's reinforcement thresholds;
         for each criterion, providing a ``Threshold`` is optional and it
         can be set to ``None``
     :param reinforcement_factors: if criterion has specified reinforcement
@@ -633,12 +629,12 @@ def concordance_with_interactions_marginal(
     to which alternative `a` outranks `b` with considering the
     interactions effects on criteria.
 
-    :param a_values: alternative performance on all its criteria
-    :param b_values: alternative performance on all its criteria
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
     :param interactions: table with information about the interactions
         between criteria; both rows and columns must be indexed
         with criteria names; for pairs without an interaction, value
@@ -761,10 +757,10 @@ def concordance_with_interactions(
     :param alternatives_perform: performance table of alternatives, where single
         row is a performance of one alternative (which means that one column
         represents single criterion values of all alternatives)
-    :param scales: all criteria scales with specified preference direction
-    :param weights: all criteria weights, :math:`weight\\_value > 0`
-    :param indifference_thresholds: all criteria indifference thresholds
-    :param preference_thresholds: all criteria preference thresholds
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
     :param interactions: table with information about the interactions
         between criteria; both rows and columns must be indexed
         with criteria names; for pairs without an interaction, value
