@@ -29,15 +29,23 @@ def discordance_bin_marginal(
     veto_threshold: Optional[Threshold],
     inverse: bool = False,
 ) -> int:
-    """_summary_
+    """Computes marginal binary discordance index:
+    :math:`d^V(a\\_value, b\\_value) \\in \\{0, 1\\}`,
+    which represents an opposition in outranking `a` over `b`
+    on the provided criterion.
 
-    :param a_value: _description_
-    :param b_value: _description_
-    :param scale: _description_
-    :param veto_threshold: _description_
-    :param inverse: _description_, defaults to False
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param veto_threshold: criterion's veto threshold
+    :param inverse: if ``True``, then function will calculate :math:`d^V(b\\_value, a\\_value)`
+        with opposite scale preference direction, defaults to ``False``
 
-    :return: _description_
+    :raises exceptions.WrongThresholdValueError: if the veto threshold
+        value is not positive.
+
+    :return: ``0``, if veto was not exceeded or `veto_threshold` is ``None``,
+        ``1`` otherwise
     """
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
@@ -64,15 +72,20 @@ def discordance_bin_comprehensive(
     inverse: bool = False,
     **kwargs,
 ) -> int:
-    """_summary_
+    """Computes comprehensive binary discordance index:
+    :math:`D^V(a, b) \\in \\{0, 1\\}`, which represents an opposition
+    in outranking a over b.
 
-    :param a_values: _description_
-    :param b_values: _description_
-    :param scales: _description_
-    :param veto_thresholds: _description_
-    :param inverse: _description_, defaults to False
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional and it
+        can be set to ``None``
+    :param inverse: if ``True``, then function will calculate :math:`D^V(b, a)`
+        with opposite scales preference direction, defaults to ``False``
 
-    :return: _description_
+    :return: ``0``, if veto occur on any criterion, ``1`` otherwise
     """
     if "validated" not in kwargs:
         _consistent_criteria_names(
@@ -98,8 +111,17 @@ def discordance_bin_criteria_marginals(
     veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     **kwargs,
 ) -> pd.Series:
-    """Returns discordance marginals for all criteria between
-    two alternatives."""
+    """Computes marginal binary discordance indices:
+    :math:`d_j^V(a, b) \\in \\{0, 1\\}` for alternatives pair
+    (or between alternative and profile).
+
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param veto_threshold: criterion's veto threshold
+
+    :return: a series with marginal binary discordance for each criterion
+    """
     if "validated" not in kwargs:
         _consistent_criteria_names(
             a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
@@ -126,15 +148,29 @@ def discordance_bin(
     profiles_perform: Optional[pd.DataFrame] = None,
     return_marginals: bool = False,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Computes binary discordance indices: marginals or comprehensive ones.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param veto_thresholds: _description_
-    :param profiles_perform: _description_, defaults to None
-    :param return_marginals: _description_, defaults to False
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds
+    param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
+    :param return_marginals: if ``True``, the function will return
+        marginal indices, not the comprehensive ones, defaults to ``False``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`D^V(a, b)` indices
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`D^V(a, b)(alternative_i, profile_j)` indices, and the second one
+          :math:`D^V(a, b)(profile_j, alternative_i)`, respectively
+        * when `return_marginals` argument is set to ``True``, data frames will
+          contain a series with discordance marginals, not the :math:`D^V` indices
     """
     discordance_function: Callable = discordance_bin_comprehensive
 
