@@ -8,6 +8,12 @@ from .._validation import _check_index_value_binary, _consistent_df_indexing
 
 
 def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    """Transforms crisp outranking relations between alternatives into pandas.Series`
+
+    :param crisp_outranking_table: crisp outranking relations between alternatives
+
+    :return: `pandas.Series` transformed from crisp outranking table
+    """
     _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
     for column_name in crisp_outranking_table.columns.values:
         for row_name in crisp_outranking_table.index.values:
@@ -143,11 +149,11 @@ def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
 
 
 def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
-    """This function finds a kernel (out1) in a graph
-    constructed on the basis of a crisp outranking relation
-    :param crisp_outranking_table: table with crisp relations
-    between alternatives
-    :return: every alternative that is in kernel
+    """Constructs kernel as a set of alternatives, based on crisp outranking table.
+
+    :param crisp_outranking_table: crisp outranking relations between alternatives
+
+    :return: alternatives which are in the kernel
     """
     graph = _change_to_series(crisp_outranking_table)
     graph = aggregate(graph)

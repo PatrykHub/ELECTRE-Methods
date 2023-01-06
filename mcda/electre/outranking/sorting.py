@@ -12,11 +12,11 @@ def assign_tri_b_class(
     """Assigns each element of the alternatives set to appropriate class,
     based on the crisp outranking relations between alternatives and boundary profiles.
 
-    :param crisp_outranking_alt_prof: crisp outranking relation DataFrame alternatives-profiles
-    :param crisp_outranking_prof_alt: crisp outranking relation DataFrame profiles-alternatives
+    :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
+    :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
     :param boundary_profiles: profiles which separate the classes
 
-    :return: Series of pairs with the pessimistic and optimistic assignment to the classes
+    :return: `pandas.Series` of pairs with the pessimistic and optimistic assignment to the classes
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
 
@@ -57,12 +57,14 @@ def assign_tri_nb_class(
 ) -> pd.Series:
     """Assigns each element of the alternatives set to appropriate class,
     based on the crisp outranking relations between alternatives and boundary profiles.
+    Unlike in `assign_tri_b_class` module, it is possible to define many boundary profiles
+    dividing alternatives between every two classes.
 
-    :param crisp_outranking_alt_prof: crisp outranking relation DataFrame alternatives-profiles
-    :param crisp_outranking_prof_alt: crisp outranking relation DataFrame profiles-alternatives
+    :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
+    :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
     :param boundary_profiles: profiles which separate the classes
 
-    :return: Series of pairs with the pessimistic and optimistic assignment to the classes
+    :return: `pandas.Series` of pairs with the pessimistic and optimistic assignment to the classes
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
     for alternative in crisp_outranking_alt_prof.index.values:
@@ -126,15 +128,15 @@ def assign_tri_c_class(
     characteristic_profiles: pd.Series,
 ) -> pd.Series:
     """Implements the descending and ascending assignment rules for set of alternatives,
-    based on crisp outarnking relation, credibility tables and characteristic profiles.
+    based on crisp outranking relation, credibility tables and characteristic profiles.
 
-    :param crisp_outranking_alt_prof: crisp outranking relation DataFrame alternatives-profiles
-    :param crisp_outranking_prof_alt: crisp outranking relation DataFrame profiles-alternatives
-    :param credibility_alt_prof: _description_
-    :param credibility_prof_alt: _description_
-    :param characteristic_profiles: _description_
+    :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
+    :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
+    :param credibility_alt_prof: credibility table alternatives-profiles
+    :param credibility_prof_alt: credibility table profiles-alternatives
+    :param characteristic_profiles: profiles which characterize classes
 
-    :return: _description_
+    :return: `pandas.Series` of pairs with the descending and ascending assignment to the classes
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
 
@@ -212,15 +214,19 @@ def assign_tri_rc_class(
     credibility_prof_alt: pd.DataFrame,
     characteristic_profiles: pd.Series,
 ) -> pd.Series:
-    """_summary_
+    """Implements the descending and ascending assignment rules for set of alternatives,
+    based on crisp outranking relation, credibility tables and characteristic profiles.
+    Unlike in `assign_tri_c_class` module, it is possible to clearly indicate the worst
+    and the best class for each alternative.
 
-    :param crisp_outranking_alt_prof: crisp outranking relation DataFrame alternatives-profiles
-    :param crisp_outranking_prof_alt: crisp outranking relation DataFrame profiles-alternatives
-    :param credibility_alt_prof: _description_
-    :param credibility_prof_alt: _description_
-    :param characteristic_profiles: _description_
+    :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
+    :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
+    :param credibility_alt_prof: credibility table alternatives-profiles
+    :param credibility_prof_alt: credibility table profiles-alternatives
+    :param characteristic_profiles: profiles which characterize classes
 
-    :return: _description_
+    :return: `pandas.Series` of pairs with the worst and the best class
+        indicated for each alternative
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
 

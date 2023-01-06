@@ -25,13 +25,13 @@ def net_flow_score(outranking_table: pd.DataFrame) -> pd.Series:
     """Constructs descending list of alternatives ordered by their Net Flow Score,
     based on an outranking table.
 
-    :param outranking_table: crisp or valued outranking table DataFrame
+    :param outranking_table: crisp or valued outranking table
 
     :raises exceptions.InconsistentDataFrameIndexingError: _description_
     .. todo::
         describe exception
 
-    :return: Ordered Series with Net Flow Scores for all alternatives
+    :return: ordered `pandas.Series` with Net Flow Scores for all alternatives
     """
     _consistent_df_indexing(outranking_table=outranking_table)
     if set(outranking_table.columns) != set(outranking_table.index):
@@ -58,9 +58,9 @@ def _get_maximal_credibility_index(credibility_table: pd.DataFrame) -> NumericVa
     """Selects the maximal credibility index, based on credibility table :math:`S` of an outranking
     relation with zeroed diagonal.
 
-    :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
+    :param credibility_table: credibility table :math:`S` for each alternatives' pair
 
-    :return:  Maximal credibility index, value from the :math:`[0, 1]` interval
+    :return:  maximal credibility index, value from the [0, 1] interval
     """
     return max(credibility_table.max())
 
@@ -74,17 +74,16 @@ def _get_minimal_credibility_index(
     """Selects the minimal credibility index, based on credibility table :math:`S` of an outranking
     relation with zeroed diagonal, maximal credibility index and given linear function coefficients.
 
-    :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
-    :param maximal_credibility_index: maximal credibility index,
-        value from the :math:`[0, 1]` interval
-    :param alpha: coefficient of the independent variable, defaults to -0.15
-    :param beta: y-intercept, defaults to 0.30
+    :param credibility_table: credibility table :math:`S` for each alternatives' pair
+    :param maximal_credibility_index: maximal credibility index, value from the [0, 1] interval
+    :param alpha: coefficient of the independent variable, defaults to ``-0.15``
+    :param beta: y-intercept, defaults to ``0.30``
 
     :raises exceptions.ValueOutsideScaleError: _description_
     .. todo::
         describe exception
 
-    :return: Minimal credibility index, value from the :math:`[0, 1]` interval
+    :return: minimal credibility index, value from the [0, 1] interval
     """
     threshold_value = maximal_credibility_index - linear_function(
         maximal_credibility_index, alpha, beta
@@ -117,14 +116,14 @@ def crisp_outranking_relation_distillation(
     :param credibility_pair_value_ab: credibility value of (a, b) alternatives
     :param credibility_pair_value_ba: credibility value of (b, a) alternatives
     :param minimal_credibility_index: minimal credibility index, value from the [0, 1] interval
-    :param alpha: coefficient of the independent variable, defaults to -0.15
-    :param beta: y-intercept, defaults to 0.30
+    :param alpha: coefficient of the independent variable, defaults to ``-0.15``
+    :param beta: y-intercept, defaults to ``0.30``
 
     :raises exceptions.ValueOutsideScaleError: _description_
     .. todo::
         describe exception
 
-    :return: 1 if undermentioned inequality is true, 0 otherwise
+    :return: ``1`` if undermentioned inequality is true, ``0`` otherwise
     """
     _check_index_value_interval(credibility_pair_value_ab, name="credibility")
     _check_index_value_interval(credibility_pair_value_ba, name="credibility")
@@ -156,16 +155,16 @@ def alternative_qualities(
     which are, respectively, outranked by a or outrank a.
 
     :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
-    :param alpha: coefficient of the independent variable, defaults to -0.15
-    :param beta: y-intercept, defaults to 0.30
+    :param alpha: coefficient of the independent variable, defaults to ``-0.15``
+    :param beta: y-intercept, defaults to ``0.30``
     :param maximal_credibility_index: optional minimal credibility index from outer distillation,
-        defaults to None
+        defaults to ``None``
 
     :raises exceptions.InconsistentDataFrameIndexingError: _description_
     .. todo::
         describe exception
 
-    :return: Quality of a computed as the difference of its strength and weakness,
+    :return: quality of a computed as the difference of its strength and weakness,
         also maximal credibility index for possible inner distillation
     """
     _consistent_df_indexing(credibility_matrix=credibility_table)
@@ -234,12 +233,12 @@ def _distillation_process(
     :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
     :param remaining_alt_indices: remaining alternatives' indices to conduct distillation
     :param preference_operator: represents distillation order (max - downward / min - upward)
-    :param alpha: coefficient of the independent variable, defaults to -0.15
-    :param beta: y-intercept, defaults to 0.30
+    :param alpha: coefficient of the independent variable, defaults to ``-0.15``
+    :param beta: y-intercept, defaults to ``0.30``
     :param maximal_credibility_index: optional minimal credibility index from outer distillation,
-        defaults to None
+        defaults to ``None``
 
-    :return: Set of alternatives with the greatest quality,
+    :return: set of alternatives with the greatest quality,
         also maximal credibility index for possible inner distillation
     """
     updated_credibility_table = credibility_table.loc[remaining_alt_indices][
@@ -269,10 +268,10 @@ def distillation(
 
     :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
     :param upward_order: descending order if False, otherwise ascending, defaults to False
-    :param alpha: coefficient of the independent variable, defaults to -0.15
-    :param beta: y-intercept, defaults to 0.30
+    :param alpha: coefficient of the independent variable, defaults to ``-0.15``
+    :param beta: y-intercept, defaults to ``0.30``
 
-    :return: Nested list of complete upward :math:`P^A` or downward :math:`P^D` order
+    :return: nested list of complete upward :math:`P^A` or downward :math:`P^D` order
     """
     try:
         np.fill_diagonal(credibility_table.values, 0)
@@ -320,7 +319,7 @@ def final_ranking_matrix(
     :param downward_order: downward order :math:`P^D` from distillation process
     :param upward_order: upward order :math:`P^A` from distillation process
 
-    :return: Final outranking matrix :math:`P`
+    :return: final outranking matrix :math:`P`
     """
     descending_order_matrix = order_to_outranking_matrix(downward_order)
     ascending_order_matrix = order_to_outranking_matrix(upward_order)
@@ -341,7 +340,7 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
     .. todo::
         describe exception
 
-    :return: Nested list of ranks
+    :return: nested list of ranks
     """
     _consistent_df_indexing(final_ranking_matrix=final_ranking_matrix)
     if set(final_ranking_matrix.columns.values) != set(
@@ -403,7 +402,7 @@ def median_order(
     .. todo::
         describe exception
 
-    :return: _description_
+    :return: median preorder
     """
     try:
         alternatives = ranks.explode().to_list()

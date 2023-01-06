@@ -14,9 +14,9 @@ def outranking_to_graph(
     """Constructs graph from outranking matrix (if it is possible to create DAG).
 
     :param outranking_matrix: given outranking matrix
-    :param transitive_reduction: enable transitive reduction, defaults to True
+    :param transitive_reduction: enables transitive reduction, defaults to ``True``
 
-    :return: Graph created from outranking matrix if possible,
+    :return: graph created from outranking matrix if possible,
         otherwise displays warning and returns None.
     """
     graph = nx.DiGraph()
@@ -55,9 +55,9 @@ def plot_outranking(
     """Creates graph plot from outranking matrix (if it is possible to create DAG).
 
     :param outranking_matrix: given outranking matrix
-    :param transitive_reduction: enable transitive reduction, defaults to True
+    :param transitive_reduction: enables transitive reduction, defaults to ``True``
 
-    :return: Graph created from outranking matrix if possible,
+    :return: graph created from outranking matrix if possible,
         otherwise displays warning and returns None.
     """
     graph = outranking_to_graph(outranking_matrix, transitive_reduction)

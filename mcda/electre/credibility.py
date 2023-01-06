@@ -66,7 +66,7 @@ def credibility_comprehensive(
     :param is_non_discordance: ``True`` if non-discordance is provided, otherwise ``False``,
         defaults to ``True``
 
-    :return: credibility :math:`S` with values from [0, 1] interval
+    :return: credibility table :math:`S` with values from [0, 1] interval
     """
     _consistent_df_indexing(
         concordance_comprehensive=concordance_comprehensive,
@@ -179,7 +179,7 @@ def credibility_cv(
     :param counter_veto_occurs: counter-veto occurs with lists or values :math:`cv(a, b)`
     :param number_of_criteria: number of criteria
 
-    :return: credibility :math:`S^{CV}` with values from [0, 1] interval
+    :return: credibility table :math:`S^{CV}` with values from [0, 1] interval
     """
     _consistent_df_indexing(
         concordance_comprehensive=concordance_comprehensive,
