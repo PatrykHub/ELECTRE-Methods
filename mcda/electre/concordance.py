@@ -1,4 +1,8 @@
-"""This module implements methods to compute concordance."""
+"""This module implements methods to compute concordance.
+
+.. todo:
+    References
+"""
 from enum import Enum
 from typing import Any, Dict, Hashable, Optional, Tuple, Union
 
@@ -27,20 +31,21 @@ def concordance_marginal(
     preference_threshold: Threshold,
     inverse: bool = False,
 ) -> NumericValue:
-    """Computes marginal concordance index c(a, b) ∈ [0, 1],
+    """Computes marginal concordance index: :math:`c(a\\_value, b\\_value) \\in [0, 1]`,
     which represents a degree to which criterion supports
-    the hypothesis about outranking a over b (aSb).
+    the hypothesis about outranking a over b :math:`(aSb)`.
 
-    :param a_value: criterion value
-    :param b_value: criterion value
-    :param scale: criterion scale with specified preference direction
-    :param indifference_threshold: criterion indifference threshold
-    :param preference_threshold: criterion preference threshold
-    :param inverse: if ``True``, then function will calculate c(b, a)
-    with opposite scale preference direction, defaults to ``False``
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param indifference_threshold: criterion's indifference threshold
+    :param preference_threshold: criterion's preference threshold
+    :param inverse: if ``True``, then function will calculate `c(b_value, a_value)`
+        with opposite scale preference direction, defaults to ``False``
 
-    :raises ValueError:
-        * if thresholds don't meet a condition: 0 <= indifference_threshold <= preference_threshold
+    :raises exceptions.WrongThresholdValueError: if thresholds don't meet a condition:
+    .. math::
+        0 \\le indifference\\_threshold(value) \\le preference\\_threshold(value)
 
     :return: marginal concordance index, value from the [0, 1] interval
     """
@@ -84,17 +89,19 @@ def concordance_comprehensive(
     inverse: bool = False,
     **kwargs,
 ) -> NumericValue:
-    """_summary_
+    """Computes comprehensive discordance index :math:`C^S(a, b) \\in [0, 1]`,
+    which represents a degree to which alternative `a` outranks `b`.
 
-    :param a_values: _description_
-    :param b_values: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param indifference_thresholds: _description_
-    :param preference_thresholds: _description_
-    :param inverse: _description_, defaults to False
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param inverse: if ``True``, then function will calculate :math:`C^S(b, a)`
+        with opposite scales preference direction, defaults to ``False``
 
-    :return: _description_
+    :return: comprehensive concordance index, value from the [0, 1] interval
     """
     if "validated" not in kwargs:
         _consistent_criteria_names(
@@ -131,16 +138,27 @@ def concordance(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Computes comprehensive concordance indices :math:`C^S(a, b) \\in [0, 1]`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param indifference_thresholds: _description_
-    :param preference_thresholds: _description_
-    :param profiles_perform: _description_
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`C^S(a, b)` indices
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`C^S(alternative_i, profile_j)` indices, and the second one
+          :math:`C^S(profile_j, alternative_i)`, respectively
     """
     _consistent_criteria_names(
         alternatives_perform=alternatives_perform,
@@ -220,14 +238,22 @@ def is_reinforcement_occur(
     preference_threshold: Threshold,
     reinforcement_threshold: Threshold,
 ) -> bool:
-    """_summary_
+    """Checks if the reinforcement occurs when comparing
+    two alternatives on a criterion, i.e. if the `a`
+    alternative is better than `b` on specified criterion
+    by more than the `reinforcement_threshold` value.
 
-    :param a_value: _description_
-    :param b_value: _description_
-    :param scale: _description_
-    :param reinforcement_threshold: _description_
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param preference_threshold: criterion's preference threshold
+    :param reinforcement_threshold: criterion's reinforcement threshold
 
-    :return: _description_
+    :raises exceptions.WrongThresholdValueError: if thresholds don't meet a condition:
+    .. math::
+        0 \\le preference\\_threshold(b\\_value) < reinforcement\\_threshold(b\\_value)
+
+    :return: ``True``, if reinforcement condition is fulfilled, ``False`` otherwise
     """
     _both_values_in_scale(a_value, b_value, scale)
     threshold_value, preference_value = _get_threshold_values(
@@ -256,7 +282,13 @@ def _get_reinforced_criteria(
     preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
     reinforced_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
 ) -> pd.Series:
-    """Return a series with information about reinforcement."""
+    """Return a series with information about reinforcement occurrence
+    between performance values from `a_values` and `b_values` on all their
+    criteria.
+
+    For each criterion, if no reinforcement threshold is specified, the
+    reinforcement is set to ``False``.
+    """
     result = pd.Series([False] * len(a_values), index=list(a_values.keys()))
     for criterion_name in a_values.keys():
         threshold = reinforced_thresholds[criterion_name]
@@ -283,19 +315,30 @@ def concordance_reinforced_comprehensive(
     inverse: bool = False,
     **kwargs,
 ) -> NumericValue:
-    """_summary_
+    """Computes concordance index with reinforcement
+    :math:`C^{RP}(a, b) \\in [0, 1]`, which represents a degree
+    to which alternative `a` outranks `b` with considering the
+    reinforcement effect.
 
-    :param a_values: _description_
-    :param b_values: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param indifference_thresholds: _description_
-    :param preference_thresholds: _description_
-    :param reinforced_thresholds: _description_
-    :param reinforcement_factors: _description_
-    :param inverse: _description_, defaults to False
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param reinforced_thresholds: all criteria's reinforcement thresholds;
+        for each criterion, providing a ``Threshold`` is optional and it
+        can be set to ``None``
+    :param reinforcement_factors: if criterion has specified reinforcement
+        threshold, the reinforcement factor :math:`\\omega_j > 1`
+        must be set as well; otherwise, it should be ``None``
+    :param inverse: if ``True``, then function will calculate :math:`C^S(b, a)`
+        with opposite scales preference direction, defaults to ``False``
 
-    :return: _description_
+    :raises ValueError: if reinforcement threshold for a criterion was
+        specified, but its reinforcement factor is ``None``
+
+    :return: reinforced concordance index, value from the [0, 1] interval
     """
     if "validated" not in kwargs:
         _consistent_criteria_names(
@@ -353,18 +396,33 @@ def concordance_reinforced(
     reinforcement_factors: Union[Dict[Any, Optional[NumericValue]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Computes reinforced concordance indices :math:`C^{RP}(a, b) \\in [0, 1]`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param indifference_thresholds: _description_
-    :param preference_thresholds: _description_
-    :param reinforced_thresholds: _description_
-    :param reinforcement_factors: _description_
-    :param profiles_perform: _description_
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param reinforced_thresholds: all criteria's reinforcement thresholds;
+        for each criterion, providing a ``Threshold`` is optional and it
+        can be set to ``None``
+    :param reinforcement_factors: if criterion has specified reinforcement
+        threshold, the reinforcement factor :math:`\\omega_j > 1`
+        must be set as well; otherwise, it should be ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`C^{RP}(a, b)` indices
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`C^{RP}(alternative_i, profile_j)` indices, and the second one
+          :math:`C^{RP}(profile_j, alternative_i)`, respectively
     """
     _consistent_criteria_names(
         alternatives_perform=alternatives_perform,
@@ -447,17 +505,39 @@ def concordance_reinforced(
 
 
 class InteractionType(Enum):
+    """An `Enum` class to specify type of interaction during the
+    concordance with interactions computation.
+    """
+
     MS = "Mutual Strengthening"
     MW = "Mutual Weakening"
     A = "Antagonistic"
 
 
 class FunctionType(Enum):
+    """An `Enum` class to specify type of function during the
+    concordance with interactions computation.
+
+    The function will multiply the pair of concordance indices
+    or choose a lower value.
+    """
+
     MUL = "Multiplication"
     MIN = "Minimisation"
 
 
 class Interaction:
+    """Class type for interaction representation, used in
+    concordance with interactions computation.
+
+    :param interaction_type: type of the interaction,
+        one of the `InteractionType` option
+    :param factor: interaction factor, value used for
+        multiply a concordance value; for the
+        mutual weakening effect, the value must be negative,
+        otherwise positive
+    """
+
     def __init__(
         self,
         interaction_type: InteractionType,
@@ -544,16 +624,25 @@ def concordance_with_interactions_marginal(
     function_type: FunctionType = FunctionType.MIN,
     **kwargs,
 ) -> NumericValue:
-    """
+    """Computes concordance index with interactions
+    :math:`C^{INT}(a, b) \\in [0, 1]`, which represents a degree
+    to which alternative `a` outranks `b` with considering the
+    interactions effects on criteria.
 
-    :param interactions:
-    :param a_values:
-    :param b_values:
-    :param scales:
-    :param weights:
-    :param indifference_thresholds:
-    :param preference_thresholds:
-    :return:
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param interactions: table with information about the interactions
+        between criteria; both rows and columns must be indexed
+        with criteria names; for pairs without an interaction, value
+        should be set to ``None``
+    :param function_type: specifies the function used during the
+        interaction value calculation, defaults to FunctionType.MIN
+
+    :return: concordance with interactions index, value from the [0, 1] interval
     """
     if "validated" not in kwargs:
         _consistent_criteria_names(
@@ -660,17 +749,36 @@ def concordance_with_interactions(
     function_type: FunctionType = FunctionType.MIN,
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Computes concordance with interactions indices
+    :math:`C^{INT}(a, b) \\in [0, 1]`. Comparison is possible for
+    alternatives or between alternatives and profiles, depending
+    on the `profiles_perform` argument value.
 
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param weights: _description_
-    :param indifference_thresholds: _description_
-    :param preference_thresholds: _description_
-    :param interactions: _description_
-    :param profiles_perform: _description_
+    :param alternatives_perform: performance table of alternatives, where single
+        row is a performance of one alternative (which means that one column
+        represents single criterion values of all alternatives)
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param interactions: table with information about the interactions
+        between criteria; both rows and columns must be indexed
+        with criteria names; for pairs without an interaction, value
+        should be set to ``None``
+    :param function_type: specifies the function used during the
+        interaction value calculation, defaults to FunctionType.MIN
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`C^{RP}(a, b)` indices
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`C^{RP}(alternative_i, profile_j)` indices, and the second one
+          :math:`C^{RP}(profile_j, alternative_i)`, respectively
     """
     _consistent_criteria_names(
         alternatives_perform=alternatives_perform,
