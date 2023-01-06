@@ -1,4 +1,4 @@
-"""This module implements modules to explore outranking with choice methods."""
+"""This module implements methods to explore outranking relations with choice problems."""
 from typing import Any, Iterable, List
 
 import pandas as pd
@@ -8,6 +8,13 @@ from .._validation import _check_index_value_binary, _consistent_df_indexing
 
 
 def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
+    """Transforms crisp outranking relations between alternatives into graph represented
+    in `pandas.Series` where indexes are vertices and values are vertices connected to them.
+
+    :param crisp_outranking_table: crisp outranking relations between alternatives
+
+    :return: `pandas.Series` transformed from crisp outranking table
+    """
     _consistent_df_indexing(crisp_outranking_table=crisp_outranking_table)
     for column_name in crisp_outranking_table.columns.values:
         for row_name in crisp_outranking_table.index.values:
@@ -28,6 +35,16 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
 
 
 def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
+    """Returns list of lists of vertices that are parts of a cycle.
+    When the vertex isn't part of a cycle is the only element of the list.
+
+    :param graph: graph represented in `pandas.Series`
+
+    :raises exceptions.GraphError: raised when graph contain an arc directed to
+        a non-existent vertex
+
+    :return: list of lists of vertices that are parts of a cycle
+    """
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
@@ -84,6 +101,15 @@ def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
 
 
 def aggregate(graph: pd.Series) -> pd.Series:
+    """Aggregates every cycle in the graph into one vertex.
+
+    :param graph: graph represented in `pandas.Series`
+    :raises TypeError: _description_
+    .. todo::
+        describe exception
+
+    :return: acyclic graph represented in `pandas.Series` with aggregated vertices
+    """
     try:
         new_graph = graph.copy()
     except AttributeError as exc:
@@ -114,6 +140,18 @@ def aggregate(graph: pd.Series) -> pd.Series:
 
 
 def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
+    """Finds every vertex without predecessor and returns list of them.
+
+    :param graph: graph represented in `pandas.Series`
+
+    :raises TypeError: _description_
+    :raises exceptions.GraphError: graph represented in `pandas.Series`
+    :raises TypeError: _description_
+    .. todo::
+        describe exception
+
+    :return: list of vertices without predecessor
+    """
     if "validated" not in kwargs:
         try:
             vertex_set = set(graph.keys())
@@ -143,11 +181,11 @@ def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
 
 
 def find_kernel(crisp_outranking_table: pd.DataFrame) -> List[str]:
-    """This function finds a kernel (out1) in a graph
-    constructed on the basis of a crisp outranking relation
-    :param crisp_outranking_table: table with crisp relations
-    between alternatives
-    :return: every alternative that is in kernel
+    """Constructs kernel as a set of alternatives, based on crisp outranking table.
+
+    :param crisp_outranking_table: crisp outranking relations between alternatives
+
+    :return: alternatives which are in the kernel
     """
     graph = _change_to_series(crisp_outranking_table)
     graph = aggregate(graph)
