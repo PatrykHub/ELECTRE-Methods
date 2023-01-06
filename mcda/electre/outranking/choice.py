@@ -8,7 +8,8 @@ from .._validation import _check_index_value_binary, _consistent_df_indexing
 
 
 def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
-    """Transforms crisp outranking relations between alternatives into pandas.Series`
+    """Transforms crisp outranking relations between alternatives into graph represented 
+    in `pandas.Series` where indexes are vertices and values are vertices connected to them
 
     :param crisp_outranking_table: crisp outranking relations between alternatives
 
@@ -34,6 +35,13 @@ def _change_to_series(crisp_outranking_table: pd.DataFrame) -> pd.Series:
 
 
 def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
+    """Returns list of lists of vertices that are parts of a cycle. When the vertex isn't part of
+    a cycle is the only element of the list.
+
+    :param graph: graph represented in `pandas.Series`
+    :raises exceptions.GraphError: raised when graph contain an arc directed to a non-existent vertex
+    :return: list of lists of vertices that are parts of a cycle
+    """
     index_counter = [0]
     stack, result = [], []
     lowlink, index = {}, {}
@@ -90,6 +98,14 @@ def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
 
 
 def aggregate(graph: pd.Series) -> pd.Series:
+    """Aggregates every cycle in the graph into one vertex.
+
+    :param graph: graph represented in `pandas.Series` 
+    :raises TypeError: _description_
+    .. todo::
+        describe exception
+    :return: acyclic graph represented in `pandas.Series` with aggregated vertices 
+    """
     try:
         new_graph = graph.copy()
     except AttributeError as exc:
@@ -120,6 +136,16 @@ def aggregate(graph: pd.Series) -> pd.Series:
 
 
 def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
+    """Finds every vertex without predecessor and returns list of them
+
+    :param graph: graph represented in `pandas.Series` 
+    :raises TypeError: .. todo::
+        describe exception
+    :raises exceptions.GraphError: graph represented in `pandas.Series`
+    :raises TypeError: .. todo::
+        describe exception
+    :return: list of vertices without predecessor
+    """
     if "validated" not in kwargs:
         try:
             vertex_set = set(graph.keys())
