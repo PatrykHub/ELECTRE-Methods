@@ -722,14 +722,19 @@ def is_counter_veto_occur(
     scale: QuantitativeScale,
     counter_veto_threshold: Optional[Threshold],
 ) -> bool:
-    """_summary_
+    """Checks if the counter-veto occurs :math:`cv(a\\_value, b\\_value)`.
 
-    :param a_value: _description_
-    :param b_value: _description_
-    :param scale: _description_
-    :param counter_veto_threshold: _description_
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param counter_veto_threshold: criterion's counter-veto threshold;
+        if no `counter_veto_threshold` is specified, the function
+        will return ``False``
 
-    :return: _description_
+    :raises exceptions.WrongThresholdValueError: if counter-veto
+        threshold value is not positive
+
+    :return: ``True``, if the counter-veto occurs, ``False`` otherwise
     """
     _both_values_in_scale(a_value, b_value, scale)
     if counter_veto_threshold is None:
@@ -757,14 +762,19 @@ def counter_veto_pair(
     counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     **kwargs,
 ) -> pd.Series:
-    """_summary_
+    """Checks if the counter-veto occurs :math:`cv(a, b)`
+    on all criteria between two alternatives or between an alternative
+    and a profile.
 
-    :param a_values: _description_
-    :param b_values: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds,
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
 
-    :return: _description_
+    :return: a boolean series with information about exceeding
+        the counter-veto or not
     """
     if "validated" not in kwargs:
         _consistent_criteria_names(
@@ -794,14 +804,27 @@ def counter_veto(
     counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Checks if the counter-veto occurs :math:`cv(a, b)`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
 
-    :param alt_values: _description_
-    :param performance_table: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
+    :param performance_table: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with `pandas.Series` objects
+          inside, each containing information about exceeding the counter-veto
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`cv(alternative_i, profile_j)` indices, and the second one
+          :math:`cv(profile_j, alternative_i)`, respectively.
     """
     _consistent_criteria_names(
         performance_table=performance_table,
@@ -876,14 +899,27 @@ def counter_veto_count(
     counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """_summary_
+    """Counts the counter-veto occurrences :math:`cv(a, b)`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
 
-    :param alternatives_perform: _description_
-    :param scales: _description_
-    :param counter_veto_thresholds: _description_
-    :param profiles_perform: _description_
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
 
-    :return: _description_
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with counted
+          counter-veto occurrences
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          counted :math:`cv(alternative_i, profile_j)` occurrences, and the second one
+          counted :math:`cv(profile_j, alternative_i)`, respectively.
     """
     _consistent_criteria_names(
         alternatives_perform=alternatives_perform,
