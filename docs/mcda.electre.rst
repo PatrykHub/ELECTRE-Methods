@@ -1,6 +1,14 @@
 mcda.electre package
 ====================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   mcda.electre.outranking
+
 Submodules
 ----------
 
@@ -36,10 +44,10 @@ mcda.electre.exceptions module
    :undoc-members:
    :show-inheritance:
 
-mcda.electre.outranking module
-------------------------------
+mcda.electre.plot module
+------------------------
 
-.. automodule:: mcda.electre.outranking
+.. automodule:: mcda.electre.plot
    :members:
    :undoc-members:
    :show-inheritance:
