@@ -12,11 +12,14 @@ def get_criterion_difference(
     """Calculates criterion difference based on pair criterion values
     including preference direction.
 
-    :param a_value: criterion value of first alternative
-    :param b_value: criterion value of second alternative
-    :param scale: criterion scale with specified preference direction
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
 
-    :return: Difference between criterion values
+    :return: difference between criterion values;
+        if positive, that means the `a` alternative is better than the `b`,
+        ``0`` means there's no difference in performances, and negative value
+        implies the `b` is better than `a`.
     """
     _both_values_in_scale(a_value, b_value, scale)
     return (
@@ -32,12 +35,16 @@ def is_veto(
     scales: pd.Series,
     veto_thresholds: pd.Series,
 ) -> bool:
-    """Determines if veto is present between two alternatives
+    """Determines if veto is present between two alternatives.
 
-    :param a_values: criteria values of first alternative
-    :param b_values: criteria values of second alternative
-    :param scales: criteria scales with specified preference direction
-    :param veto_thresholds: criteria veto thresholds
+    .. todo::
+        Remove this function, since it does the same job as the
+        :func:`mcda.electre.discordance.discordance_bin_comprehensive` function.
+
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds
 
     :return: ``True`` if is veto between a and b, ``False`` otherwise
     """
@@ -59,7 +66,10 @@ def is_veto(
 
 
 def linear_function(alpha: NumericValue, x: NumericValue, beta: NumericValue) -> NumericValue:
-    """Calculates linear function.
+    """Calculates linear function value.
+
+    .. math::
+        y = \\alpha \\cdot x + \\beta
 
     :param alpha: coefficient of the independent variable
     :param x: independent variable
