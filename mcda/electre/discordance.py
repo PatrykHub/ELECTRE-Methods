@@ -586,6 +586,11 @@ def discordance(
 
 
 class NonDiscordanceType(Enum):
+    """An Enum class to specify which non-discordance
+    index should be computed: :math:`\\Delta^{DC}`, :math:`\\Delta^D`
+    or :math:`\\Delta^{DM}`.
+    """
+
     DC = "DC"
     D = "D"
     DM = "DM"
@@ -596,6 +601,29 @@ def non_discordance_marginal(
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[NumericValue] = None,
 ) -> NumericValue:
+    """Computes non-discordance index value between two alternatives
+    on one criterion.
+
+    The function calculates one from the following indices:
+    :math:`\\Delta^{DC}`, :math:`\\Delta^D`, :math:`\\Delta^{DM}`,
+    depending on the `non_discordance_type` argument.
+
+    :param criteria_discordance_marginals: a series with discordance
+        marginals :math:`d_j(a, b)` for all criteria, :math:`d_j(a, b)
+        \\in \\{d_j^V(a, b), d_j^{PV}(a, b), d_j^{PVV}(a, b)\\}`
+    :param non_discordance_type: an enum object to specify the
+        non-discordance formula during the calculation,
+        defaults to ``NonDiscordanceType.DC``
+    :param concordance_comprehensive: comprehensive concordance
+        index value :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
+        C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
+        calculation, defaults to ``None``
+
+    :raises exceptions.WrongIndexValueError: if any index is outside
+        [0, 1] interval
+
+    :return: a non-discordance index, value from the [0, 1] interval
+    """
     try:
         _unique_names(criteria_discordance_marginals.keys(), names_type="criteria")
 
@@ -642,7 +670,28 @@ def non_discordance(
     non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
     concordance_comprehensive: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
+    """Computes non-discordance indices for alternatives
+    comparison, or between alternatives and profiles.
 
+    The function calculates one from the following indices:
+    :math:`\\Delta^{DC}`, :math:`\\Delta^D`, :math:`\\Delta^{DM}`,
+    depending on the `non_discordance_type` argument.
+
+    :param criteria_discordance_marginals: a data frame with discordance
+        marginals :math:`d_j(a, b)` for all criteria, :math:`d_j(a, b)
+        \\in \\{d_j^V(a, b), d_j^{PV}(a, b), d_j^{PVV}(a, b)\\}`,
+        can be an output from :func:`discordance_bin` or
+        :func:`discordance_marginals` functions
+    :param non_discordance_type: an enum object to specify the
+        non-discordance formula during the calculation,
+        defaults to ``NonDiscordanceType.DC``
+    :param concordance_comprehensive: comprehensive concordance
+        indices :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
+        C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
+        calculation, defaults to ``None``
+
+    :return: a non-discordance indices, values from the [0, 1] interval
+    """
     _consistent_df_indexing(
         discordance_marginals=discordance_marginals,
         concordance_comprehensive=concordance_comprehensive,
