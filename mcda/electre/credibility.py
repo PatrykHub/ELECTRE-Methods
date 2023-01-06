@@ -62,7 +62,7 @@ def credibility_comprehensive(
 
     :param concordance_comprehensive: comprehensive concordance :math:`C`
     :param discordance: non-discordance :math:`{\\Delta}`
-        or discordance comprehensive :math:`D(a, b)`
+        or comprehensive discordance :math:`D(a, b)`
     :param is_non_discordance: ``True`` if non-discordance is provided, otherwise ``False``,
         defaults to ``True``
 

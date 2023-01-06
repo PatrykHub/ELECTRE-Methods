@@ -267,7 +267,7 @@ def distillation(
     with linear function coefficients.
 
     :param credibility_table: credibility :math:`S` DataFrame for each alternatives' pair
-    :param upward_order: descending order if False, otherwise ascending, defaults to False
+    :param upward_order: descending order if ``False``, otherwise ascending, defaults to ``False``
     :param alpha: coefficient of the independent variable, defaults to ``-0.15``
     :param beta: y-intercept, defaults to ``0.30``
 
