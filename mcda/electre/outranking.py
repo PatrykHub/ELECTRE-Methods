@@ -16,47 +16,47 @@ class OutrankingRelation(Enum):
     R = "INCOMPARABILITY"
 
 
-def crisp_outranking_cut_marginal(
-    credibility: NumericValue,
+def crisp_cut_marginal(
+    value: NumericValue,
     cutting_level: NumericValue,
 ) -> bool:
-    """Constructs a crisp outranking relation,
-    based on the credibility value S(a, b).
+    """Compares concordance, discordance, or credibility value to the cutting_level 
+    and returns false if is smaller, true otherwise
 
-    :param credibility: credibility of outranking, value from [0, 1] interval
-    :param cutting_level: value from [0.5, 1] interval
+    :param value: concordance, discordance, or credibility value from [0, 1] interval
+    :param cutting_level: value from [0, 1] interval
 
-    :return: ``True`` if a outranks b, ``False`` otherwise
+    :return: ``True`` if bigger or equal b, ``False`` otherwise
     """
-    _check_index_value_interval(credibility, "credibility")
-    _check_index_value_interval(cutting_level, "cutting level", minimal_val=0.5)
-    return credibility >= cutting_level
+    _check_index_value_interval(value, "value")
+    _check_index_value_interval(cutting_level, "cutting level", minimal_val=0)
+    return value >= cutting_level
 
 
-def crisp_outranking_cut(
-    credibility_table: pd.DataFrame,
+def crisp_cut(
+    table: pd.DataFrame,
     cutting_level: NumericValue,
 ) -> pd.DataFrame:
-    """Constructs crisp outranking relations,
-    based on credibility values.
+    """Constructs a boolean table, based on comparison of concordance,
+     discordance or credibility values to the cutting_level.
 
-    :param credibility_table: table with credibility values
-    :param cutting_level: value from [0.5, 1] interval
+    :param table: table with concordance, discordance, or credibility values
+    :param cutting_level: value from [0, 1] interval
 
-    :return: Boolean table the same size as the credibility table
+    :return: Boolean table the same size as the input table
     """
     return pd.DataFrame(
         [
             [
-                crisp_outranking_cut_marginal(
-                    credibility_table.loc[alt_name_a][alt_name_b], cutting_level
+                crisp_cut_marginal(
+                    table.loc[alt_name_a][alt_name_b], cutting_level
                 )
-                for alt_name_b in credibility_table.index.values
+                for alt_name_b in table.index.values
             ]
-            for alt_name_a in credibility_table.index.values
+            for alt_name_a in table.index.values
         ],
-        index=credibility_table.index,
-        columns=credibility_table.index,
+        index=table.index,
+        columns=table.index,
     )
 
 

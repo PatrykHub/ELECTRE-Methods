@@ -12,37 +12,42 @@ from .utils import get_criterion_difference, is_veto
 
 def credibility_pair(
     concordance_comprehensive: NumericValue,
-    non_discordance: NumericValue,
+    discordance: NumericValue,
 ) -> NumericValue:
     """Computes the credibility value S(a, b) of an outranking relation, based on
-    comprehensive concordance C(a, b) and non_discordance Delta(a, b) indices.
+    comprehensive concordance C(a, b) and discordance Delta_CD(a,b) or non-discordance Delta(a, b) indices.
 
     :param concordance_comprehensive: comprehensive concordance value C(a, b)
-    :param non_discordance: non_discordance value Delta(a, b)
+    :param discordance: discordance Delta_CD(a,b) or non-discordance value Delta(a, b)
+
 
     :return: Credibility value S(a, b), value from [0, 1] interval
     """
-    return concordance_comprehensive * non_discordance
+    return concordance_comprehensive * discordance
 
 
 def credibility_comprehensive(
     concordance_comprehensive: pd.DataFrame,
-    non_discordance: pd.DataFrame,
+    discordance: pd.DataFrame,
+    is_non_discordance: bool = True,
 ) -> pd.DataFrame:
     """Computes the credibility of an outranking relation, based on
-    comprehensive concordance matrix and non-discordance matrix.
+    comprehensive concordance matrix and discordance or non-discordance matrix.
 
     :param concordance_comprehensive: comprehensive concordance matrix
-    :param non_discordance: non-discordance matrix
+    :param discordance: discordance matrix
+    :param is_non_discordance: indicates if in input is discordance or non-discordance matrix
 
     :return: Credibility matrix with float values from [0, 1] interval
     """
+    if not is_non_discordance:
+        discordance = 1 - discordance
     return pd.DataFrame(
         [
             [
                 credibility_pair(
                     concordance_comprehensive[alt_name_b][alt_name_a],
-                    non_discordance[alt_name_b][alt_name_a],
+                    discordance[alt_name_b][alt_name_a],
                 )
                 for alt_name_b in concordance_comprehensive.columns.values
             ]
@@ -169,7 +174,9 @@ def get_criteria_counts(
 
     :return: Matrix of criteria counts for each pair
     """
-    columns_content = profiles_perform if profiles_perform is not None else performance_table
+    columns_content = (
+        profiles_perform if profiles_perform is not None else performance_table
+    )
 
     return pd.DataFrame(
         [
@@ -234,7 +241,9 @@ def _calculate_credibility_values(
                 credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
             else:
                 np_ab, nq_ab, ni_ab = criteria_counts[alt_name_b][alt_name_a][:3]
-                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[alt_name_b, alt_name_a][:3]
+                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[
+                    alt_name_b, alt_name_a
+                ][:3]
 
                 if np_ba + nq_ba == 0 and ni_ba < np_ab + nq_ab + ni_ab:
                     credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
