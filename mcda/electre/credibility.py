@@ -15,7 +15,8 @@ def credibility_pair(
     discordance: NumericValue,
 ) -> NumericValue:
     """Computes the credibility value S(a, b) of an outranking relation, based on
-    comprehensive concordance C(a, b) and discordance Delta_CD(a,b) or non-discordance Delta(a, b) indices.
+    comprehensive concordance C(a, b) and discordance Delta_CD(a,b) 
+    or non-discordance Delta(a, b) indices.
 
     :param concordance_comprehensive: comprehensive concordance value C(a, b)
     :param discordance: discordance Delta_CD(a,b) or non-discordance value Delta(a, b)
