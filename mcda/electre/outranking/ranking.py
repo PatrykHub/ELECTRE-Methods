@@ -1,4 +1,9 @@
-"""This module implements methods to explore outranking relations with ranking problems."""
+"""This module implements methods to explore outranking relations with ranking problems.
+
+Implementation based on:
+    * net_flow_score: :cite:p:`Bouyssou06`,
+    * distillation: :cite:p:`Figueira16`.
+"""
 from typing import Callable, Optional, Tuple
 
 import numpy as np

@@ -1,7 +1,9 @@
 """This module implements methods to compute concordance.
 
-.. todo:
-    References
+Implementation based on:
+    * concordance: :cite:p:`DelVastoTerrientes15`,
+    * concordance_reinforced: :cite:p:`Roy08`,
+    * concordance_with_interactions: :cite:p:`Figueira09`.
 """
 from enum import Enum
 from typing import Any, Dict, Hashable, Optional, Tuple, Union

@@ -1,4 +1,11 @@
-"""This module implements methods to compute discordance."""
+"""This module implements methods to compute discordance.
+
+Implementation based on:
+    * discordance_bin: :cite:p:`Younes00`,
+    * discordance_marginals: :cite:p:`DelVastoTerrientes15`,
+    * non_discordance: :cite:p:`Mousseau06`,
+    * counter_veto: :cite:p:`Roy08`.
+"""
 from enum import Enum
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
