@@ -39,6 +39,10 @@ def credibility_pair(
 
     :return: credibility value, from [0, 1] interval
     """
+    _check_index_value_interval(
+        concordance_comprehensive, name="comprehensive concordance"
+    )
+    _check_index_value_interval(discordance, name="discordance index")
     return concordance_comprehensive * discordance
 
 

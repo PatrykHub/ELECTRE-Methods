@@ -62,6 +62,7 @@ def crisp_cut(
 
     :return: Boolean table the same size as the input table
     """
+    _consistent_df_indexing(table=table)
     return pd.DataFrame(
         [
             [
