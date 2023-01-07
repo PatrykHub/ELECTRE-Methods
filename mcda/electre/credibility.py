@@ -1,4 +1,11 @@
-"""This module implements methods to compute an outranking credibility."""
+"""This module implements methods to compute a valued outranking relation
+which can be interpreted as a degree of credibility of an outranking relation.
+
+Implementation based on:
+    * credibility_comprehensive: :cite:p:`DelVastoTerrientes15`,
+    * credibility_cv: :cite:p:`Roy08`,
+    * credibility_electre_iv: :cite:p:`Wolny15`.
+"""
 import math
 from enum import Enum
 from typing import Optional, Sized, Tuple, Union
@@ -7,6 +14,14 @@ import numpy as np
 import pandas as pd
 
 from ..core.aliases import NumericValue
+from . import exceptions
+from ._validation import (
+    _check_df_index,
+    _check_index_value_interval,
+    _consistent_criteria_names,
+    _consistent_df_indexing,
+    _get_threshold_values,
+)
 from .utils import get_criterion_difference, is_veto
 
 
@@ -14,15 +29,15 @@ def credibility_pair(
     concordance_comprehensive: NumericValue,
     discordance: NumericValue,
 ) -> NumericValue:
-    """Computes the credibility value S(a, b) of an outranking relation, based on
-    comprehensive concordance C(a, b) and discordance Delta_CD(a,b)
-    or non-discordance Delta(a, b) indices.
+    """Computes the credibility value math:`S(a, b)` of an outranking relation, based on
+    comprehensive concordance :math:`C(a, b)` index multiplied by non-discordance
+    :math:`{\\Delta}(a, b)` or comprehensive discordance :math:`D(a, b)` index.
 
     :param concordance_comprehensive: comprehensive concordance value C(a, b)
-    :param discordance: discordance Delta_CD(a,b) or non-discordance value Delta(a, b)
+    :param discordance: comprehensive discordance :math:`D(a, b)`
+        or non-discordance value :math:`{\\Delta}(a,b)`
 
-
-    :return: Credibility value S(a, b), value from [0, 1] interval
+    :return: credibility value, from [0, 1] interval
     """
     return concordance_comprehensive * discordance
 
@@ -32,17 +47,24 @@ def credibility_comprehensive(
     discordance: pd.DataFrame,
     is_non_discordance: bool = True,
 ) -> pd.DataFrame:
-    """Computes the credibility of an outranking relation, based on
-    comprehensive concordance matrix and discordance or non-discordance matrix.
+    """Computes the credibility :math:`S` of an outranking relation, based on
+    comprehensive concordance :math:`C` multiplied by non-discordance :math:`{\\Delta}`
+    or comprehensive discordance :math:`D`.
 
-    :param concordance_comprehensive: comprehensive concordance matrix
-    :param discordance: discordance matrix
-    :param is_non_discordance: indicates if in input is discordance or non-discordance matrix
+    :param concordance_comprehensive: comprehensive concordance :math:`C`
+    :param discordance: discordance :math:`D` or non-discordance :math:`{\\Delta}`
 
-    :return: Credibility matrix with float values from [0, 1] interval
+    :param is_non_discordance: ``True`` if non-discordance is provided, otherwise ``False``,
+        defaults to ``True``
+
+    :return: credibility table :math:`S` with values from [0, 1] interval
     """
     if not is_non_discordance:
         discordance = 1 - discordance
+    _consistent_df_indexing(
+        concordance_comprehensive=concordance_comprehensive,
+        discordance=discordance,
+    )
     return pd.DataFrame(
         [
             [
@@ -65,26 +87,73 @@ def credibility_cv_pair(
     counter_veto_occurs: Union[int, Sized],
     number_of_criteria: int,
 ) -> NumericValue:
-    """Computes the credibility value S(a, b) of an outranking relation, based on
-    comprehensive concordance C(a, b) and non-discordance Delta(a, b) indices,
-    also counter veto occurs cv(a, b) and number of criteria.
+    """Computes the single credibility value :math:`S^{CV}(a, b)` of an outranking relation
+    with counter-veto effect, based on comprehensive concordance :math:`C(a, b)`
+    and non-discordance :math:`{\\Delta}(a, b)` indices, also counter-veto occurs :math:`cv(a, b)`
+    with the number of criteria.
 
-    :param concordance_comprehensive: comprehensive concordance value C(a, b)
-    :param non_discordance: non-discordance value Delta(a, b)
-    :param counter_veto_occurs: counter veto occurs cv(a, b)
+    :param concordance_comprehensive: comprehensive concordance index :math:`C(a, b)`
+    :param non_discordance: non-discordance index :math:`{\\Delta} (a, b)`
+    :param counter_veto_occurs: counter-veto occurs list or value :math:`cv(a, b)`
     :param number_of_criteria: number of criteria
 
-    :return: Credibility value S(a, b), value from [0, 1] interval
+    :raises TypeError: _description_
+    :raises ValueError: _description_
+    :raises TypeError: _description_
+    :raises ValueError: _description_
+    .. todo::
+        describe errors
+
+    :return: credibility value :math:`S^{CV}(a, b)` with counter-veto effect,
+        value from [0, 1] interval
     """
-    return concordance_comprehensive * non_discordance ** (
-        1
-        - (
-            len(counter_veto_occurs)
-            if isinstance(counter_veto_occurs, Sized)
-            else counter_veto_occurs
-        )
-        / number_of_criteria
+    _check_index_value_interval(
+        concordance_comprehensive, name="comprehensive concordance"
     )
+    _check_index_value_interval(non_discordance, name="non-discordance index")
+
+    try:
+        if int(number_of_criteria) != number_of_criteria:
+            raise TypeError
+
+        if number_of_criteria <= 0:
+            raise ValueError(
+                "Number of criteria must be a positive number, but "
+                f"got {number_of_criteria} instead."
+            )
+    except TypeError as exc:
+        exc.args = (
+            "Number of criteria should be an integer, but got "
+            f"{type(number_of_criteria).__name__} instead.",
+        )
+        raise
+
+    try:
+        if not isinstance(counter_veto_occurs, Sized):
+            if int(counter_veto_occurs) != counter_veto_occurs:
+                raise TypeError
+
+            if counter_veto_occurs < 0:
+                raise ValueError(
+                    "Counter veto occurrence count cannot be less than 0, "
+                    f"but got {counter_veto_occurs} instead."
+                )
+        return concordance_comprehensive * non_discordance ** (
+            1
+            - (
+                len(counter_veto_occurs)
+                if isinstance(counter_veto_occurs, Sized)
+                else counter_veto_occurs
+            )
+            / number_of_criteria
+        )
+    except TypeError as exc:
+        exc.args = (
+            "Wrong argument type with cv occurrence information. "
+            f"Expected {credibility_cv_pair.__annotations__['counter_veto_occurs']}, "
+            f"but got {type(counter_veto_occurs).__name__} instead.",
+        )
+        raise
 
 
 def credibility_cv(
@@ -93,17 +162,22 @@ def credibility_cv(
     counter_veto_occurs: pd.DataFrame,
     number_of_criteria: int,
 ) -> pd.DataFrame:
-    """Computes the credibility of an outranking relation, based on
-    comprehensive concordance matrix, non_discordance matrix,
-    counter veto occurs matrix and number of criteria.
+    """Computes the credibility :math:`S^{CV}` of an outranking relation with counter-veto effect,
+    based on comprehensive concordance :math:`C` and non-discordance :math:`{\\Delta}`,
+    also counter-veto occurs :math:`cv` with the number of criteria.
 
-    :param concordance_comprehensive: comprehensive concordance matrix
-    :param non_discordance: non-discordance matrix
-    :param counter_veto_occurs: counter veto occurs matrix
+    :param concordance_comprehensive: comprehensive concordance :math:`C`
+    :param non_discordance: non-discordance value :math:`{\\Delta}`
+    :param counter_veto_occurs: counter-veto occurs with lists or values :math:`cv(a, b)`
     :param number_of_criteria: number of criteria
 
-    :return: Credibility matrix with float values from [0, 1] interval
+    :return: credibility table :math:`S^{CV}` with values from [0, 1] interval
     """
+    _consistent_df_indexing(
+        concordance_comprehensive=concordance_comprehensive,
+        non_discordance=non_discordance,
+        counter_veto_occurs=counter_veto_occurs,
+    )
     return pd.DataFrame(
         [
             [
@@ -128,33 +202,57 @@ def get_criteria_counts_marginal(
     scales: pd.Series,
     indifference_thresholds: pd.Series,
     preference_thresholds: pd.Series,
+    **kwargs,
 ) -> pd.Series:
-    """Calculates criteria counts for a pair.
+    """Computes criteria parameters for a pair between alternatives or alternatives-profiles.
 
-    :param a_values: criteria values of first alternative/profile
-    :param b_values: criteria values of second alternative/profile
-    :param scales: criteria scales with specified preference direction
-    :param indifference_thresholds: criteria indifference thresholds
-    :param preference_thresholds: criteria performance thresholds
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
 
-    :return: List of criteria counts for a pair
+    :raises exceptions.WrongThresholdValueError: _description_
+    .. todo::
+        describe raised exception
+
+    :return: criteria counts for a pair
     """
     np = nq = ni = no = 0
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+        )
 
     for i in range(len(a_values)):
         difference = get_criterion_difference(a_values[i], b_values[i], scales[i])
+        indifference, preference = _get_threshold_values(
+            a_values[i],
+            indifference_threshold=indifference_thresholds[i],
+            preference_threshold=preference_thresholds[i],
+        )
+        if not 0 <= indifference <= preference:
+            raise exceptions.WrongThresholdValueError(
+                "Threshold values must meet a condition: "
+                "0 <= indifference_threshold <= preference_threshold, but got "
+                f"0 <= {indifference} <= {preference}"
+            )
 
         if difference > 0.0:
-            if difference >= preference_thresholds[i](a_values[i]):
+            if difference >= preference:
                 np += 1
-            elif difference > indifference_thresholds[i](a_values[i]):
+            elif difference > indifference:
                 nq += 1
             else:
                 ni += 1
         elif math.isclose(difference, 0.0):
             no += 1
 
-    return pd.Series([np, nq, ni, no])
+    return pd.Series([np, nq, ni, no], index=["np", "nq", "ni", "no"])
 
 
 def get_criteria_counts(
@@ -163,22 +261,33 @@ def get_criteria_counts(
     indifference_thresholds: pd.Series,
     preference_thresholds: pd.Series,
     profiles_perform: Optional[pd.DataFrame] = None,
+    **kwargs,
 ) -> pd.DataFrame:
-    """Calculates criteria counts for each pair.
+    """Computes criteria parameters for each pair between alternatives or alternatives-profiles.
 
     :param performance_table: performance table (alternatives/profiles as rows, criteria as columns)
-    :param scales: criteria scales with specified preference direction
-    :param indifference_thresholds: criteria indifference thresholds
-    :param preference_thresholds: criteria performance thresholds
-    :param profiles_perform: performance table (alternatives/profiles as rows, criteria as columns),
-    defaults to None
+    :param scales: all criteria's scales with specified preference direction
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param profiles_perform: optional profiles performance table (alternatives/profiles as rows,
+        criteria as columns), defaults to ``None``
 
-    :return: Matrix of criteria counts for each pair
+    :return: criteria counts for each pair
     """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            performance_table=performance_table,
+            scales=scales,
+            indifference_thresholds=indifference_thresholds,
+            preference_thresholds=preference_thresholds,
+            profiles_perform=profiles_perform,
+        )
+        _check_df_index(performance_table, index_type="alternatives")
+        _check_df_index(profiles_perform, index_type="criteria")
+
     columns_content = (
         profiles_perform if profiles_perform is not None else performance_table
     )
-
     return pd.DataFrame(
         [
             [
@@ -188,6 +297,7 @@ def get_criteria_counts(
                     scales,
                     indifference_thresholds,
                     preference_thresholds,
+                    validated=True,
                 )
                 for alt_name_b in columns_content.index.values
             ]
@@ -199,6 +309,20 @@ def get_criteria_counts(
 
 
 class RelationType(float, Enum):
+    """Definition of five predefined outranking relations in ELECTRE IV credibility.
+
+    :param float: credibility value of predefined relation
+    :param Enum: shortcut of predefined relation name
+
+    .. note::
+        Relations from the most to the least credible:
+        :math:`SQ` - quasi-dominance,
+        :math:`SC` - canonic-dominance,
+        :math:`SP` - pseudo-dominance,
+        :math:`SS` - sub-dominance,
+        :math:`SV` - veto-dominance.
+    """
+
     SQ = 1.0
     SC = 0.8
     SP = 0.6
@@ -217,15 +341,15 @@ def _calculate_credibility_values(
 ) -> pd.DataFrame:
     """Determines value and type of relation depending on criteria counts.
 
-    :param performance_table: performance table (alternatives as rows, criteria as columns)
+    :param performance_table: performance table (alternatives/profiles as rows, criteria as columns)
     :param criteria_counts: criteria counts for each pair
-    :param scales: criteria scales with specified preference direction
-    :param veto_thresholds: criteria veto thresholds
-    :param profiles_perform: performance table (alternatives/profiles as rows, criteria as columns),
-    defaults to None
-    :param profiles_criteria_counts: criteria counts for each pair, defaults to None
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds
+    :param profiles_perform: optional profiles performance table (alternatives/profiles as rows,
+        criteria as columns), defaults to ``None``
+    :param profiles_criteria_counts: optional criteria counts for each pair, defaults to ``None``
 
-    :return: Credibility matrix
+    :return: credibility :math:`S^{IV}` with values from [0, 1] interval
     """
     if profiles_perform is None or profiles_criteria_counts is None:
         profiles_perform, profiles_criteria_counts = performance_table, criteria_counts
@@ -277,7 +401,7 @@ def _calculate_credibility_values(
     return credibility_matrix
 
 
-def get_credibility_values(
+def _get_credibility_values(
     performance_table: pd.DataFrame,
     criteria_counts: pd.DataFrame,
     scales: pd.Series,
@@ -289,13 +413,13 @@ def get_credibility_values(
 
     :param performance_table: performance table (alternatives as rows, criteria as columns)
     :param criteria_counts: criteria counts for each pair
-    :param scales: criteria scales with specified preference direction
-    :param veto_thresholds: criteria veto thresholds
-    :param profiles_perform: performance table (alternatives/profiles as rows, criteria as columns),
-    defaults to None
-    :param profiles_criteria_counts: criteria counts for each pair, defaults to None
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds
+    :param profiles_perform: optional profiles performance table (alternatives/profiles as rows,
+        criteria as columns), defaults to ``None``
+    :param profiles_criteria_counts: optional criteria counts for each pair, defaults to ``None``
 
-    :return: Credibility matrix (or 2 for profiles)
+    :return: credibility :math:`S^{IV}` (or 2 for profiles) with values from [0, 1] interval
     """
     if profiles_perform is not None and profiles_criteria_counts is not None:
         return _calculate_credibility_values(
@@ -327,22 +451,39 @@ def credibility_electre_iv(
     veto_thresholds: pd.Series,
     profiles_perform: Optional[pd.DataFrame] = None,
 ) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
-    """Computes the credibility of an outranking relation S(a, b) for Electre IV,
-    based on performance table (alternatives as rows, criteria as columns),
-    scales and thresholds (indifference, preference, veto - Optional),
-    also profiles performance table (profiles as rows, criteria as columns) optionally.
+    """Computes the credibility of an outranking relation :math:`S^{CV}` for alternatives
+    or alternatives-profiles, based on performance table, scales, the indifference, preference,
+    veto thresholds, and optionally profiles performance table.
 
     :param performance_table: performance table (alternatives as rows, criteria as columns)
-    :param scales: criteria scales with specified preference direction
-    :param indifference_thresholds: criteria indifference thresholds
-    :param preference_thresholds: criteria performance thresholds
-    :param veto_thresholds: criteria veto thresholds
-    :param profiles_perform: performance table (profiles as rows, criteria as columns),
-    defaults to None
+    :param scales: all criteria's scales with specified preference direction
+    :param indifference_thresholds: all criteria's indifference thresholds
+    :param preference_thresholds: all criteria's preference thresholds
+    :param veto_thresholds: all criteria's veto thresholds
+    :param profiles_perform: optional profiles performance table (alternatives/profiles as rows,
+        criteria as columns), defaults to ``None``
 
-    :return: Credibility matrix
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`S^{IV}(a, b)` values
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`S^{IV}(alternative_i, profile_j)` indices, and the second one
+          :math:`S^{IV}(profile_j, alternative_i)`, respectively
     """
-    return get_credibility_values(
+    _consistent_criteria_names(
+        performance_table=performance_table,
+        scales=scales,
+        indifference_thresholds=indifference_thresholds,
+        preference_thresholds=preference_thresholds,
+        veto_thresholds=veto_thresholds,
+        profiles_perform=profiles_perform,
+    )
+    _check_df_index(performance_table, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="criteria")
+
+    return _get_credibility_values(
         performance_table,
         get_criteria_counts(
             performance_table,
@@ -350,6 +491,7 @@ def credibility_electre_iv(
             indifference_thresholds,
             preference_thresholds,
             profiles_perform,
+            validated=True,
         ),
         scales,
         veto_thresholds,
@@ -360,6 +502,7 @@ def credibility_electre_iv(
             indifference_thresholds,
             preference_thresholds,
             performance_table,
+            validated=True,
         )
         if profiles_perform is not None
         else None,

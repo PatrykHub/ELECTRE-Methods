@@ -3,6 +3,7 @@ from typing import List
 
 import pandas as pd
 import pytest
+
 from mcda.core.functions import Threshold
 from mcda.core.scales import PreferenceDirection, QuantitativeScale
 
@@ -151,4 +152,62 @@ def preference_thresholds(criterion_names: List[str]) -> pd.Series:
             Threshold(0, 60),
         ],
         index=criterion_names,
+    )
+
+
+@pytest.fixture
+def alternative_names_non_discordance() -> List[str]:
+    return ["BMW", "Audi", "Honda", "Volkswagen"]
+
+
+@pytest.fixture
+def profile_names_non_discordance() -> List[str]:
+    return ["P1", "P2", "P3"]
+
+
+@pytest.fixture
+def discordance_marginals(
+    alternative_names_non_discordance, profile_names_non_discordance
+) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            [
+                pd.Series([0.3, 0.9, 0.4, 0.5]),
+                pd.Series([0.6, 0.3, 0.8, 0.7]),
+                pd.Series([0.5, 0.3, 0.4, 0.2]),
+            ],
+            [
+                pd.Series([0.5, 0.1, 0.5, 0.7]),
+                pd.Series([0.9, 0.4, 0.3, 1]),
+                pd.Series([0.5, 0.7, 0.4, 0.8]),
+            ],
+            [
+                pd.Series([0.6, 0.3, 0.5, 0.2]),
+                pd.Series([0.5, 0.4, 0.9, 0.3]),
+                pd.Series([1, 0.6, 0.3, 0.6]),
+            ],
+            [
+                pd.Series([0.8, 0.6, 0.3, 0.8]),
+                pd.Series([1, 0.5, 0.5, 0.9]),
+                pd.Series([0.8, 0.3, 0.6, 0.7]),
+            ],
+        ],
+        index=alternative_names_non_discordance,
+        columns=profile_names_non_discordance,
+    )
+
+
+@pytest.fixture
+def concordance_comprehensive(
+    alternative_names_non_discordance, profile_names_non_discordance
+) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            [1, 0.7, 0.5],
+            [0.5, 0.3, 0.8],
+            [0.4, 0.5, 0.9],
+            [0.5, 0.4, 0.6],
+        ],
+        index=alternative_names_non_discordance,
+        columns=profile_names_non_discordance,
     )

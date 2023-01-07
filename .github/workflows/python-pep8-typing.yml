@@ -18,4 +18,4 @@ jobs:
       - name: Checking with flake8
         run: flake8 mcda/electre/ tests/ --max-line-length=100
       - name: Checking typing
-        run: mypy mcda/electre/ tests/
+        run: mypy mcda/electre/ tests/ --ignore-missing-imports

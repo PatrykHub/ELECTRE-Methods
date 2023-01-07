@@ -9,17 +9,21 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-
+#
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../mcda/electre'))
+
+import sphinx_rtd_theme  # noqa: F401
+
+sys.path.insert(0, os.path.abspath('../'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'pymcda'
-copyright = '2022, todo'
-author = 'todo'
+project = 'ELECTRE Methods Documentation'
+copyright = '2023, Agnieszka Klimek, Anna Prałat, Patryk Hubicki, Tomasz Budner'
+author = 'Agnieszka Klimek, Anna Prałat, Patryk Hubicki, Tomasz Budner'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -28,7 +32,10 @@ author = 'todo'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc"
+    'sphinx.ext.todo',
+    'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
+    'sphinxcontrib.bibtex'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -37,7 +44,14 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+
+# -- Config constants --------------------------------------------------------
+
+autodoc_member_order = 'bysource'
+todo_include_todos = True
+bibtex_bibfiles = ['refs.bib']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -45,7 +59,7 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -121,7 +121,7 @@ def _check_df_index(
 def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, None]) -> None:
     """Checks if all dictionaries / series contain the same set of keys.
 
-    :raises InconsistentCriteriaNamesError (ValueError):
+    :raises InconsistentIndexNamesError (ValueError):
         * if criteria names are inconsistent, i.e. contain different values set
 
     :raises NotUniqueNamesError (ValueError):
@@ -142,7 +142,7 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, No
             _unique_names(args[i][1].keys(), names_type="criteria")
 
             if base_criteria_set != set(args[i][1].keys()):
-                raise exceptions.InconsistentCriteriaNamesError(
+                raise exceptions.InconsistentIndexNamesError(
                     "All arguments should have the same criteria names, but found "
                     f"{base_criteria_set} inside the {args[0][0]} argument and "
                     f"{set(args[i][1].keys())} inside the {args[i][0]} argument."
@@ -293,6 +293,21 @@ def _reinforcement_factors_vals(
             f"'{type(non_numeric).__name__}' instead.",
         )
         raise
+
+
+def _check_index_value_binary(
+    value: Union[int, bool],
+    name: str,
+) -> None:
+    """Checks if a value has binary type (is a bool or integer)
+
+    :raises WrongIndexValueError (ValueError:)
+        * if `value` is not binary
+    """
+    if value not in [0, 1, True, False]:
+        raise exceptions.WrongIndexValueError(
+            f"Wrong {name} value. Expected a binary value, " f"but got {value} instead."
+        )
 
 
 def _check_index_value_interval(

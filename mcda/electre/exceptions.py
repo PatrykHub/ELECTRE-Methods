@@ -24,8 +24,8 @@ class WrongFactorValueError(ValueError):
     has improper value."""
 
 
-class InconsistentCriteriaNamesError(ValueError):
-    """Raised, if criteria names inside dictionaries or
+class InconsistentIndexNamesError(ValueError):
+    """Raised, if keys names inside dictionaries or
     series are inconsistent, i.e. contain different values set."""
 
 
@@ -51,3 +51,7 @@ class WrongInteractionError(ValueError):
 class PositiveNetBalanceError(ValueError):
     """Raised, if the positive net balance condition is not fulfilled
     during the concordance with interactions calculations."""
+
+
+class GraphError(ValueError):
+    """Raised, if abnormalities in a graph was found."""
