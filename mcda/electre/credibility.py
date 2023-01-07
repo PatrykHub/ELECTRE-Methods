@@ -1,10 +1,10 @@
 """This module implements methods to compute a valued outranking relation
 which can be interpreted as a degree of credibility of an outranking relation.
 
-Implementation and naming conventions are taken from
-
-.. todo::
-    add ref
+Implementation based on:
+    * credibility_comprehensive: :cite:p:`DelVastoTerrientes15`,
+    * credibility_cv: :cite:p:`Roy08`,
+    * credibility_electre_iv: :cite:p:`Wolny15`.
 """
 import math
 from enum import Enum

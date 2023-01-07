@@ -1,4 +1,8 @@
-"""This module implements methods to explore outranking relations with choice problems."""
+"""This module implements methods to explore outranking relations with choice problems.
+
+Implementation based on:
+    * find_kernel: :cite:p:`Govindan19`.
+"""
 from typing import Any, Iterable, List
 
 import pandas as pd

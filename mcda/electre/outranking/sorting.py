@@ -1,4 +1,12 @@
-"""This module implements methods to explore outranking relations with sorting problems."""
+"""This module implements methods to explore outranking relations with sorting problems.
+
+Implementation based on:
+    * assign_tri_b_class: :cite:p:`Mousseau00`,
+    * assign_tri_nb_class: :cite:p:`Fernandez17`,
+    * assign_tri_c_class: :cite:p:`Almeida10`,
+    * assign_tri_nc_class: :cite:p:`Almeida12`,
+    * assign_tri_rc_class: :cite:p:`Rezaei17`.
+"""
 import pandas as pd
 
 from mcda.electre.outranking import OutrankingRelation, outranking_relation_marginal

@@ -1,4 +1,11 @@
-"""This module implements methods to transform valued outranking relation into crisp one."""
+"""This module implements methods to transform valued outranking relation into crisp one.
+
+Implementation based on:
+    * crisp_outranking_cut: :cite:p:`Lopez21`,
+    * crisp_outranking_Is: :cite:p:`Figueira16`,
+    * crisp_outranking_coal: :cite:p:`Sobrie14`,
+    * outranking_relation: :cite:p:`Roy96`.
+"""
 from enum import Enum
 from typing import Optional, Tuple, Union
 
