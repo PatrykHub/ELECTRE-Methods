@@ -9,7 +9,9 @@ Implementation based on:
 """
 import pandas as pd
 
-from mcda.electre.outranking import OutrankingRelation, outranking_relation_marginal, crisp_outranking_cut
+from mcda.electre.outranking import OutrankingRelation, \
+    outranking_relation_marginal, \
+    crisp_outranking_cut
 
 
 def assign_tri_b_class(
@@ -227,15 +229,18 @@ def assign_tri_nc_class(
     :param credibility_prof_alt: credibility table profiles-alternatives
     :param characteristic_profiles: profiles which characterize classes
 
-    :return: `pandas.Series` of pairs with the descending and ascending assignment to the classes
+    :return: `pandas.Series` of pairs with the descending and ascending
+    assignment to the classes
     """
     credibility_acc_alt_prof = pd.DataFrame([
-        [0.0 for _ in characteristic_profiles.index.values] for _ in credibility_alt_prof.index.values],
+        [0.0 for _ in characteristic_profiles.index.values]
+        for _ in credibility_alt_prof.index.values],
         index=credibility_alt_prof.index.values,
         columns=characteristic_profiles.index.values
     )
     credibility_acc_prof_alt = pd.DataFrame([
-        [0.0 for _ in credibility_prof_alt.columns.values] for _ in characteristic_profiles.index.values],
+        [0.0 for _ in credibility_prof_alt.columns.values]
+        for _ in characteristic_profiles.index.values],
         index=characteristic_profiles.index.values,
         columns=credibility_prof_alt.columns.values
     )
@@ -243,14 +248,20 @@ def assign_tri_nc_class(
         for i, profile in enumerate(characteristic_profiles):
             cat_idx = characteristic_profiles.index.values[i]
             for category in profile:
-                if credibility_alt_prof.loc[alternative][category] > credibility_acc_alt_prof.loc[alternative][cat_idx]:
-                    credibility_acc_alt_prof.loc[alternative][cat_idx] = credibility_alt_prof.loc[alternative][category]
-                if credibility_prof_alt.loc[category][alternative] > credibility_acc_prof_alt.loc[cat_idx][alternative]:
-                    credibility_acc_prof_alt.loc[cat_idx][alternative] = credibility_prof_alt.loc[category][alternative]
+                if credibility_alt_prof.loc[alternative][category] > \
+                        credibility_acc_alt_prof.loc[alternative][cat_idx]:
+                    credibility_acc_alt_prof.loc[alternative][cat_idx] = \
+                        credibility_alt_prof.loc[alternative][category]
+                if credibility_prof_alt.loc[category][alternative] > \
+                        credibility_acc_prof_alt.loc[cat_idx][alternative]:
+                    credibility_acc_prof_alt.loc[cat_idx][alternative] = \
+                        credibility_prof_alt.loc[category][alternative]
     crisp_table = (crisp_outranking_cut(credibility_acc_alt_prof, 0.7),
                    crisp_outranking_cut(credibility_acc_prof_alt, 0.7))
-    new_profiles = pd.Series(characteristic_profiles.index.values, index=characteristic_profiles.index.values)
-    return assign_tri_c_class(crisp_table[0], crisp_table[1], credibility_acc_alt_prof, credibility_acc_prof_alt,
+    new_profiles = pd.Series(characteristic_profiles.index.values,
+                             index=characteristic_profiles.index.values)
+    return assign_tri_c_class(crisp_table[0], crisp_table[1],
+                              credibility_acc_alt_prof, credibility_acc_prof_alt,
                               new_profiles)
 
 
