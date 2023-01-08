@@ -236,6 +236,7 @@ def expected_tri_c() -> pd.Series:
         ],
     )
 
+
 @pytest.fixture
 def categories_tri_c_2() -> pd.Series:
     return pd.Series(
@@ -287,13 +288,20 @@ def crisp_outranking_ap_tri_c_2() -> pd.DataFrame:
 @pytest.fixture
 def crisp_outranking_pa_tri_c_2() -> pd.DataFrame:
     return pd.DataFrame(
-        [[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False],
-         [False, False, False, False, False, False, False, False, False, False, False, False, False, False, False],
-         [False, False, False, False, True, True, False, False, True, False, True, False, True, False, False],
-         [True, False, False, True, True, True, False, False, True, True, True, False, True, False, False],
-         [True, False, True, True, True, True, True, False, True, True, True, False, True, True, True],
-         [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
-         [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True],
+        [[False, False, False, False, False, False, False, False,
+          False, False, False, False, False, False, False],
+         [False, False, False, False, False, False, False, False,
+          False, False, False, False, False, False, False],
+         [False, False, False, False, True, True, False, False,
+          True, False, True, False, True, False, False],
+         [True, False, False, True, True, True, False, False,
+          True, True, True, False, True, False, False],
+         [True, False, True, True, True, True, True, False,
+          True, True, True, False, True, True, True],
+         [True, True, True, True, True, True, True, True,
+          True, True, True, True, True, True, True],
+         [True, True, True, True, True, True, True, True,
+          True, True, True, True, True, True, True],
          ],
         index=["C0", "C1", "C2", "C3", "C4", "C5", "C6"],
         columns=[
