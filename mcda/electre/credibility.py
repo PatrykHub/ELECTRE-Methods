@@ -63,12 +63,12 @@ def credibility_comprehensive(
 
     :return: credibility table :math:`S` with values from [0, 1] interval
     """
-    if not is_non_discordance:
-        discordance = 1 - discordance
     _consistent_df_indexing(
         concordance_comprehensive=concordance_comprehensive,
         discordance=discordance,
     )
+    if not is_non_discordance:
+        discordance = 1 - discordance
     return pd.DataFrame(
         [
             [
