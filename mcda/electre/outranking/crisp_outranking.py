@@ -50,7 +50,7 @@ def crisp_cut_marginal(
 
 
 def crisp_cut(
-    table: pd.DataFrame,
+    indices_table: pd.DataFrame,
     cutting_level: NumericValue,
 ) -> pd.DataFrame:
     """Constructs a boolean table, based on comparison of concordance,
@@ -62,17 +62,17 @@ def crisp_cut(
 
     :return: Boolean table the same size as the input table
     """
-    _consistent_df_indexing(table=table)
+    _consistent_df_indexing(indices_table=indices_table)
     return pd.DataFrame(
         [
             [
-                crisp_cut_marginal(table.loc[alt_name_a][alt_name_b], cutting_level)
-                for alt_name_b in table.index.values
+                crisp_cut_marginal(indices_table.loc[alt_name_a][alt_name_b], cutting_level)
+                for alt_name_b in indices_table.index.values
             ]
-            for alt_name_a in table.index.values
+            for alt_name_a in indices_table.index.values
         ],
-        index=table.index,
-        columns=table.index,
+        index=indices_table.index,
+        columns=indices_table.index,
     )
 
 
