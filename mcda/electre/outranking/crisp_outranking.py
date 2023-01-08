@@ -67,12 +67,12 @@ def crisp_cut(
         [
             [
                 crisp_cut_marginal(indices_table.loc[alt_name_a][alt_name_b], cutting_level)
-                for alt_name_b in indices_table.index.values
+                for alt_name_b in indices_table.columns.values
             ]
             for alt_name_a in indices_table.index.values
         ],
         index=indices_table.index,
-        columns=indices_table.index,
+        columns=indices_table.columns,
     )
 
 
