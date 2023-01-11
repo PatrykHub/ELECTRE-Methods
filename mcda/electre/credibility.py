@@ -27,23 +27,22 @@ from .utils import get_criterion_difference, is_veto
 
 def credibility_pair(
     concordance_comprehensive: NumericValue,
-    discordance: NumericValue,
+    non_discordance: NumericValue,
 ) -> NumericValue:
     """Computes the credibility value math:`S(a, b)` of an outranking relation, based on
     comprehensive concordance :math:`C(a, b)` index multiplied by non-discordance
-    :math:`{\\Delta}(a, b)` or comprehensive discordance :math:`D(a, b)` index.
+    :math:`{\\Delta}(a, b)`.
 
     :param concordance_comprehensive: comprehensive concordance value C(a, b)
-    :param discordance: comprehensive discordance :math:`D(a, b)`
-        or non-discordance value :math:`{\\Delta}(a,b)`
+    :param discordance: non-discordance value :math:`{\\Delta}(a,b)`
 
     :return: credibility value, from [0, 1] interval
     """
     _check_index_value_interval(
         concordance_comprehensive, name="comprehensive concordance"
     )
-    _check_index_value_interval(discordance, name="discordance index")
-    return concordance_comprehensive * discordance
+    _check_index_value_interval(non_discordance, name="discordance index")
+    return concordance_comprehensive * non_discordance
 
 
 def credibility_comprehensive(
