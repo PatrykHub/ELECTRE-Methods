@@ -34,7 +34,7 @@ def credibility_pair(
     :math:`{\\Delta}(a, b)`.
 
     :param concordance_comprehensive: comprehensive concordance value C(a, b)
-    :param discordance: non-discordance value :math:`{\\Delta}(a,b)`
+    :param non_discordance: non-discordance value :math:`{\\Delta}(a,b)`
 
     :return: credibility value, from [0, 1] interval
     """
