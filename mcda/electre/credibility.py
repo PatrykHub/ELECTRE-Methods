@@ -27,28 +27,22 @@ from .utils import get_criterion_difference, is_veto
 
 def credibility_pair(
     concordance_comprehensive: NumericValue,
-    discordance: NumericValue,
-    is_non_discordance: bool = True,
+    non_discordance: NumericValue,
 ) -> NumericValue:
-    """Computes the single credibility value :math:`S(a, b)` of an outranking relation,
-    based on comprehensive concordance index :math:`C(a, b)` multiplied by non-discordance
-    :math:`{\\Delta}(a, b)` or comprehensive discordance :math:`D(a, b)` index.
+    """Computes the credibility value math:`S(a, b)` of an outranking relation, based on
+    comprehensive concordance :math:`C(a, b)` index multiplied by non-discordance
+    :math:`{\\Delta}(a, b)`.
 
-    :param concordance_comprehensive: comprehensive concordance index :math:`C(a, b)`
-    :param discordance: non-discordance :math:`{\\Delta}(a, b)`
-        or discordance comprehensive :math:`D(a, b)` index
-    :param is_non_discordance: ``True`` if non-discordance is provided, otherwise ``False``,
-        defaults to ``True``
+    :param concordance_comprehensive: comprehensive concordance value C(a, b)
+    :param non_discordance: non-discordance value :math:`{\\Delta}(a,b)`
 
     :return: credibility value, from [0, 1] interval
     """
     _check_index_value_interval(
         concordance_comprehensive, name="comprehensive concordance"
     )
-    _check_index_value_interval(discordance, name="discordance index")
-    return concordance_comprehensive * (
-        discordance if is_non_discordance else (1 - discordance)
-    )
+    _check_index_value_interval(non_discordance, name="discordance index")
+    return concordance_comprehensive * non_discordance
 
 
 def credibility_comprehensive(
@@ -58,11 +52,11 @@ def credibility_comprehensive(
 ) -> pd.DataFrame:
     """Computes the credibility :math:`S` of an outranking relation, based on
     comprehensive concordance :math:`C` multiplied by non-discordance :math:`{\\Delta}`
-    or discordance comprehensive :math:`D`.
+    or comprehensive discordance :math:`D`.
 
     :param concordance_comprehensive: comprehensive concordance :math:`C`
-    :param discordance: non-discordance :math:`{\\Delta}`
-        or comprehensive discordance :math:`D(a, b)`
+    :param discordance: discordance :math:`D` or non-discordance :math:`{\\Delta}`
+
     :param is_non_discordance: ``True`` if non-discordance is provided, otherwise ``False``,
         defaults to ``True``
 
@@ -72,13 +66,14 @@ def credibility_comprehensive(
         concordance_comprehensive=concordance_comprehensive,
         discordance=discordance,
     )
+    if not is_non_discordance:
+        discordance = 1 - discordance
     return pd.DataFrame(
         [
             [
                 credibility_pair(
                     concordance_comprehensive[alt_name_b][alt_name_a],
                     discordance[alt_name_b][alt_name_a],
-                    is_non_discordance,
                 )
                 for alt_name_b in concordance_comprehensive.columns.values
             ]

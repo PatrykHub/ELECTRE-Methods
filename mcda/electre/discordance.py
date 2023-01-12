@@ -549,7 +549,6 @@ def discordance(
 
     try:
         _unique_names(weights.keys(), names_type="criteria")
-        _weights_proper_vals(weights)
     except AttributeError as exc:
         raise TypeError(
             f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
@@ -577,7 +576,6 @@ def discordance(
             f"{pd.Series.__name__}, but got "
             f"{type(discordance_marginals[column_name][row_name]).__name__} instead."
         ) from exc
-
     weights_sum: NumericValue = sum(weights)
     return pd.DataFrame(
         [

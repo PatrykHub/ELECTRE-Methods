@@ -32,48 +32,47 @@ class OutrankingRelation(Enum):
     R = "INCOMPARABILITY"
 
 
-def crisp_outranking_cut_marginal(
-    credibility: NumericValue,
+def crisp_cut_marginal(
+    value: NumericValue,
     cutting_level: NumericValue,
 ) -> bool:
-    """Computes the single crisp outranking relation value :math:`S^{CUT}(a, b)`,
-    based on credibility value :math:`S(a, b)` and cutting level :math:`\\lambda`.
+    """Compares concordance, discordance, or credibility value to
+    the cutting_level :math:`\\lambda`.
 
-    :param credibility: credibility value :math:`S(a, b)`, value from [0, 1] interval
-    :param cutting_level: majority threshold, value from [0.5, 1] interval
+    :param value: concordance, discordance, or credibility value from [0, 1] interval
+    :param cutting_level: majority threshold, value from [0, 1] interval
 
-    :return: crisp outranking relation value, ``True`` if a outranks b, ``False`` otherwise
+    :return: ``True`` if bigger or equal the cutting_level, ``False`` otherwise
     """
-    _check_index_value_interval(credibility, "credibility")
-    _check_index_value_interval(cutting_level, "cutting level", minimal_val=0.5)
-    return credibility >= cutting_level
+    _check_index_value_interval(value, "value")
+    _check_index_value_interval(cutting_level, "cutting level", minimal_val=0)
+    return value >= cutting_level
 
 
-def crisp_outranking_cut(
-    credibility_table: pd.DataFrame,
+def crisp_cut(
+    indices_table: pd.DataFrame,
     cutting_level: NumericValue,
 ) -> pd.DataFrame:
-    """Constructs a crisp outranking relation :math:`S^{CUT}`, based on credibility table `S`
-    and cutting level :math:`\\lambda`.
+    """Constructs a boolean table, based on comparison of concordance,
+     discordance or credibility values to the cutting_level :math:`\\lambda`.
 
-    :param credibility_table: credibility table :math:`S` with values from [0, 1] interval
-    :param cutting_level: majority threshold, value from [0.5, 1] interval
+    :param table: table with concordance, discordance, or credibility values
+        with values from [0, 1] interval
+    :param cutting_level: majority threshold, value from [0, 1] interval
 
-    :return: crisp outranking relation table, ``True`` if a outranks b, ``False`` otherwise
+    :return: Boolean table the same size as the input table
     """
-    _consistent_df_indexing(credibility_table=credibility_table)
+    _consistent_df_indexing(indices_table=indices_table)
     return pd.DataFrame(
         [
             [
-                crisp_outranking_cut_marginal(
-                    credibility_table.loc[alt_name_a][alt_name_b], cutting_level
-                )
-                for alt_name_b in credibility_table.columns.values
+                crisp_cut_marginal(indices_table.loc[alt_name_a][alt_name_b], cutting_level)
+                for alt_name_b in indices_table.columns.values
             ]
-            for alt_name_a in credibility_table.index.values
+            for alt_name_a in indices_table.index.values
         ],
-        index=credibility_table.index,
-        columns=credibility_table.columns,
+        index=indices_table.index,
+        columns=indices_table.columns,
     )
 
 
@@ -196,7 +195,7 @@ def crisp_outranking_coal(
     :param concordance_cutting_level: concordance majority threshold (cutting level),
         value from [0.5, 1] interval
     :param discordance_cutting_level: discordance majority threshold (cutting level),
-        value from [0.5, 1] interval
+        value from [0, 1] interval
 
     :return: crisp outranking relation table, ``True`` if a outranks b, ``False`` otherwise
     """

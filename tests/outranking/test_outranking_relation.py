@@ -7,8 +7,8 @@ from mcda.electre.outranking import (
     OutrankingRelation,
     crisp_outranking_coal,
     crisp_outranking_coal_marginal,
-    crisp_outranking_cut,
-    crisp_outranking_cut_marginal,
+    crisp_cut,
+    crisp_cut_marginal,
     crisp_outranking_Is,
     crisp_outranking_Is_marginal,
     outranking_relation,
@@ -24,24 +24,24 @@ from mcda.electre.outranking.ranking import net_flow_score
 
 
 @pytest.mark.parametrize(
-    ("credibility", "cutting_level", "expected"),
+    ("value", "cutting_level", "expected"),
     (
         (0, 0.5, False),
         (1, 0.5, True),
         (0.6786, 0.6786, True),
     ),
 )
-def test_crisp_outranking_cut_marginal(
-    credibility,
+def test_crisp_cut_marginal(
+    value,
     cutting_level,
     expected: Union[bool, type],
 ) -> None:
-    assert crisp_outranking_cut_marginal(credibility, cutting_level) == expected
+    assert crisp_cut_marginal(value, cutting_level) == expected
 
 
-def test_crisp_outranking_cut() -> None:
+def test_crisp_cut() -> None:
     alt_names: List[str] = ["A1", "A2", "A3"]
-    assert crisp_outranking_cut(
+    assert crisp_cut(
         pd.DataFrame(
             [
                 [1, 0.996, 0.673],
