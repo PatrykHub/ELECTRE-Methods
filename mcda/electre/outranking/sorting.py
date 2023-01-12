@@ -11,7 +11,7 @@ import pandas as pd
 
 from mcda.electre.outranking import OutrankingRelation, \
     outranking_relation_marginal, \
-    crisp_outranking_cut
+    crisp_cut
 
 
 def assign_tri_b_class(
@@ -256,8 +256,8 @@ def assign_tri_nc_class(
                         credibility_acc_prof_alt.loc[cat_idx][alternative]:
                     credibility_acc_prof_alt.loc[cat_idx][alternative] = \
                         credibility_prof_alt.loc[category][alternative]
-    crisp_table = (crisp_outranking_cut(credibility_acc_alt_prof, 0.7),
-                   crisp_outranking_cut(credibility_acc_prof_alt, 0.7))
+    crisp_table = (crisp_cut(credibility_acc_alt_prof, 0.7),
+                   crisp_cut(credibility_acc_prof_alt, 0.7))
     new_profiles = pd.Series(characteristic_profiles.index.values,
                              index=characteristic_profiles.index.values)
     return assign_tri_c_class(crisp_table[0], crisp_table[1],
