@@ -24,7 +24,7 @@ def assign_tri_b_class(
 
     :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
     :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
-    :param boundary_profiles: profiles which separate the classes
+    :param boundary_profiles: profiles which separate the classes in ascending order
 
     :return: `pandas.Series` of pairs with the pessimistic and optimistic assignment to the classes
     """
@@ -72,13 +72,36 @@ def assign_tri_nb_class(
 
     :param crisp_outranking_alt_prof: crisp outranking relation table alternatives-profiles
     :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
-    :param boundary_profiles: profiles which separate the classes
+    :param boundary_profiles: profiles which separate the classes in ascending order
 
     :return: `pandas.Series` of pairs with the pessimistic and optimistic assignment to the classes
     """
     assignment = pd.Series([], dtype=pd.StringDtype(storage=None))
     for alternative in crisp_outranking_alt_prof.index.values:
         for category, profiles in boundary_profiles.items():
+            in_category = False
+            for profile in profiles:
+                relation_pa = outranking_relation_marginal(
+                    crisp_outranking_prof_alt.loc[profile][alternative],
+                    crisp_outranking_alt_prof.loc[alternative][profile],
+                )
+                relation_ap = outranking_relation_marginal(
+                    crisp_outranking_alt_prof.loc[alternative][profile],
+                    crisp_outranking_prof_alt.loc[profile][alternative],
+                )
+                if relation_pa == OutrankingRelation.PQ:
+                    in_category = True
+                if relation_ap == OutrankingRelation.PQ:
+                    in_category = False
+                    break
+            if in_category:
+                assignment_optimistic = category
+                break
+        if not in_category:
+            assignment_optimistic = boundary_profiles.index.values[-1]
+        current_category = boundary_profiles.index.values[-1]
+        in_category = False
+        for category, profiles in boundary_profiles[-2::-1].items():
             in_category = False
             for profile in profiles:
                 relation_pa = outranking_relation_marginal(
@@ -98,34 +121,11 @@ def assign_tri_nb_class(
                     in_category = False
                     break
             if in_category:
-                assignment_pesimistic = category
-                break
-        if not in_category:
-            assignment_pesimistic = boundary_profiles.index.values[-1]
-        current_category = boundary_profiles.index.values[-1]
-        in_category = False
-        for category, profiles in boundary_profiles[-2::-1].items():
-            in_category = False
-            for profile in profiles:
-                relation_pa = outranking_relation_marginal(
-                    crisp_outranking_prof_alt.loc[profile][alternative],
-                    crisp_outranking_alt_prof.loc[alternative][profile],
-                )
-                relation_ap = outranking_relation_marginal(
-                    crisp_outranking_alt_prof.loc[alternative][profile],
-                    crisp_outranking_prof_alt.loc[profile][alternative],
-                )
-                if relation_pa == OutrankingRelation.PQ:
-                    in_category = True
-                if relation_ap == OutrankingRelation.PQ:
-                    in_category = False
-                    break
-            if in_category:
-                assignment_optimistic = current_category
+                assignment_pesimistic = current_category
                 break
             current_category = category
         if not in_category:
-            assignment_optimistic = boundary_profiles.index.values[0]
+            assignment_pesimistic = boundary_profiles.index.values[0]
         assignment[alternative] = (assignment_pesimistic, assignment_optimistic)
     return assignment
 
@@ -144,7 +144,7 @@ def assign_tri_c_class(
     :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
     :param credibility_alt_prof: credibility table alternatives-profiles
     :param credibility_prof_alt: credibility table profiles-alternatives
-    :param characteristic_profiles: profiles which characterize classes
+    :param characteristic_profiles: profiles which characterize classes in ascending order
 
     :return: `pandas.Series` of pairs with the descending and ascending assignment to the classes
     """
@@ -227,7 +227,7 @@ def assign_tri_nc_class(
 
     :param credibility_alt_prof: credibility table alternatives-profiles
     :param credibility_prof_alt: credibility table profiles-alternatives
-    :param characteristic_profiles: profiles which characterize classes
+    :param characteristic_profiles: profiles which characterize classes in ascending order
 
     :return: `pandas.Series` of pairs with the descending and ascending
     assignment to the classes
@@ -281,7 +281,7 @@ def assign_tri_rc_class(
     :param crisp_outranking_prof_alt: crisp outranking relation table profiles-alternatives
     :param credibility_alt_prof: credibility table alternatives-profiles
     :param credibility_prof_alt: credibility table profiles-alternatives
-    :param characteristic_profiles: profiles which characterize classes
+    :param characteristic_profiles: profiles which characterize classes in ascending order
 
     :return: `pandas.Series` of pairs with the worst and the best class
         indicated for each alternative

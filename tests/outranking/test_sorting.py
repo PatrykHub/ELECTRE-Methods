@@ -666,16 +666,16 @@ def test_assign_tri_nc_class(
                     [1, 1, 1, 0],
                 ],
                 index=["Audi", "BMW", "Fiat", "Honda", "Opel"],
-                columns=["p1_1", "p1_2", "p2_1", "p2_2"],
+                columns=["p2_1", "p2_2", "p1_1", "p1_2"],
             ),
             pd.DataFrame(
                 [[0, 1, 1, 1, 0], [0, 1, 0, 0, 0], [0, 1, 0, 0, 0], [1, 0, 1, 0, 1]],
-                index=["p1_1", "p1_2", "p2_1", "p2_2"],
+                index=["p2_1", "p2_2", "p1_1", "p1_2"],
                 columns=["Audi", "BMW", "Fiat", "Honda", "Opel"],
             ),
             pd.Series(
                 [["p1_1", "p1_2"], ["p2_1", "p2_2"], []],
-                index=["good", "medium", "bad"],
+                index=["bad", "medium", "good"],
             ),
             pd.Series(
                 [
