@@ -549,6 +549,7 @@ def discordance(
 
     try:
         _unique_names(weights.keys(), names_type="criteria")
+        _weights_proper_vals(weights, can_be_none=True)
     except AttributeError as exc:
         raise TypeError(
             f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
