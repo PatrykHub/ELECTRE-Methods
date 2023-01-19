@@ -166,7 +166,7 @@ def _consistent_df_indexing(**kwargs: Optional[pd.DataFrame]) -> None:
     :raises NotUniqueNamesError (ValueError):
         * because inside `pd.DataFrame` object there's a possibility for multiple
         existences of the same `key` value, if something like this occurs, the
-        error will be raises as well
+        error will be raised as well
 
     :raises TypeError:
         * if any argument is not a ``df`` or ``None``
