@@ -238,7 +238,7 @@ def _inverse_values(
 def _weights_proper_vals(
     weights: Union[Dict[Any, NumericValue], pd.Series], can_be_none: bool = False
 ) -> None:
-    """Checks if all weights are > 0.
+    """Checks if all weights are >= 0.
     If any weight can be set to ``None``, the `can_be_none`
     parameter must be set to ``True``.
 
