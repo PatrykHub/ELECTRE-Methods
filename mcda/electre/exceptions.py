@@ -55,3 +55,9 @@ class PositiveNetBalanceError(ValueError):
 
 class GraphError(ValueError):
     """Raised, if abnormalities in a graph was found."""
+
+
+class SortingError(ValueError):
+    """Raised, if an error occurred on a sorting procedure
+    (for example wrong profile name in characteristic
+    profiles list)"""

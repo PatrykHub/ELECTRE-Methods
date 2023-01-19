@@ -1,5 +1,6 @@
 from typing import (
     Any,
+    Callable,
     Collection,
     Dict,
     List,
@@ -74,7 +75,7 @@ def _get_threshold_values(value: NumericValue, **kwargs: Threshold) -> List[Nume
 
 def _unique_names(
     names_set: Collection,
-    names_type: Literal["criteria", "alternatives", "profiles", "rows", "columns"],
+    names_type: Literal["criteria", "alternatives", "profiles", "rows", "columns", "categories"],
 ) -> None:
     """Checks if passed `names_set` contains only
     unique values
@@ -159,7 +160,7 @@ def _consistent_df_indexing(**kwargs: Optional[pd.DataFrame]) -> None:
     """Checks if for all provided data frames, the index and column values sets
     are the same.
 
-    :raised exceptions.InconsistentDataFrameIndexingError (ValueError):
+    :raises exceptions.InconsistentDataFrameIndexingError (ValueError):
         * if at least two dfs have different set of index (or columns) values
 
     :raises NotUniqueNamesError (ValueError):
@@ -167,7 +168,7 @@ def _consistent_df_indexing(**kwargs: Optional[pd.DataFrame]) -> None:
         existences of the same `key` value, if something like this occurs, the
         error will be raised as well
 
-    :raised TypeError:
+    :raises TypeError:
         * if any argument is not a ``df`` or ``None``
     """
     args = list((name, value) for (name, value) in kwargs.items() if value is not None)
@@ -235,8 +236,12 @@ def _inverse_values(
         ) from exc
 
 
-def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> None:
-    """Checks if all weights are > 0
+def _weights_proper_vals(
+    weights: Union[Dict[Any, NumericValue], pd.Series], can_be_none: bool = False
+) -> None:
+    """Checks if all weights are >= 0.
+    If any weight can be set to ``None``, the `can_be_none`
+    parameter must be set to ``True``.
 
     :raises WrongWeightValueError (ValueError):
         * if any weight is not positive
@@ -245,11 +250,15 @@ def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> 
         * if any weight is not a numeric type
     """
     try:
+        if can_be_none:
+            weights = pd.Series(weights)
+            weights = weights[pd.notnull(weights)]
+
         if not all(
-            weight > 0
+            weight >= 0
             for weight in (weights.values() if isinstance(weights, dict) else weights.values)
         ):
-            raise exceptions.WrongWeightValueError("Weight value must be positive.")
+            raise exceptions.WrongWeightValueError("Weight value must be non-negative.")
     except TypeError as exc:
         non_numeric = [
             weight for weight in weights if not isinstance(weight, get_args(NumericValue))
@@ -362,3 +371,86 @@ def _check_index_value_interval(
             f"Wrong {name} type. Expected numeric, but got '{type(value).__name__}' instead.",
         )
         raise
+
+
+def _check_tables_ap(
+    df_alt_prof: pd.DataFrame,
+    df_prof_alt: pd.DataFrame,
+    index_validation_function: Optional[Callable] = None,
+    *args,
+    **kwargs,
+) -> None:
+    """Check if set of profiles (and alternatives)
+    from the `df_alt_prof` is the same as from the `df_prof_alt`.
+
+    :param df_alt_prof: data frame with alternative names as index
+        and profile names as columns index
+    :param df_prof_alt: data frame with profile names as index
+        and alternative names as columns index
+    :param indices_name: name of the passed indices (such as crisp outranking,
+        credibility, etc.)
+    :param index_validation_function: function to validate every
+        index value inside both dfs:
+        * the function must take value from df as first argument
+        * any other arguments are arbitrary, just pass them in
+              `args` and `kwargs` :))
+
+    :raises TypeError:
+        * if any df has wrong type
+
+    :raises NotUniqueNamesError (ValueError):
+        * if single df does not contain only unique profile / alternative names
+
+    :raises exceptions.InconsistentDataFrameIndexingError (ValueError):
+        * if sets of alternatives / profiles are different in data frames
+    """
+    try:
+        alternatives_1_collection = df_alt_prof.index.values
+        alternatives_2_collection = df_prof_alt.columns.values
+        profiles_1_collection = df_alt_prof.columns.values
+        profiles_2_collection = df_prof_alt.index.values
+
+        _unique_names(alternatives_1_collection, names_type="alternatives")
+        _unique_names(alternatives_2_collection, names_type="alternatives")
+        _unique_names(profiles_1_collection, names_type="profiles")
+        _unique_names(profiles_2_collection, names_type="profiles")
+
+        if set(alternatives_1_collection) != set(alternatives_2_collection):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Alternative names set in both tables must be the same. "
+                f"(found: {set(alternatives_1_collection)} in one table, "
+                f"{alternatives_2_collection} in second one)"
+            )
+
+        if set(profiles_1_collection) != set(profiles_2_collection):
+            raise exceptions.InconsistentDataFrameIndexingError(
+                "Profile names set in both tables must be the same. "
+                f"(found: {set(profiles_1_collection)} in one table, "
+                f"{profiles_2_collection} in second one)"
+            )
+
+    except AttributeError as exc:
+        if not isinstance(df_alt_prof, pd.DataFrame):
+            raise TypeError(
+                "Wrong table type for comparison between alternatives "
+                f"and profiles. Expected {pd.DataFrame.__name__}, "
+                f"but got {type(df_alt_prof).__name__} instead."
+            ) from exc
+
+        if not isinstance(df_prof_alt, pd.DataFrame):
+            raise TypeError(
+                "Wrong table type for comparison between profiles "
+                f"and alternatives. Expected {pd.DataFrame.__name__}, "
+                f"but got {type(df_prof_alt).__name__} instead."
+            ) from exc
+
+        raise
+
+    if index_validation_function is not None:
+        for column_name in df_alt_prof.columns.values:
+            for row_name in df_alt_prof.index.values:
+                index_validation_function(df_alt_prof[column_name][row_name], *args, **kwargs)
+
+        for column_name in df_prof_alt.columns.values:
+            for row_name in df_prof_alt.index.values:
+                index_validation_function(df_prof_alt[column_name][row_name], *args, **kwargs)

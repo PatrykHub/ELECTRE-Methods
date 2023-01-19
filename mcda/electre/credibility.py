@@ -22,7 +22,7 @@ from ._validation import (
     _consistent_df_indexing,
     _get_threshold_values,
 )
-from .utils import get_criterion_difference, is_veto
+from .utils import get_criterion_difference, is_veto_exceeded
 
 
 def credibility_pair(
@@ -38,9 +38,7 @@ def credibility_pair(
 
     :return: credibility value, from [0, 1] interval
     """
-    _check_index_value_interval(
-        concordance_comprehensive, name="comprehensive concordance"
-    )
+    _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
     _check_index_value_interval(non_discordance, name="discordance index")
     return concordance_comprehensive * non_discordance
 
@@ -105,9 +103,7 @@ def credibility_cv_pair(
     :return: credibility value :math:`S^{CV}(a, b)` with counter-veto effect,
         value from [0, 1] interval
     """
-    _check_index_value_interval(
-        concordance_comprehensive, name="comprehensive concordance"
-    )
+    _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
     _check_index_value_interval(non_discordance, name="non-discordance index")
 
     try:
@@ -283,9 +279,7 @@ def get_criteria_counts(
         _check_df_index(performance_table, index_type="alternatives")
         _check_df_index(profiles_perform, index_type="criteria")
 
-    columns_content = (
-        profiles_perform if profiles_perform is not None else performance_table
-    )
+    columns_content = profiles_perform if profiles_perform is not None else performance_table
     return pd.DataFrame(
         [
             [
@@ -364,9 +358,7 @@ def _calculate_credibility_values(
                 credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
             else:
                 np_ab, nq_ab, ni_ab = criteria_counts[alt_name_b][alt_name_a][:3]
-                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[
-                    alt_name_b, alt_name_a
-                ][:3]
+                np_ba, nq_ba, ni_ba = profiles_criteria_counts.loc[alt_name_b, alt_name_a][:3]
 
                 if np_ba + nq_ba == 0 and ni_ba < np_ab + nq_ab + ni_ab:
                     credibility_matrix[alt_name_b][alt_name_a] = RelationType.SQ
@@ -383,7 +375,7 @@ def _calculate_credibility_values(
                 elif (
                     np_ba <= 1
                     and np_ab >= len(scales) // 2
-                    and is_veto(
+                    and is_veto_exceeded(
                         profiles_perform.loc[alt_name_b],
                         performance_table.loc[alt_name_a],
                         scales,

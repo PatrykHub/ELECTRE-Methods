@@ -549,6 +549,7 @@ def discordance(
 
     try:
         _unique_names(weights.keys(), names_type="criteria")
+        _weights_proper_vals(weights, can_be_none=True)
     except AttributeError as exc:
         raise TypeError(
             f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
@@ -603,7 +604,7 @@ class NonDiscordanceType(Enum):
 
 def non_discordance_marginal(
     criteria_discordance_marginals: pd.Series,
-    non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
+    non_discordance_type: NonDiscordanceType = NonDiscordanceType.D,
     concordance_comprehensive: Optional[NumericValue] = None,
 ) -> NumericValue:
     """Computes non-discordance index value between two alternatives
@@ -618,7 +619,7 @@ def non_discordance_marginal(
         \\in \\{d_j^V(a, b), d_j^{PV}(a, b), d_j^{PVV}(a, b)\\}`
     :param non_discordance_type: an enum object to specify the
         non-discordance formula during the calculation,
-        defaults to ``NonDiscordanceType.DC``
+        defaults to ``NonDiscordanceType.D``
     :param concordance_comprehensive: comprehensive concordance
         index value :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
         C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
@@ -672,7 +673,7 @@ def non_discordance_marginal(
 
 def non_discordance(
     discordance_marginals: pd.DataFrame,
-    non_discordance_type: NonDiscordanceType = NonDiscordanceType.DC,
+    non_discordance_type: NonDiscordanceType = NonDiscordanceType.D,
     concordance_comprehensive: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     """Computes non-discordance indices for alternatives
@@ -689,7 +690,7 @@ def non_discordance(
         :func:`discordance_marginals` functions
     :param non_discordance_type: an enum object to specify the
         non-discordance formula during the calculation,
-        defaults to ``NonDiscordanceType.DC``
+        defaults to ``NonDiscordanceType.D``
     :param concordance_comprehensive: comprehensive concordance
         indices :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
         C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
