@@ -108,9 +108,6 @@ def aggregate(graph: pd.Series) -> pd.Series:
     """Aggregates every cycle in the graph into one vertex.
 
     :param graph: graph represented in `pandas.Series`
-    :raises TypeError: _description_
-    .. todo::
-        describe exception
 
     :return: acyclic graph represented in `pandas.Series` with aggregated vertices
     """
@@ -148,11 +145,8 @@ def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
 
     :param graph: graph represented in `pandas.Series`
 
-    :raises TypeError: _description_
-    :raises exceptions.GraphError: graph represented in `pandas.Series`
-    :raises TypeError: _description_
-    .. todo::
-        describe exception
+    :raises exceptions.GraphError: if graph contains an arc
+    directed to a non-existent vertex
 
     :return: list of vertices without predecessor
     """

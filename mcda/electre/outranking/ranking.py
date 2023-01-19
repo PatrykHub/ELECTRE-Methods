@@ -32,10 +32,6 @@ def net_flow_score(outranking_table: pd.DataFrame) -> pd.Series:
 
     :param outranking_table: crisp or valued outranking table
 
-    :raises exceptions.InconsistentDataFrameIndexingError: _description_
-    .. todo::
-        describe exception
-
     :return: ordered `pandas.Series` with Net Flow Scores for all alternatives
     """
     _consistent_df_indexing(outranking_table=outranking_table)
@@ -84,9 +80,10 @@ def _get_minimal_credibility_index(
     :param alpha: coefficient of the independent variable, defaults to ``-0.15``
     :param beta: y-intercept, defaults to ``0.30``
 
-    :raises exceptions.ValueOutsideScaleError: _description_
-    .. todo::
-        describe exception
+    :raises exceptions.ValueOutsideScaleError: if `alpha` and `beta`
+        values are incorrect. Both parameters must meet a condition:
+    .. math::
+        \\alpha \\cdot S + \\beta > 0
 
     :return: minimal credibility index, value from the [0, 1] interval
     """
@@ -124,9 +121,10 @@ def crisp_outranking_relation_distillation(
     :param alpha: coefficient of the independent variable, defaults to ``-0.15``
     :param beta: y-intercept, defaults to ``0.30``
 
-    :raises exceptions.ValueOutsideScaleError: _description_
-    .. todo::
-        describe exception
+    :raises exceptions.ValueOutsideScaleError: if `alpha` and `beta`
+        values are incorrect. Both parameters must meet a condition:
+    .. math::
+        \\alpha \\cdot S + \\beta > 0
 
     :return: ``1`` if undermentioned inequality is true, ``0`` otherwise
     """
@@ -164,10 +162,6 @@ def alternative_qualities(
     :param beta: y-intercept, defaults to ``0.30``
     :param maximal_credibility_index: optional minimal credibility index from outer distillation,
         defaults to ``None``
-
-    :raises exceptions.InconsistentDataFrameIndexingError: _description_
-    .. todo::
-        describe exception
 
     :return: quality of a computed as the difference of its strength and weakness,
         also maximal credibility index for possible inner distillation
@@ -341,10 +335,6 @@ def ranks(final_ranking_matrix: pd.DataFrame) -> pd.Series:
 
     :param final_ranking_matrix: outranking matrix from final ranking :math:`P`
 
-    :raises exceptions.InconsistentDataFrameIndexingError: _description_
-    .. todo::
-        describe exception
-
     :return: nested list of ranks
     """
     _consistent_df_indexing(final_ranking_matrix=final_ranking_matrix)
@@ -398,14 +388,6 @@ def median_order(
     :param ranks: nested list of ranks of the alternatives
     :param downward_order: nested list of downward order :math:`P^D`
     :param upward_order: nested list of upward order :math:`P^A`
-
-    :raises TypeError: _description_
-    :raises exceptions.InconsistentIndexNamesError: _description_
-    :raises exceptions.InconsistentIndexNamesError: _description_
-    :raises exceptions.InconsistentIndexNamesError: _description_
-    :raises exceptions.InconsistentIndexNamesError: _description_
-    .. todo::
-        describe exception
 
     :return: median preorder
     """

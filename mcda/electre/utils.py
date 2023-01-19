@@ -37,10 +37,6 @@ def is_veto(
 ) -> bool:
     """Determines if veto is present between two alternatives.
 
-    .. todo::
-        Remove this function, since it does the same job as the
-        :func:`mcda.electre.discordance.discordance_bin_comprehensive` function.
-
     :param a_values: alternative's performance on all its criteria
     :param b_values: alternative's performance on all its criteria
     :param scales: all criteria's scales with specified preference direction
