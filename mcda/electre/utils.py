@@ -29,24 +29,21 @@ def get_criterion_difference(
     )
 
 
-def is_veto(
+def is_veto_exceeded(
     a_values: pd.Series,
     b_values: pd.Series,
     scales: pd.Series,
     veto_thresholds: pd.Series,
 ) -> bool:
-    """Determines if veto is present between two alternatives.
-
-    .. todo::
-        Remove this function, since it does the same job as the
-        :func:`mcda.electre.discordance.discordance_bin_comprehensive` function.
+    """Determines if veto threshold is exceeded when comparing
+    any pair of alternatives (or alternative and profile).
 
     :param a_values: alternative's performance on all its criteria
     :param b_values: alternative's performance on all its criteria
     :param scales: all criteria's scales with specified preference direction
     :param veto_thresholds: all criteria's veto thresholds
 
-    :return: ``True`` if is veto between a and b, ``False`` otherwise
+    :return: ``True`` if is veto was exceeded between a and b, ``False`` otherwise
     """
     for i in range(len(a_values)):
         if veto_thresholds[i] is not None:
