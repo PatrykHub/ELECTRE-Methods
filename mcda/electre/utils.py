@@ -76,10 +76,16 @@ def linear_function(alpha: NumericValue, x: NumericValue, beta: NumericValue) ->
     try:
         return alpha * x + beta
     except TypeError as exc:
-        exc.args = (
-            "Wrong alpha or beta coefficient. Expected numeric types, but got "
-            f"alpha: {type(alpha).__name__}, beta: {type(beta).__name__} instead.",
-        )
+        if isinstance(x, int) or isinstance(x, float):
+            exc.args = (
+                "Wrong alpha or beta coefficient. Expected numeric types, but got "
+                f"alpha: {type(alpha).__name__}, beta: {type(beta).__name__} instead.",
+            )
+        else:
+            exc.args = (
+                "Wrong linear function argument type. Expected numeric, but got "
+                f"{type(x).__name__} instead.",
+            )
         raise
 
 
