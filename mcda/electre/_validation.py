@@ -235,8 +235,12 @@ def _inverse_values(
         ) from exc
 
 
-def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> None:
-    """Checks if all weights are > 0
+def _weights_proper_vals(
+    weights: Union[Dict[Any, NumericValue], pd.Series], can_be_none: bool = False
+) -> None:
+    """Checks if all weights are >= 0.
+    If any weight can be set to ``None``, the `can_be_none`
+    parameter must be set to ``True``.
 
     :raises WrongWeightValueError (ValueError):
         * if any weight is not positive
@@ -245,11 +249,15 @@ def _weights_proper_vals(weights: Union[Dict[Any, NumericValue], pd.Series]) -> 
         * if any weight is not a numeric type
     """
     try:
+        if can_be_none:
+            weights = pd.Series(weights)
+            weights = weights[pd.notnull(weights)]
+
         if not all(
-            weight > 0
+            weight >= 0
             for weight in (weights.values() if isinstance(weights, dict) else weights.values)
         ):
-            raise exceptions.WrongWeightValueError("Weight value must be positive.")
+            raise exceptions.WrongWeightValueError("Weight value must be non-negative.")
     except TypeError as exc:
         non_numeric = [
             weight for weight in weights if not isinstance(weight, get_args(NumericValue))
