@@ -128,7 +128,7 @@ def _consistent_criteria_names(**kwargs: Union[Dict, pd.Series, pd.DataFrame, No
     :raises NotUniqueNamesError (ValueError):
         * because inside `pd.Series` object there's a possibility for multiple
         existences of the same `key` value, if something like this occurs, the
-        error will be raises as well
+        error will be raised as well
 
     :raises TypeError:
         * if any kwarg has no ``keys`` method
