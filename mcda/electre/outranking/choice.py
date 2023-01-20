@@ -44,7 +44,7 @@ def _strongly_connected_components(graph: pd.Series) -> List[List[Any]]:
 
     :param graph: graph represented in `pandas.Series`
 
-    :raises exceptions.GraphError: raised when graph contain an arc directed to
+    :raises exceptions.GraphError: if graph contains an arc directed to
         a non-existent vertex
 
     :return: list of lists of vertices that are parts of a cycle
@@ -145,8 +145,8 @@ def find_vertices_without_predecessor(graph: pd.Series, **kwargs) -> List[Any]:
 
     :param graph: graph represented in `pandas.Series`
 
-    :raises exceptions.GraphError: if graph contains an arc
-    directed to a non-existent vertex
+    :raises exceptions.GraphError: if graph contains an arc directed to
+        a non-existent vertex
 
     :return: list of vertices without predecessor
     """
