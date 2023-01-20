@@ -98,12 +98,7 @@ def credibility_cv_pair(
     :param counter_veto_occurs: counter-veto occurs list or value :math:`cv(a, b)`
     :param number_of_criteria: number of criteria
 
-    :raises TypeError: _description_
-    :raises ValueError: _description_
-    :raises TypeError: _description_
-    :raises ValueError: _description_
-    .. todo::
-        describe errors
+    :raises ValueError: if number of criteria is not a positive value
 
     :return: credibility value :math:`S^{CV}(a, b)` with counter-veto effect,
         value from [0, 1] interval
@@ -211,9 +206,9 @@ def get_criteria_counts_marginal(
     :param indifference_thresholds: all criteria's indifference thresholds
     :param preference_thresholds: all criteria's preference thresholds
 
-    :raises exceptions.WrongThresholdValueError: _description_
-    .. todo::
-        describe raised exception
+    :raises exceptions.WrongThresholdValueError: if thresholds don't meet a condition:
+    .. math::
+        0 \\le indifference\\_threshold(value) \\le preference\\_threshold(value)
 
     :return: criteria counts for a pair
     """

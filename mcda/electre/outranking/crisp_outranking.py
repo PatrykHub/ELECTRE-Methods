@@ -259,11 +259,6 @@ def outranking_relation(
     :param crisp_outranking_table_profiles: optional crisp outranking table of profiles,
         defaults to ``None``
 
-    :raises exceptions.InconsistentDataFrameIndexingError: _description_
-    :raises exceptions.InconsistentDataFrameIndexingError: _description_
-    .. todo::
-        describe exception
-
     :return:
         * if `crisp_outranking_table_profiles` argument is set to ``None``, the function
           will return a single `pandas.DataFrame` object with outranking relation
