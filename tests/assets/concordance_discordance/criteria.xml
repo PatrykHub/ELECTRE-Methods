@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmcda:XMCDA xmlns:xmcda="http://www.decision-deck.org/2009/XMCDA-2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.decision-deck.org/2009/XMCDA-2.0.0 file:/home/pat/Documents/currentResearch/DecisionDeck/svn-DecisionDeck/XMCDA/XMCDA-2.0.0.xsd">
+  <criteria>
+    <criterion id="PRICE">
+        <scale>
+            <quantitative>
+                <preferenceDirection>min</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+            </quantitative>
+        </scale>
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <linear>
+                    <slope><real>0.1</real></slope>
+                    <intercept><integer>10000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <linear>
+                    <slope><real>0.1</real></slope>
+                    <intercept><integer>30000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="reinforced_preference">
+                <linear>
+                    <slope><real>0.3</real></slope>
+                    <intercept><integer>30000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="veto">
+                <linear>
+                    <slope><real>0.2</real></slope>
+                    <intercept><integer>40000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="pre_veto">
+                <linear>
+                    <slope><real>0.2</real></slope>
+                    <intercept><integer>30000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <linear>
+                    <slope><real>0.17</real></slope>
+                    <intercept><integer>21370</integer></intercept>
+                </linear>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="REPAIR_COST">
+        <scale>
+            <quantitative>
+                <preferenceDirection>min</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+            </quantitative>
+        </scale>
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <linear>
+                    <slope><real>0.15</real></slope>
+                    <intercept><integer>7000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <linear>
+                    <slope><real>0.2</real></slope>
+                    <intercept><integer>7000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="reinforced_preference">
+                <linear>
+                    <slope><real>0.2</real></slope>
+                    <intercept><integer>10000</integer></intercept>
+                </linear>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <linear>
+                    <slope><real>0.1</real></slope>
+                    <intercept><integer>50000</integer></intercept>
+                </linear>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="RATING">
+        <scale>
+            <quantitative>
+                <preferenceDirection>max</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+                <maximum><integer>10</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant>
+                    <real>0.5</real>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant>
+                    <real>1.5</real>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="veto">
+                <constant><integer>3</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><real>4.5</real></constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="MAX_SPEED">
+        <scale>
+            <quantitative>
+                <preferenceDirection>max</preferenceDirection>
+                <minimum><integer>80</integer></minimum>
+                <maximum><integer>300</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant><integer>40</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant><integer>70</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="reinforced_preference">
+                <constant><integer>90</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="veto">
+                <constant><integer>100</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="pre_veto">
+                <constant><integer>90</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>105</integer></constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="COMFORT">
+        <scale>
+            <quantitative>
+                <preferenceDirection>max</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+                <maximum><integer>100</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant>
+                    <integer>10</integer>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant>
+                    <integer>15</integer>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="reinforced_preference">
+                <constant><integer>27</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="veto">
+                <constant><integer>45</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="pre_veto">
+                <constant><integer>25</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>49</integer></constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="APPEARANCE">
+        <scale>
+            <quantitative>
+                <preferenceDirection>max</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+                <maximum><integer>10</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant>
+                    <real>0.75</real>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant>
+                    <real>1</real>
+                </constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="WEIGHT">
+        <scale>
+            <quantitative>
+                <preferenceDirection>min</preferenceDirection>
+                <minimum><integer>300</integer></minimum>
+                <maximum><integer>2000</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant>
+                    <integer>200</integer>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant>
+                    <integer>300</integer>
+                </constant>
+            </threshold>
+                <threshold mcdaConcept="veto">
+                <constant><integer>500</integer></constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+
+    <criterion id="LATENCY_TIME">
+        <scale>
+            <quantitative>
+                <preferenceDirection>min</preferenceDirection>
+                <minimum><integer>0</integer></minimum>
+                <maximum><integer>365</integer></maximum>
+            </quantitative>
+        </scale>
+
+        <thresholds>
+            <threshold mcdaConcept="indifference">
+                <constant>
+                    <integer>30</integer>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="preference">
+                <constant>
+                    <integer>60</integer>
+                </constant>
+            </threshold>
+            <threshold mcdaConcept="reinforced_preference">
+                <constant><integer>70</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="veto">
+                <constant><integer>120</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="pre_veto">
+                <constant><integer>80</integer></constant>
+            </threshold>
+            <threshold mcdaConcept="counter_veto">
+                <constant><integer>110</integer></constant>
+            </threshold>
+        </thresholds>
+    </criterion>
+  </criteria>
+</xmcda:XMCDA>

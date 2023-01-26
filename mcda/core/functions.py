@@ -1,5 +1,5 @@
 import math
-from typing import Any, Dict, List, Optional, Type, cast, get_args
+from typing import Any, Dict, List, Optional, cast, get_args
 
 from .aliases import NumericFunction, NumericValue, Value
 
@@ -251,9 +251,9 @@ class PieceWiseFunction:
 
     def __init__(
         self,
-        intervals: List[Interval] = None,
-        functions: List[NumericFunction] = None,
-        segments: List[List[List]] = None,
+        intervals: Optional[List[Interval]] = None,
+        functions: Optional[List[NumericFunction]] = None,
+        segments: Optional[List[List[List]]] = None,
     ):
         """Constructor method"""
         intervals = [] if intervals is None else intervals
@@ -337,9 +337,9 @@ class FuzzyNumber(PieceWiseFunction):
 
     def __init__(
         self,
-        intervals: List[Interval] = None,
-        functions: List[NumericFunction] = None,
-        segments: List[List[List]] = None,
+        intervals: Optional[List[Interval]] = None,
+        functions: Optional[List[NumericFunction]] = None,
+        segments: Optional[List[List[List]]] = None,
     ):
         """Constructor method"""
         PieceWiseFunction.__init__(self, intervals, functions, segments)
@@ -371,7 +371,10 @@ class Threshold:
 
         self._alpha: NumericValue = alpha
         self._beta: NumericValue = beta
-    
+
+    def __repr__(self) -> str:
+        return f"Threshold: alpha={self.alpha}, beta={self.beta}"
+
     def __check_coeff_val(self, val: NumericValue) -> None:
         """Checks if new coefficient value has a numeric type."""
         if not isinstance(val, get_args(NumericValue)):
@@ -379,16 +382,16 @@ class Threshold:
                 f"Wrong coefficient type. Expected '{NumericValue}', "
                 f"but got '{type(val).__name__}' instead."
             )
-    
+
     @property
     def alpha(self) -> NumericValue:
         return self._alpha
-    
+
     @alpha.setter
     def alpha(self, value: NumericValue) -> None:
         self.__check_coeff_val(value)
         self._alpha = value
-    
+
     @property
     def beta(self) -> NumericValue:
         return self._beta

@@ -1,142 +1,249 @@
-"""This module implements methods to compute discordance."""
-from typing import List, Optional, Sized, Tuple, Union, cast
+"""This module implements methods to compute discordance.
+
+Implementation based on:
+    * discordance_bin: :cite:p:`Younes00`,
+    * discordance_marginals: :cite:p:`DelVastoTerrientes15`,
+    * non_discordance: :cite:p:`Mousseau06`,
+    * counter_veto: :cite:p:`Roy08`.
+"""
+from enum import Enum
+from typing import Any, Callable, Dict, Optional, Tuple, Union
+
+import numpy as np
+import pandas as pd
 
 from ..core.aliases import NumericValue
 from ..core.functions import Threshold
 from ..core.scales import PreferenceDirection, QuantitativeScale
-from ._validate import _all_lens_equal, _both_values_in_scale, _inverse_values
+from . import exceptions
+from ._validation import (
+    _both_values_in_scale,
+    _check_df_index,
+    _check_index_value_interval,
+    _consistent_criteria_names,
+    _consistent_df_indexing,
+    _get_threshold_values,
+    _inverse_values,
+    _unique_names,
+    _weights_proper_vals,
+)
 
 
-def discordance_marginal_bin(
+def discordance_bin_marginal(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    veto_threshold: List[NumericValue],
+    veto_threshold: Optional[Threshold],
     inverse: bool = False,
 ) -> int:
-    """
-    Calculates binary marginal discordance with veto threshold.
-    :param a_value:
-    :param b_value:
-    :param scale:
-    :param veto_threshold:
-    :param inverse:
-    :return:
-    """
-    try:
-        if a_value not in scale or b_value not in scale:
-            # TODO
-            raise ValueError("")
-    except TypeError as e:
-        e.args = ("Both criteria values have to be numeric values.",)
-        raise
+    """Computes marginal binary discordance index:
+    :math:`d^V(a\\_value, b\\_value) \\in \\{0, 1\\}`,
+    which represents an opposition in outranking `a` over `b`
+    on the provided criterion.
 
-    try:
-        if inverse:
-            a_value, b_value = b_value, a_value
-            scale.preference_direction = (
-                PreferenceDirection.MIN
-                if scale.preference_direction == PreferenceDirection.MAX
-                else PreferenceDirection.MAX
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param veto_threshold: criterion's veto threshold
+    :param inverse: if ``True``, then function will calculate :math:`d^V(b\\_value, a\\_value)`
+        with opposite scale preference direction, defaults to ``False``
+
+    :raises exceptions.WrongThresholdValueError: if the veto threshold
+        value is not positive.
+
+    :return: ``0``, if veto was not exceeded or `veto_threshold` is ``None``,
+        ``1`` otherwise
+    """
+    _both_values_in_scale(a_value, b_value, scale)
+    a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
+
+    if veto_threshold is None:
+        return 0
+
+    veto_threshold_value = _get_threshold_values(a_value, veto_threshold=veto_threshold)[0]
+    if veto_threshold_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            f"Veto threshold value must be positive, but got {veto_threshold_value} instead."
+        )
+
+    if scale.preference_direction == PreferenceDirection.MAX:
+        return 1 if b_value - a_value >= veto_threshold_value else 0
+    return 1 if a_value - b_value >= veto_threshold_value else 0
+
+
+def discordance_bin_comprehensive(
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    inverse: bool = False,
+    **kwargs,
+) -> int:
+    """Computes comprehensive binary discordance index:
+    :math:`D^V(a, b) \\in \\{0, 1\\}`, which represents an opposition
+    in outranking a over b.
+
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional and it
+        can be set to ``None``
+    :param inverse: if ``True``, then function will calculate :math:`D^V(b, a)`
+        with opposite scales preference direction, defaults to ``False``
+
+    :return: ``0``, if veto occur on any criterion, ``1`` otherwise
+    """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
+    for criterion_name in a_values.keys():
+        if discordance_bin_marginal(
+            a_values[criterion_name],
+            b_values[criterion_name],
+            scales[criterion_name],
+            veto_thresholds[criterion_name],
+            inverse,
+        ):
+            return 1
+    return 0
+
+
+def discordance_bin_criteria_marginals(
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    **kwargs,
+) -> pd.Series:
+    """Computes marginal binary discordance indices:
+    :math:`d_j^V(a, b) \\in \\{0, 1\\}` for alternatives pair
+    (or between alternative and profile).
+
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param veto_threshold: criterion's veto threshold
+
+    :return: a series with marginal binary discordance for each criterion
+    """
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values, b_values=b_values, scales=scales, veto_thresholds=veto_thresholds
+        )
+
+    return pd.Series(
+        [
+            discordance_bin_marginal(
+                a_values[criterion_name],
+                b_values[criterion_name],
+                scales[criterion_name],
+                veto_thresholds[criterion_name],
             )
-
-        veto: NumericValue = veto_threshold[0] * a_value + veto_threshold[1]
-        if scale.preference_direction == PreferenceDirection.MAX:
-            return 1 if b_value - a_value >= veto else 0
-        return 1 if a_value - b_value >= veto else 0
-    except (IndexError, TypeError) as e:
-        e.args = ("Veto threshold needs to be a two element list.",)
-        raise
-    except AttributeError as e:
-        e.args = (
-            f"Scale have to be a QuantitativeScale object, got {type(scale).__name__} instead.",
-        )
-        raise
-
-
-def discordance_comprehensive_bin(
-    a: List[NumericValue],
-    b: List[NumericValue],
-    scales: List[QuantitativeScale],
-    veto_thresholds: List[List[NumericValue]],
-    inverse: bool = False,
-) -> int:
-    """
-    Calculates comprehensive binary discordance.
-    :param a:
-    :param b:
-    :param scales:
-    :param veto_thresholds:
-    :param inverse:
-    :return:
-    """
-    try:
-        list_len: int = max(
-            len(cast(Sized, el)) for el in (a, b, scales, veto_thresholds)
-        )
-        return (
-            1
-            if 1
-            in [
-                discordance_marginal_bin(
-                    a[i], b[i], scales[i], veto_thresholds[i], inverse
-                )
-                for i in range(list_len)
-            ]
-            else 0
-        )
-    except TypeError:
-        # TODO ktorys arg nie jest lista
-        raise
-    except IndexError:
-        # TODO rozna dlugosc list
-        raise
+            for criterion_name in a_values.keys()
+        ],
+        index=list(a_values.keys()),
+    )
 
 
 def discordance_bin(
-    alternatives_perform: List[List[NumericValue]],
-    scales: List[QuantitativeScale],
-    veto_thresholds: List[List[NumericValue]],
-    profiles_perform: List[List[NumericValue]] = None,
-) -> Union[List[List[int]], Tuple]:
-    """
-    :param alternatives_perform:
-    :param scales:
-    :param veto_thresholds:
-    :param profiles_perform:
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
+    return_marginals: bool = False,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+    """Computes binary discordance indices: marginals or comprehensive ones.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
+
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param veto_thresholds: all criteria's veto thresholds
+    param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
+    :param return_marginals: if ``True``, the function will return
+        marginal indices, not the comprehensive ones, defaults to ``False``
+
     :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with :math:`D^V(a, b)` indices
+          for all alternatives pairs
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`D^V(a, b)(alternative_i, profile_j)` indices, and the second one
+          :math:`D^V(a, b)(profile_j, alternative_i)`, respectively
+        * when `return_marginals` argument is set to ``True``, data frames will
+          contain a series with discordance marginals, not the :math:`D^V` indices
     """
-    if profiles_perform is None:
-        return [
+    discordance_function: Callable = discordance_bin_comprehensive
+
+    if return_marginals:
+        discordance_function = discordance_bin_criteria_marginals
+
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        veto_thresholds=veto_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+    if profiles_perform is not None:
+        return pd.DataFrame(
             [
-                discordance_comprehensive_bin(
-                    alternatives_perform[i],
-                    alternatives_perform[j],
+                [
+                    discordance_function(
+                        alternatives_perform.loc[alt_name],
+                        profiles_perform.loc[prof_name],
+                        scales,
+                        veto_thresholds,
+                        validated=True,
+                    )
+                    for prof_name in profiles_perform.index.values
+                ]
+                for alt_name in alternatives_perform.index.values
+            ],
+            index=alternatives_perform.index,
+            columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_function(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        veto_thresholds,
+                        validated=True,
+                    )
+                    for alt_name in alternatives_perform.index.values
+                ]
+                for prof_name in profiles_perform.index.values
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
+        )
+
+    return pd.DataFrame(
+        [
+            [
+                discordance_function(
+                    alternatives_perform.loc[alt_name_a],
+                    alternatives_perform.loc[alt_name_b],
                     scales,
                     veto_thresholds,
+                    validated=True,
                 )
-                for j in range(len(alternatives_perform[i]))
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for i in range(len(alternatives_perform))
-        ]
-
-    return [
-        [
-            discordance_comprehensive_bin(
-                alternatives_perform[i], profiles_perform[j], scales, veto_thresholds
-            )
-            for j in range(len(profiles_perform))
-        ]
-        for i in range(len(alternatives_perform))
-    ], [
-        [
-            discordance_comprehensive_bin(
-                profiles_perform[i], alternatives_perform[j], scales, veto_thresholds
-            )
-            for j in range(len(alternatives_perform))
-        ]
-        for i in range(len(profiles_perform))
-    ]
+            for alt_name_a in alternatives_perform.index.values
+        ],
+        index=alternatives_perform.index,
+        columns=alternatives_perform.index,
+    )
 
 
 def discordance_marginal(
@@ -144,305 +251,744 @@ def discordance_marginal(
     b_value: NumericValue,
     scale: QuantitativeScale,
     preference_threshold: Threshold,
-    veto_threshold: Threshold,
-    pre_veto_threshold: Optional[Threshold],
+    veto_threshold: Optional[Threshold],
+    pre_veto_threshold: Optional[Threshold] = None,
     inverse: bool = False,
 ) -> NumericValue:
-    """_summary_
-    :param NumericValue a_value: _description_
-    :param NumericValue b_value: _description_
-    :param QuantitativeScale scale: _description_
-    :param Threshold preference_threshold: _description_
-    :param Threshold veto_threshold: _description_
-    :param Optional[Threshold] pre_veto_threshold: _description_
-    :param bool inverse: _description_, defaults to False
-    :raises ValueError: _description_
-    :return NumericValue: _description_
+    """Computes marginal discordance index
+    :math:`d(a\\_value, b\\_value) \\in [0, 1]`,
+    which represents a degree in opposition in outranking `a` over `b`
+    on the provided criterion.
+
+    The function calculates
+    :math:`d(a\\_value, b\\_value) \\in \\{d^{PV}(a\\_value, b\\_value),
+    d^{PVV}(a\\_value, b\\_value)\\}` index, depending
+    on the `pre_veto_threshold` presence.
+
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param preference_threshold: criterion's preference threshold
+    :param veto_threshold: criterion's veto threshold
+    :param pre_veto_threshold: criterion's pre-veto threshold; if provided,
+        with ``Threshold``, then the `veto_threshold` must be set as well,
+        defaults to ``None``
+    :param inverse: if ``True``, then function will calculate :math:`d(b\\_value, a\\_value)`
+        with opposite scales preference direction, defaults to ``False``
+
+    :raises exceptions.WrongThresholdValueError: if thresholds don't meet a condition:
+    .. math::
+        0 \\le preference\\_threshold(value) < veto\\_threshold(value)
+        < pre\\_veto\\_threshold(value)
+
+    :return: marginal discordance index, value from the [0, 1] interval;
+        if no `veto_threshold` is specified, the function will return ``0``
     """
     _both_values_in_scale(a_value, b_value, scale)
     a_value, b_value, scale = _inverse_values(a_value, b_value, scale, inverse)
 
-    try:
-        veto: NumericValue = veto_threshold(a_value)
-        preference: NumericValue = preference_threshold(a_value)
-        pre_veto: Optional[NumericValue] = (
-            pre_veto_threshold(a_value) if pre_veto_threshold is not None else None
-        )
-    except TypeError as exc:
-        exc.args = ("",)  # TODO: Wrong threshold type
-        raise
+    if veto_threshold is None:
+        if pre_veto_threshold is not None:
+            raise exceptions.WrongThresholdValueError(
+                "Missing veto threshold for criterion with defined pre-veto."
+            )
+        return 0
 
-    # TODO: exception message - wrong threshold values
+    preference, veto = _get_threshold_values(
+        a_value, preference_threshold=preference_threshold, veto_threshold=veto_threshold
+    )
+    pre_veto = (
+        _get_threshold_values(a_value, pre_veto_threshold=pre_veto_threshold)[0]
+        if pre_veto_threshold is not None
+        else None
+    )
+
     if preference >= veto:
-        raise ValueError("")
-    if pre_veto and (pre_veto >= veto or pre_veto <= preference):
-        raise ValueError("")
+        raise exceptions.WrongThresholdValueError(
+            "Preference threshold must be less than the veto threshold, but got "
+            f"preference_threshold={preference}, veto_threshold={veto}."
+        )
+    if pre_veto and not veto > pre_veto > preference:
+        raise exceptions.WrongThresholdValueError(
+            "Thresholds must meet a condition: veto > pre_veto > preference, but got "
+            f"{veto} > {pre_veto} > {preference} instead."
+        )
 
+    discordance_beginning = preference if pre_veto is None else pre_veto
     if scale.preference_direction == PreferenceDirection.MAX:
         if b_value - a_value > veto:
             return 1
-        elif b_value - a_value <= preference:
+        elif b_value - a_value <= discordance_beginning:
             return 0
-        return (veto - b_value + a_value) / (veto - preference)
+        return (b_value - a_value - discordance_beginning) / (veto - discordance_beginning)
 
     if a_value - b_value > veto:
         return 1
-    elif a_value - b_value <= preference:
+    elif a_value - b_value <= discordance_beginning:
         return 0
-    return (veto - a_value + b_value) / (veto - preference)
+    return (a_value - b_value - discordance_beginning) / (veto - discordance_beginning)
 
 
 def discordance_comprehensive(
-    alternatives_a: List[NumericValue],
-    alternatives_b: List[NumericValue],
-    scales: List[QuantitativeScale],
-    weights: List[NumericValue],
-    preference_threshold: List[Threshold],
-    veto_threshold: List[Threshold],
-    pre_veto_threshold: Optional[List[Threshold]],
-):
-    """
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
+) -> NumericValue:
+    """Computes comprehensive discordance index :math:`\\Delta^{CD}(a, b) \\in [0, 1]`
+    from :math:`d_j^{PV}(a, b)` or :math:`d_j^{PVV}(a, b)` indices,
+    depending on a `pre_veto_thresholds` presence for each criterion.
 
-    :param alternatives_a:
-    :param alternatives_b:
-    :param scales:
-    :param weights:
-    :param preference_threshold:
-    :param veto_threshold:
-    :param pre_veto_threshold:
-    :return:
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param preference_thresholds: all criteria's preference thresholds
+    :param veto_thresholds: all criteria's veto thresholds
+    :param pre_veto_thresholds: all criteria's pre-veto thresholds,
+        defaults to ``None``
+
+    :return: comprehensive discordance index, value from the [0, 1] interval
     """
-    if pre_veto_threshold:
-        return sum(
-            [
-                weights[i]
-                * discordance_marginal(
-                    alternatives_a[i],
-                    alternatives_b[i],
-                    scales[i],
-                    preference_threshold[i],
-                    veto_threshold[i],
-                    pre_veto_threshold[i],
-                )
-                for i in range(len(alternatives_a))
-            ]
-        ) / sum(weights)
-    else:
-        return sum(
-            [
-                weights[i]
-                * discordance_marginal(
-                    alternatives_a[i],
-                    alternatives_b[i],
-                    scales[i],
-                    preference_threshold[i],
-                    veto_threshold[i],
-                    None,
-                )
-                for i in range(len(alternatives_a))
-            ]
-        ) / sum(weights)
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            weights=weights,
+            preference_thresholds=preference_thresholds,
+            veto_thresholds=veto_thresholds,
+        )
+        _weights_proper_vals(weights)
+    return sum(
+        pd.Series(weights)
+        * discordance_criteria_marginals(
+            a_values,
+            b_values,
+            scales,
+            preference_thresholds,
+            veto_thresholds,
+            pre_veto_thresholds,
+            validated=True,
+        )
+    ) / sum(weights.values() if isinstance(weights, dict) else weights.values)
 
 
-def discordance_pair(
-    a_values: List[NumericValue],
-    b_values: List[NumericValue],
-    scales: List[QuantitativeScale],
-    preference_thresholds: List[Threshold],
-    veto_thresholds: List[Threshold],
-    pre_veto_thresholds: Optional[List[Threshold]],
-    inverse: bool = False,
-) -> List[NumericValue]:
-    """_summary_
-    :param List[NumericValue] a_values: _description_
-    :param List[NumericValue] b_values: _description_
-    :param List[QuantitativeScale] scales: _description_
-    :param List[Threshold] preference_thresholds: _description_
-    :param List[Threshold] veto_thresholds: _description_
-    :param Optional[List[Threshold]] pre_veto_thresholds: _description_
-    :param bool inverse: _description_, defaults to False
-    :return List[NumericValue]: _description_
+def discordance_criteria_marginals(
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    **kwargs,
+) -> pd.Series:
+    """Computes marginal discordance indices:
+    :math:`d_j^{PVV}(a, b) \\in \\{0, 1\\}` or :math:`d_j^{PV}(a, b) \\in \\{0, 1\\}`
+    for alternatives pair (or between alternative and profile).
+
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+    :param preference_thresholds: all criteria's preference thresholds
+    :param veto_thresholds: all criteria's veto thresholds
+    :param pre_veto_thresholds: all criteria's pre-veto thresholds,
+        defaults to ``None``
+
+    :return: a series with marginal discordance indices
     """
-    if pre_veto_thresholds:
-        _all_lens_equal(
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
             a_values=a_values,
             b_values=b_values,
             scales=scales,
             preference_thresholds=preference_thresholds,
             veto_thresholds=veto_thresholds,
-            pre_veto_thresholds=pre_veto_thresholds,
         )
-        return [
+    return pd.Series(
+        [
             discordance_marginal(
-                aval,
-                bval,
-                scale,
-                preference_threshold,
-                veto_threshold,
-                pre_veto_threshold,
-                inverse,
+                a_values[criterion_name],
+                b_values[criterion_name],
+                scales[criterion_name],
+                preference_thresholds[criterion_name],
+                veto_thresholds[criterion_name],
+                (pre_veto_thresholds[criterion_name] if pre_veto_thresholds is not None else None),
             )
-            for aval, bval, scale, preference_threshold, veto_threshold, pre_veto_threshold in zip(
-                a_values,
-                b_values,
-                scales,
-                preference_thresholds,
-                veto_thresholds,
-                pre_veto_thresholds,
-            )
-        ]
-    _all_lens_equal(
-        a_values=a_values,
-        b_values=b_values,
+            for criterion_name in a_values.keys()
+        ],
+        index=list(a_values.keys()),
+    )
+
+
+def discordance_marginals(
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    preference_thresholds: Union[Dict[Any, Threshold], pd.Series],
+    veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    pre_veto_thresholds: Optional[Union[Dict[Any, Optional[Threshold]], pd.Series]] = None,
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+    """Computes marginal discordance indices :math:`d_j^{PV}(a, b)`
+    or :math:`d_j^{PVV}(a, b)`. Comparison is possible for
+    alternatives or between alternatives and profiles,
+    depending on the `profiles_perform` argument value.
+
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param preference_thresholds: all criteria's preference thresholds
+    :param veto_thresholds: all criteria's preference thresholds
+    :param pre_veto_thresholds: all criteria's pre-veto thresholds,
+        defaults to ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
+
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with `pandas.Series` objects
+          inside, each containing marginal discordance indices
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`d_j(alternative_i, profile_j)` indices, and the second one
+          :math:`d_j(profile_j, alternative_i)`, respectively,
+          where :math:`d_j \\in \\{d_j^{PV}, d_j^{PVV}\\}`.
+    """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
         scales=scales,
         preference_thresholds=preference_thresholds,
         veto_thresholds=veto_thresholds,
+        pre_veto_thresholds=pre_veto_thresholds,
+        profiles_perform=profiles_perform,
     )
-    return [
-        discordance_marginal(
-            aval,
-            bval,
-            scale,
-            preference_threshold,
-            veto_threshold,
-            inverse=inverse,
-            pre_veto_threshold=None,
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+    if profiles_perform is not None:
+        return pd.DataFrame(
+            [
+                [
+                    discordance_criteria_marginals(
+                        alternatives_perform.loc[alt_name],
+                        profiles_perform.loc[prof_name],
+                        scales,
+                        preference_thresholds,
+                        veto_thresholds,
+                        pre_veto_thresholds,
+                        validated=True,
+                    )
+                    for prof_name in profiles_perform.index.values
+                ]
+                for alt_name in alternatives_perform.index.values
+            ],
+            index=alternatives_perform.index,
+            columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    discordance_criteria_marginals(
+                        profiles_perform.loc[prof_name],
+                        alternatives_perform.loc[alt_name],
+                        scales,
+                        preference_thresholds,
+                        veto_thresholds,
+                        pre_veto_thresholds,
+                        validated=True,
+                    )
+                    for alt_name in alternatives_perform.index.values
+                ]
+                for prof_name in profiles_perform.index.values
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
         )
-        for aval, bval, scale, preference_threshold, veto_threshold in zip(
-            a_values, b_values, scales, preference_thresholds, veto_thresholds
-        )
-    ]
+    return pd.DataFrame(
+        [
+            [
+                discordance_criteria_marginals(
+                    alternatives_perform.loc[alt_name_a],
+                    alternatives_perform.loc[alt_name_b],
+                    scales,
+                    preference_thresholds,
+                    veto_thresholds,
+                    pre_veto_thresholds,
+                    validated=True,
+                )
+                for alt_name_b in alternatives_perform.index.values
+            ]
+            for alt_name_a in alternatives_perform.index.values
+        ],
+        index=alternatives_perform.index,
+        columns=alternatives_perform.index,
+    )
 
 
 def discordance(
-    alt_values: List[NumericValue],
-    performance_table: List[List[NumericValue]],
-    scales: List[QuantitativeScale],
-    preference_thresholds: List[Threshold],
-    veto_thresholds: List[Threshold],
-    pre_veto_thresholds: Optional[List[Threshold]],
-) -> List[List[NumericValue]]:
-    """_summary_
-    :param List[NumericValue] alt_values: _description_
-    :param List[List[NumericValue]] performance_table: _description_
-    :param List[NumericValue] scales: _description_
-    :param List[Threshold] preference_thresholds: _description_
-    :param List[Threshold] veto_thresholds: _description_
-    :param Optional[List[Threshold]] pre_veto_thresholds: _description_
-    :return List[List[NumericValue]]: _description_
+    discordance_marginals: pd.DataFrame,
+    weights: Union[Dict[Any, NumericValue], pd.Series],
+) -> pd.DataFrame:
+    """Aggregates discordance marginals to comprehensive
+    indices :math:`\\Delta^{CD}(a, b) \\in [0, 1]` from
+    :math:`d^{V}(a, b)`, :math:`d^{PV}(a, b)` or :math:`d^{PVV}(a, b)`
+    indices.
+
+    :param discordance_marginals: a table with marginal indices,
+        can be an output from :func:`discordance_marginals` or
+        :func:`discordance_bin` functions
+    :param weights: all criteria's weights, :math:`weight\\_value > 0`
+
+    :return: a data frame with comprehensive discordance indices
+    """
+    _check_df_index(discordance_marginals, index_type="rows")
+    _check_df_index(discordance_marginals, index_type="columns", check_columns=True)
+
+    try:
+        _unique_names(weights.keys(), names_type="criteria")
+        _weights_proper_vals(weights, can_be_none=True)
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong weights type. Expected {discordance.__annotations__['weights']}, "
+            f"but got {type(weights).__name__} instead."
+        ) from exc
+
+    criteria_set = set(weights.keys())
+    try:
+        for column_name in discordance_marginals.columns.values:
+            for row_name in discordance_marginals[column_name].index.values:
+                _unique_names(
+                    discordance_marginals[column_name][row_name].keys(), names_type="criteria"
+                )
+                if set(discordance_marginals[column_name][row_name].keys()) != criteria_set:
+                    raise exceptions.InconsistentIndexNamesError(
+                        "A criteria set inside discordance marginals table is different from "
+                        "the set provided with weights."
+                    )
+                for value in discordance_marginals[column_name][row_name].values:
+                    _check_index_value_interval(value, "marginal discordance")
+
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong marginal discordance value type. Expected "
+            f"{pd.Series.__name__}, but got "
+            f"{type(discordance_marginals[column_name][row_name]).__name__} instead."
+        ) from exc
+    weights_sum: NumericValue = sum(weights)
+    return pd.DataFrame(
+        [
+            [
+                sum(weights * discordance_marginals[alt_name_b][alt_name_a]) / weights_sum
+                for alt_name_b in discordance_marginals.columns
+            ]
+            for alt_name_a in discordance_marginals.index.values
+        ],
+        index=discordance_marginals.index,
+        columns=discordance_marginals.columns,
+    )
+
+
+class NonDiscordanceType(Enum):
+    """An Enum class to specify which non-discordance
+    index should be computed: :math:`\\Delta^{DC}`, :math:`\\Delta^D`
+    or :math:`\\Delta^{DM}`.
+    """
+
+    DC = "DC"
+    D = "D"
+    DM = "DM"
+
+
+def non_discordance_marginal(
+    criteria_discordance_marginals: pd.Series,
+    non_discordance_type: NonDiscordanceType = NonDiscordanceType.D,
+    concordance_comprehensive: Optional[NumericValue] = None,
+) -> NumericValue:
+    """Computes non-discordance index value between two alternatives
+    on one criterion.
+
+    The function calculates one from the following indices:
+    :math:`\\Delta^{DC}`, :math:`\\Delta^D`, :math:`\\Delta^{DM}`,
+    depending on the `non_discordance_type` argument.
+
+    :param criteria_discordance_marginals: a series with discordance
+        marginals :math:`d_j(a, b)` for all criteria, :math:`d_j(a, b)
+        \\in \\{d_j^V(a, b), d_j^{PV}(a, b), d_j^{PVV}(a, b)\\}`
+    :param non_discordance_type: an enum object to specify the
+        non-discordance formula during the calculation,
+        defaults to ``NonDiscordanceType.D``
+    :param concordance_comprehensive: comprehensive concordance
+        index value :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
+        C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
+        calculation, defaults to ``None``
+
+    :raises exceptions.WrongIndexValueError: if any index is outside
+        [0, 1] interval
+
+    :return: a non-discordance index, value from the [0, 1] interval
     """
     try:
-        return [
-            discordance_pair(
-                alt_values,
-                performance_table_row,
-                scales,
-                preference_thresholds,
-                veto_thresholds,
-                pre_veto_thresholds,
+        _unique_names(criteria_discordance_marginals.keys(), names_type="criteria")
+
+        for value in criteria_discordance_marginals.values:
+            _check_index_value_interval(value, name="marginal discordance")
+    except AttributeError as exc:
+        raise TypeError(
+            f"Wrong marginal discordance indices type. Expected {pd.Series.__name__}, "
+            f"but got {type(criteria_discordance_marginals).__name__} instead."
+        ) from exc
+
+    if non_discordance_type == NonDiscordanceType.DM:
+        return 1 - max(criteria_discordance_marginals)
+
+    if non_discordance_type == NonDiscordanceType.D:
+        return np.prod(1 - criteria_discordance_marginals)
+
+    if non_discordance_type == NonDiscordanceType.DC:
+        if concordance_comprehensive is None:
+            raise exceptions.WrongIndexValueError(
+                "Missing comprehensive concordance index while computing "
+                "the non-discordance DC index value."
             )
-            for performance_table_row in performance_table
-        ]
-    except TypeError as exc:
-        exc.args = ("",)  # TODO: performance table is not a list
-        raise
+        _check_index_value_interval(concordance_comprehensive, name="comprehensive concordance")
+
+        return np.prod(
+            (
+                1
+                - criteria_discordance_marginals[
+                    criteria_discordance_marginals > concordance_comprehensive
+                ]
+            )
+            / (1 - concordance_comprehensive)
+        )
+
+    raise TypeError(
+        f"Non-discordance type was not provided. Expected {NonDiscordanceType.__name__}, "
+        f"but got {type(non_discordance_type).__name__} instead."
+    )
 
 
-def counter_veto_marginal(
+def non_discordance(
+    discordance_marginals: pd.DataFrame,
+    non_discordance_type: NonDiscordanceType = NonDiscordanceType.D,
+    concordance_comprehensive: Optional[pd.DataFrame] = None,
+) -> pd.DataFrame:
+    """Computes non-discordance indices for alternatives
+    comparison, or between alternatives and profiles.
+
+    The function calculates one from the following indices:
+    :math:`\\Delta^{DC}`, :math:`\\Delta^D`, :math:`\\Delta^{DM}`,
+    depending on the `non_discordance_type` argument.
+
+    :param criteria_discordance_marginals: a data frame with discordance
+        marginals :math:`d_j(a, b)` for all criteria, :math:`d_j(a, b)
+        \\in \\{d_j^V(a, b), d_j^{PV}(a, b), d_j^{PVV}(a, b)\\}`,
+        can be an output from :func:`discordance_bin` or
+        :func:`discordance_marginals` functions
+    :param non_discordance_type: an enum object to specify the
+        non-discordance formula during the calculation,
+        defaults to ``NonDiscordanceType.D``
+    :param concordance_comprehensive: comprehensive concordance
+        indices :math:`C(a, b) \\in \\{C^S(a, b), C^{RP}(a, b),
+        C^{INT}(a, b)\\}`, needed only for :math:`\\Delta^{DC}`
+        calculation, defaults to ``None``
+
+    :return: a non-discordance indices, values from the [0, 1] interval
+    """
+    _consistent_df_indexing(
+        discordance_marginals=discordance_marginals,
+        concordance_comprehensive=concordance_comprehensive,
+    )
+
+    return pd.DataFrame(
+        [
+            [
+                non_discordance_marginal(
+                    discordance_marginals.loc[alt_name_a, alt_name_b],
+                    non_discordance_type,
+                    concordance_comprehensive.loc[alt_name_a, alt_name_b]
+                    if concordance_comprehensive is not None
+                    else None,
+                )
+                for alt_name_b in discordance_marginals.columns.values
+            ]
+            for alt_name_a in discordance_marginals.index.values
+        ],
+        index=discordance_marginals.index,
+        columns=discordance_marginals.columns,
+    )
+
+
+def is_counter_veto_occur(
     a_value: NumericValue,
     b_value: NumericValue,
     scale: QuantitativeScale,
-    counter_veto_threshold: Threshold,
+    counter_veto_threshold: Optional[Threshold],
 ) -> bool:
-    """_summary_
-    :param NumericValue a_value: _description_
-    :param NumericValue b_value: _description_
-    :param QuantitativeScale scale: _description_
-    :param Threshold counter_veto_threshold: _description_
-    :return bool: _description_
+    """Checks if the counter-veto occurs :math:`cv(a\\_value, b\\_value)`.
+
+    :param a_value: alternative's performance value on one criterion
+    :param b_value: alternative's performance value on the same criterion as `a_value`
+    :param scale: criterion's scale with specified preference direction
+    :param counter_veto_threshold: criterion's counter-veto threshold;
+        if no `counter_veto_threshold` is specified, the function
+        will return ``False``
+
+    :raises exceptions.WrongThresholdValueError: if counter-veto
+        threshold value is not positive
+
+    :return: ``True``, if the counter-veto occurs, ``False`` otherwise
     """
     _both_values_in_scale(a_value, b_value, scale)
-    try:
-        counter_veto: NumericValue = counter_veto_threshold(a_value)
-    except TypeError as exc:
-        exc.args = ("",)  # TODO: counter_veto_threshold is not a Threshold object
-        raise
+    if counter_veto_threshold is None:
+        return False
+
+    counter_veto_value = _get_threshold_values(
+        b_value, counter_veto_threshold=counter_veto_threshold
+    )[0]
+    if counter_veto_value <= 0:
+        raise exceptions.WrongThresholdValueError(
+            "Counter veto threshold value must be positive, but "
+            f"got {counter_veto_value} instead."
+        )
     return (
-        b_value - a_value > counter_veto
+        a_value - b_value > counter_veto_value
         if scale.preference_direction == PreferenceDirection.MAX
-        else a_value - b_value > counter_veto
+        else b_value - a_value > counter_veto_value
     )
 
 
 def counter_veto_pair(
-    a_values: List[NumericValue],
-    b_values: List[NumericValue],
-    scales: List[QuantitativeScale],
-    counter_veto_thresholds: List[Threshold],
-) -> List[bool]:
-    """_summary_
-    :param List[NumericValue] a_values: _description_
-    :param List[NumericValue] b_values: _description_
-    :param List[QuantitativeScale] scales: _description_
-    :param List[Threshold] counter_veto_thresholds: _description_
-    :return List[bool]: _description_
+    a_values: Union[Dict[Any, NumericValue], pd.Series],
+    b_values: Union[Dict[Any, NumericValue], pd.Series],
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    **kwargs,
+) -> pd.Series:
+    """Checks if the counter-veto occurs :math:`cv(a, b)`
+    on all criteria between two alternatives or between an alternative
+    and a profile.
+
+    :param a_values: alternative's performance on all its criteria
+    :param b_values: alternative's performance on all its criteria
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds,
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
+
+    :return: a boolean series with information about exceeding
+        the counter-veto or not
     """
-    _all_lens_equal(
-        a_values=a_values,
-        b_values=b_values,
-        scales=scales,
-        counter_veto_thresholds=counter_veto_thresholds,
-    )
-    return [
-        counter_veto_marginal(aval, bval, scale, counter_veto_threshold)
-        for aval, bval, scale, counter_veto_threshold in zip(
-            a_values, b_values, scales, counter_veto_thresholds
+    if "validated" not in kwargs:
+        _consistent_criteria_names(
+            a_values=a_values,
+            b_values=b_values,
+            scales=scales,
+            counter_veto_thresholds=counter_veto_thresholds,
         )
-    ]
+
+    return pd.Series(
+        [
+            is_counter_veto_occur(
+                a_values[criterion_name],
+                b_values[criterion_name],
+                scales[criterion_name],
+                counter_veto_thresholds[criterion_name],
+            )
+            for criterion_name in a_values.keys()
+        ],
+        index=list(a_values.keys()),
+    )
 
 
 def counter_veto(
-    alt_values: List[NumericValue],
-    performance_table: List[List[NumericValue]],
-    scales: List[QuantitativeScale],
-    counter_veto_thresholds: List[Threshold],
-) -> List[List[bool]]:
-    """_summary_
-    :param List[NumericValue] alt_values: _description_
-    :param List[List[NumericValue]] performance_table: _description_
-    :param List[QuantitativeScale] scales: _description_
-    :param List[Threshold] counter_veto_thresholds: _description_
-    :return List[List[bool]]: _description_
+    performance_table: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+    """Checks if the counter-veto occurs :math:`cv(a, b)`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
+
+    :param performance_table: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
+
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with `pandas.Series` objects
+          inside, each containing information about exceeding the counter-veto
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          :math:`cv(alternative_i, profile_j)` indices, and the second one
+          :math:`cv(profile_j, alternative_i)`, respectively.
     """
-    try:
-        return [
-            counter_veto_pair(
-                alt_values, performance_table_row, scales, counter_veto_thresholds
+    _consistent_criteria_names(
+        performance_table=performance_table,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        counter_veto_thresholds=counter_veto_thresholds,
+    )
+    _check_df_index(performance_table, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+
+    if profiles_perform is not None:
+        result_alt_profs = pd.DataFrame(
+            [[[] * len(performance_table.index)] * len(profiles_perform.index)],
+            index=performance_table.index,
+            columns=profiles_perform.index,
+        )
+        for criterion_name_a in performance_table.index.values:
+            for criterion_name_b in profiles_perform.index.values:
+                cv_series = counter_veto_pair(
+                    performance_table.loc[criterion_name_a],
+                    profiles_perform.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                    validated=True,
+                )
+                result_alt_profs[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+
+        result_profs_alt = pd.DataFrame(
+            [[[] * len(profiles_perform.index)] * len(performance_table.index)],
+            index=profiles_perform.index,
+            columns=performance_table.index,
+        )
+        for criterion_name_a in profiles_perform.index:
+            for criterion_name_b in performance_table.index:
+                cv_series = counter_veto_pair(
+                    profiles_perform.loc[criterion_name_a],
+                    performance_table.loc[criterion_name_b],
+                    scales,
+                    counter_veto_thresholds,
+                    validated=True,
+                )
+                result_profs_alt[criterion_name_b][criterion_name_a] = [
+                    cv_name for cv_name, cv_value in cv_series.items() if cv_value
+                ]
+        return result_alt_profs, result_profs_alt
+
+    result = pd.DataFrame(
+        [[[] * len(performance_table.index)] * len(performance_table.index)],
+        index=performance_table.index,
+        columns=performance_table.index,
+    )
+    for criterion_name_a in performance_table.index:
+        for criterion_name_b in performance_table.index:
+            cv_series = counter_veto_pair(
+                performance_table.loc[criterion_name_a],
+                performance_table.loc[criterion_name_b],
+                scales,
+                counter_veto_thresholds,
+                validated=True,
             )
-            for performance_table_row in performance_table
-        ]
-    except TypeError as exc:
-        exc.args = ("",)  # TODO: preformance table is not a List
-        raise
+            result[criterion_name_b][criterion_name_a] = [
+                cv_name for cv_name, cv_value in cv_series.items() if cv_value
+            ]
+    return result
 
 
 def counter_veto_count(
-    performance_table: List[List[NumericValue]],
-    scales: List[QuantitativeScale],
-    counter_veto_thresholds: List[Threshold],
-) -> List[List[int]]:
-    try:
-        return [
+    alternatives_perform: pd.DataFrame,
+    scales: Union[Dict[Any, QuantitativeScale], pd.Series],
+    counter_veto_thresholds: Union[Dict[Any, Optional[Threshold]], pd.Series],
+    profiles_perform: Optional[pd.DataFrame] = None,
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.DataFrame]]:
+    """Counts the counter-veto occurrences :math:`cv(a, b)`.
+    Comparison is possible for alternatives or between alternatives and
+    profiles, depending on the `profiles_perform` argument value.
+
+    :param alternatives_perform: performance table of alternatives
+    :param scales: all criteria's scales with specified preference direction
+    :param counter_veto_thresholds: all criteria's counter-veto thresholds;
+        for each criterion, providing a ``Threshold`` is optional an it
+        can be set to ``None``
+    :param profiles_perform: if provided, indices would be computed
+        between alternatives from `alternatives_perform` and from this argument,
+        defaults to ``None``
+
+    :return:
+        * if `profiles_perform` argument is set to ``None``, the function will
+          return a single `pandas.DataFrame` object with counted
+          counter-veto occurrences
+        * otherwise, the function will return a ``tuple`` object with two
+          `pandas.DataFrame` objects inside, where the first one contains
+          counted :math:`cv(alternative_i, profile_j)` occurrences, and the second one
+          counted :math:`cv(profile_j, alternative_i)`, respectively.
+    """
+    _consistent_criteria_names(
+        alternatives_perform=alternatives_perform,
+        profiles_perform=profiles_perform,
+        scales=scales,
+        counter_veto_thresholds=counter_veto_thresholds,
+    )
+    _check_df_index(alternatives_perform, index_type="alternatives")
+    _check_df_index(profiles_perform, index_type="profiles")
+    if profiles_perform is not None:
+        return pd.DataFrame(
+            [
+                [
+                    sum(
+                        counter_veto_pair(
+                            alternatives_perform.loc[alt_name],
+                            profiles_perform.loc[prof_name],
+                            scales,
+                            counter_veto_thresholds,
+                            validated=True,
+                        ).values
+                    )
+                    for prof_name in profiles_perform.index.values
+                ]
+                for alt_name in alternatives_perform.index.values
+            ],
+            index=alternatives_perform.index,
+            columns=profiles_perform.index,
+        ), pd.DataFrame(
+            [
+                [
+                    sum(
+                        counter_veto_pair(
+                            profiles_perform.loc[prof_name],
+                            alternatives_perform.loc[alt_name],
+                            scales,
+                            counter_veto_thresholds,
+                            validated=True,
+                        ).values
+                    )
+                    for alt_name in alternatives_perform.index.values
+                ]
+                for prof_name in profiles_perform.index.values
+            ],
+            index=profiles_perform.index,
+            columns=alternatives_perform.index,
+        )
+    return pd.DataFrame(
+        [
             [
                 sum(
                     counter_veto_pair(
-                        a_values, b_values, scales, counter_veto_thresholds
-                    )
+                        alternatives_perform.loc[alt_name_a],
+                        alternatives_perform.loc[alt_name_b],
+                        scales,
+                        counter_veto_thresholds,
+                        validated=True,
+                    ).values
                 )
-                for b_values in performance_table
+                for alt_name_b in alternatives_perform.index.values
             ]
-            for a_values in performance_table
-        ]
-    except TypeError as exc:
-        exc.args = ("",)  # TODO performance tables is not a list
-        raise
+            for alt_name_a in alternatives_perform.index.values
+        ],
+        index=alternatives_perform.index,
+        columns=alternatives_perform.index,
+    )
