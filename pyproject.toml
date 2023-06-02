@@ -1,3 +1,25 @@
 [build-system]
 requires = ["setuptools >= 35.0.2"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "electre-methods"
+version = "0.0.1"
+authors = [
+  { name="Agnieszka Klimek", email="aga.klimek.klimek@gmail.com" },
+  { name="Anna Prałat", email="anna@pralat.pl" },
+  { name="Patryk Hubicki", email="zie.patryk@gmail.com" },
+  { name="Tomasz Budner", email="tomasz.budner.ad@gmail.com" },
+]
+description = "Package with broad spectrum of elementary ELECTRE-based modules that can be joined together in many different combinations and used via a user-friendly Python library"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/PatrykHub/ELECTRE-Methods"
+"Bug Tracker" = "https://github.com/PatrykHub/ELECTRE-Methods/issues"
